@@ -1,1 +1,1 @@
-# pocket-gym
+# Pocket Gym
