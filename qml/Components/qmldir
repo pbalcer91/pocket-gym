@@ -1,0 +1,5 @@
+module Components
+
+PIconImage	    1.0		PIconImage.qml
+PButton		    1.0		PButton.qml
+PListModel	    1.0		PListModel.qml
