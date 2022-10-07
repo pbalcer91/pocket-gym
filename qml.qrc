@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qml/Properties/Colors.qml</file>
+        <file>qml/Properties/qmldir</file>
+        <file>qml/Properties/Properties.qml</file>
+        <file>qml/Components/qmldir</file>
+        <file>qml/AppWindow.qml</file>
+        <file>qml/Components/PIconImage.qml</file>
+        <file>qml/Components/PButton.qml</file>
+        <file>qml/Components/PListModel.qml</file>
+    </qresource>
+</RCC>
