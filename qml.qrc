@@ -9,5 +9,8 @@
         <file>qml/Components/PIconImage.qml</file>
         <file>qml/Components/PButton.qml</file>
         <file>qml/Components/PListModel.qml</file>
+        <file>qml/Components/PMessageDialog.qml</file>
+        <file>qml/Components/PLabel.qml</file>
+        <file>qml/Properties/Fonts.qml</file>
     </qresource>
 </RCC>

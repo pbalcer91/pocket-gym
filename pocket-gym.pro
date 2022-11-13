@@ -1,12 +1,14 @@
 QT += quick svg
 
 SOURCES += \
+        logging.cpp \
         main.cpp
 
 resources.files = main.qml 
 resources.prefix = /$${TARGET}
 
 RESOURCES += qml.qrc \
+	fonts.qrc \
 	icons.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -34,3 +36,6 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 	ANDROID_PACKAGE_SOURCE_DIR = \
 		$$PWD/android
 }
+
+HEADERS += \
+	logging.h

@@ -2,4 +2,6 @@ module Components
 
 PIconImage	    1.0		PIconImage.qml
 PButton		    1.0		PButton.qml
+PLabel		    1.0		PLabel.qml
 PListModel	    1.0		PListModel.qml
+PMessageDialog	    1.0		PMessageDialog.qml

@@ -19,6 +19,32 @@ Page {
 		UNDEFINED
 	}
 
+	function showMessage(args) {
+		if (messageDialogLoader.status != Loader.Null){
+			console.warn("Multipe messageDialogs need to be handle!")
+		}
+
+		messageDialogLoader.setSource("qrc:/qml/Components/PMessageDialog.qml", args)
+	}
+
+	//TODO: usunac to
+	function showAppCloseMessage() {
+		console.log("Proba zamkniecia aplikacji")
+		showMessage({ "message": "Are you sure to close the app?",
+						"acceptButtonText": "Yes",
+						"rejectButtonText": "No" })	// do tłumaczenia
+	}
+
+	//TODO: obsluga klawisza back na telefonie
+	Keys.onBackPressed: {
+		//showAppCloseMessage()
+	}
+
+	Component.onCompleted: {
+		window.currentPage = AppWindow.PAGES.HOME
+		window.forceActiveFocus()
+	}
+
 	PListModel {
 		id: navigationBarModel
 
@@ -56,36 +82,6 @@ Page {
 		}
 	}
 
-	ListView {
-		id: mainStack
-
-		anchors.fill: parent
-
-		snapMode: ListView.SnapOneItem
-		orientation: ListView.Horizontal
-
-		model: navigationBarModel
-
-		highlightRangeMode: ListView.StrictlyEnforceRange
-		highlightMoveDuration: 100
-
-		delegate: Rectangle {
-			color: Colors.white
-			width: ListView.view.width
-			height: ListView.view.height
-
-			Text {
-				anchors.centerIn: parent
-				text: model.index
-			}
-		}
-
-		onCurrentIndexChanged: {
-			if (window.currentPage != currentIndex)
-				window.currentPage = currentIndex
-		}
-	}
-
 	footer: ToolBar {
 		id: footer
 
@@ -99,8 +95,6 @@ Page {
 			anchors.fill: parent
 
 			Flow {
-				id: flow
-
 				Layout.fillWidth: true
 				height: navigationBar.implicitHeight
 
@@ -167,7 +161,57 @@ Page {
 		}
 	}
 
-	Component.onCompleted: {
-		window.currentPage = AppWindow.PAGES.HOME
+	ListView {
+		id: mainStack
+
+		anchors.fill: parent
+
+		snapMode: ListView.SnapOneItem
+		orientation: ListView.Horizontal
+
+		model: navigationBarModel
+
+		highlightRangeMode: ListView.StrictlyEnforceRange
+		highlightMoveDuration: 100
+
+		delegate: Rectangle {
+			color: Colors.white
+			width: ListView.view.width
+			height: ListView.view.height
+
+			//add Loader with component from ListModel
+
+			PLabel {
+				anchors.centerIn: parent
+				text: model.index
+			}
+		}
+
+		onCurrentIndexChanged: {
+			if (window.currentPage != currentIndex)
+				window.currentPage = currentIndex
+		}
+	}
+
+	Loader {
+		id: messageDialogLoader
+
+		onLoaded: {
+			messageDialogLoader.item.closed.connect(() => {
+														if (!messageDialogLoader)
+															return
+														messageDialogLoader.source = ""
+													})
+			messageDialogLoader.item.open()
+		}
+	}
+
+	//TODO: usunac to
+	Connections {
+		target: messageDialogLoader.item
+
+		function onAccepted() {
+			Qt.quit()
+		}
 	}
 }
