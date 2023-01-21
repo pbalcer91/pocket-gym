@@ -12,5 +12,41 @@
         <file>qml/Components/PMessageDialog.qml</file>
         <file>qml/Components/PLabel.qml</file>
         <file>qml/Properties/Fonts.qml</file>
+        <file>qml/Components/PCalendar.qml</file>
+        <file>qml/Calendar/CalendarView.qml</file>
+        <file>qml/Calendar/qmldir</file>
+        <file>qml/Settings/SettingsView.qml</file>
+        <file>qml/Components/PCalendarForm.ui.qml</file>
+        <file>qml/Settings/qmldir</file>
+        <file>qml/Progress/ProgressView.qml</file>
+        <file>qml/Progress/qmldir</file>
+        <file>qml/Home/HomeView.qml</file>
+        <file>qml/Home/qmldir</file>
+        <file>qml/Settings/SettingsSection.qml</file>
+        <file>qml/Components/PMainLayout.qml</file>
+        <file>qml/Components/PInfoButton.qml</file>
+        <file>qml/Home/HomeSection.qml</file>
+        <file>qml/Exercises/qmldir</file>
+        <file>qml/Exercises/ExercisesView.qml</file>
+        <file>qml/Home/TrainingPlanItem.qml</file>
+        <file>qml/Components/PListView.qml</file>
+        <file>qml/Home/Models/TrainingPlansModel.qml</file>
+        <file>qml/Home/Models/TrainingsModel.qml</file>
+        <file>qml/Home/Models/TrainersModel.qml</file>
+        <file>qml/Components/PTextField.qml</file>
+        <file>qml/Components/PSwitch.qml</file>
+        <file>qml/Components/PDialog.qml</file>
+        <file>qml/Home/TrainingItem.qml</file>
+        <file>qml/Home/EditTrainingDialog.qml</file>
+        <file>qml/Home/EditExerciseModal.qml</file>
+        <file>qml/Components/PTimeSelector.qml</file>
+        <file>qml/Components/PTumbler.qml</file>
+        <file>qml/Home/ExerciseSetItem.qml</file>
+        <file>qml/Components/PCheckBox.qml</file>
+        <file>qml/Home/TrainingPlanDetails.qml</file>
+        <file>qml/Home/TrainingDetails.qml</file>
+        <file>qml/Home/ExerciseItem.qml</file>
+        <file>qml/Home/Models/ExercisesModel.qml</file>
+        <file>qml/Home/EditTrainingPlanModal.qml</file>
     </qresource>
 </RCC>

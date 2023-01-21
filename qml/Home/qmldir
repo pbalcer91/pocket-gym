@@ -1,0 +1,19 @@
+module Home
+
+HomeView		    1.0	    HomeView.qml
+HomeSection		    1.0	    HomeSection.qml
+EditTrainingPlanModal	    1.0	    EditTrainingPlanModal.qml
+EditTrainingDialog	    1.0	    EditTrainingDialog.qml
+
+TrainingPlanDetails	    1.0	    TrainingPlanDetails.qml
+TrainingDetails		    1.0	    TrainingDetails.qml
+
+TrainingPlanItem	    1.0	    TrainingPlanItem.qml
+TrainingItem		    1.0	    TrainingItem.qml
+ExerciseItem		    1.0	    ExerciseItem.qml
+ExerciseSetItem		    1.0	    ExerciseSetItem.qml
+
+TrainingPlansModel	    1.0	    Models/TrainingPlansModel.qml
+TrainingsModel		    1.0	    Models/TrainingsModel.qml
+ExercisesModel		    1.0	    Models/ExercisesModel.qml
+TrainersModel		    1.0	    Models/TrainersModel.qml

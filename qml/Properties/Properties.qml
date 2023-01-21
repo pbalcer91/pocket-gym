@@ -16,6 +16,7 @@ QtObject {
 	readonly property int iconSize: 26
 	readonly property int smallIconSize: 18
 
+	readonly property int spacing: 8
 	readonly property int smallMargin: 12
 	readonly property int margin: 24
 	readonly property int padding: 8
@@ -25,4 +26,6 @@ QtObject {
 	readonly property int buttonRadius: 20
 
 	readonly property int selectIndicatorHeight: 2
+
+	readonly property int calendarButtonSize: 40
 }

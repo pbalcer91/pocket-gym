@@ -16,14 +16,31 @@ Drawer {
 	closePolicy: Popup.NoAutoClose
 	clip: true
 
-	height: priv.defaultHeight
+	height: (priv.defaultHeight > Properties.appWindow.height * 0.7 ?
+				 Properties.appWindow.height * 0.7
+			   : priv.defaultHeight)
 	width: Properties.appWindow.width
+
+	Behavior on height {
+		NumberAnimation {
+			duration: 100
+		}
+	}
 
 	edge: Qt.BottomEdge
 
-	property alias acceptButtonText: acceptButton.text
-	property alias rejectButtonText: rejectButton.text
+	default property alias mainContent: mainContent.data
+
+	property alias acceptButton: acceptButton
+	property alias rejectButton: rejectButton
+
+	property var acceptAction
+	property var rejectAction
+
 	property alias message: message.text
+	property alias title: title.text
+
+	property bool closeButtonAvailable: false
 
 	signal accepted
 	signal rejected
@@ -46,9 +63,9 @@ Drawer {
 	QtObject {
 		id: priv
 
-		property int defaultHeight: header.implicitHeight
+		property int defaultHeight: header.implicitHeight + Properties.smallMargin
 									+ mainContent.implicitHeight
-									+ footer.implicitHeight + Properties.margin + Properties.smallMargin * 2
+									+ footer.implicitHeight + Properties.margin +36
 	}
 
 	Item {
@@ -66,6 +83,31 @@ Drawer {
 				Layout.fillWidth: true
 
 				Layout.topMargin: Properties.smallMargin
+
+				PLabel {
+					id: title
+
+					visible: (text != "")
+
+					font: Fonts.subTitle
+					lineHeight: Fonts.subTitleHeight
+				}
+
+				Item {
+					Layout.fillWidth: true
+				}
+
+				PButton {
+					id: closeButton
+
+					icon.source: "qrc:/icons/ic_close.svg"
+
+					visible: messageDialog.closeButtonAvailable
+
+					onClicked: {
+						messageDialog.close()
+					}
+				}
 			}
 
 			ColumnLayout {
@@ -77,7 +119,9 @@ Drawer {
 				PLabel {
 					id: message
 
-					color: Colors.white
+					Layout.fillWidth: true
+
+					color: Colors.text
 
 					visible: (text != "")
 				}
@@ -88,37 +132,43 @@ Drawer {
 
 				Layout.fillWidth: true
 
-				Layout.topMargin: Properties.smallMargin
-				Layout.bottomMargin: Properties.margin
+				Layout.topMargin: Properties.margin
+				Layout.bottomMargin: 36
 
-				spacing: Properties.margin
+				spacing: 60
 
 				Item {
 					Layout.fillWidth: true
 				}
 
 				PButton {
-					id: acceptButton
+					id: rejectButton
 
-					text: "Confirm"	// do tłumaczenia
+					text: "Anuluj"	// do tłumaczenia
 
 					Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
 					onClicked: {
-						messageDialog.accepted()
+						if (rejectAction)
+							rejectAction()
+
+						messageDialog.rejected()
 						messageDialog.close()
 					}
 				}
 
 				PButton {
-					id: rejectButton
+					id: acceptButton
 
-					text: "Cancel"	// do tłumaczenia
+					text: "Zatwierdź"	// do tłumaczenia
 
 					Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
 					onClicked: {
-						messageDialog.rejected()
+						if (acceptAction)
+							acceptAction()
+
+						messageDialog.accepted()
 						messageDialog.close()
 					}
 				}

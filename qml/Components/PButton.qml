@@ -7,35 +7,70 @@ import Properties
 Button {
 	id: form
 
-	flat: true
+	flat: !isFloating
 
-	property color color: (flat ? Colors.primary : Colors.white)
+	clip: true
+
+	property color color: (!enabled ? Colors.white
+									: flat ?
+										  Colors.primary
+										: Colors.black)
 	property int iconSize: Properties.iconSize
+	property bool isBorder: false
+	property bool isFloating: false
 
-	implicitWidth: Math.max(iconSize,
-							contentItem.implicitWidth + Properties.padding * 2)
-	implicitHeight: Math.max(iconSize,
-							contentItem.implicitHeight + Properties.buttonPadding * 2)
+	font: (form.isFloating ? Fonts.floatingButton : Fonts.button)
+	property int lineHeight: (form.isFloating ? Fonts.floatingButtonHeight : Fonts.buttonHeight)
 
-	property int textTopPadding: Properties.buttonPadding
-	property int textBottomPadding: Properties.buttonPadding
-	property int textLeftPadding: Properties.padding
-	property int textRightPadding: Properties.padding
+	width: Math.max(iconSize,
+					contentItem.implicitWidth)
+	height: Math.max(iconSize,
+					 contentItem.implicitHeight)
+
+	leftInset: 0
+	rightInset: 0
+	topInset: 0
+	bottomInset: 0
+
+	topPadding: 6
+	bottomPadding: 6
+	leftPadding: 12
+	rightPadding: 12
+
+	opacity: (!enabled ? 0.5 : 1)
+
+	property int radius: Properties.buttonRadius
 
 	background: Rectangle {
-		id: background
+		color: (form.flat ? "transparent"
+						  : !form.enabled ?
+								Colors.white
+							  : Colors.primary)
 
-		color: (form.flat ? "transparent" : Colors.primary)
+		border.color: Colors.primary
+		border.width: (form.isBorder ? 1 : 0)
 
-		radius: Properties.buttonRadius
+		radius: form.radius
+
+		Rectangle {
+			anchors.fill: parent
+			radius: parent.radius
+			color: (form.flat ? Colors.primary : Colors.black)
+
+			opacity: (form.down ? 0.2 : 0)
+
+			Behavior on opacity {
+				NumberAnimation {
+					duration: 100
+				}
+			}
+		}
 	}
 
 	contentItem: GridLayout {
-		flow: GridLayout.LeftToRight
-		layoutDirection: Qt.LeftToRight
-
 		PIconImage {
 			Layout.alignment: Qt.AlignCenter
+
 			implicitHeight: form.iconSize
 			implicitWidth: form.iconSize
 
@@ -50,8 +85,8 @@ Button {
 			text: form.text
 			color: form.color
 
-			font: Fonts.button
-			lineHeight: Fonts.buttonHeight
+			font: form.font
+			lineHeight: form.lineHeight
 
 			horizontalAlignment: Text.AlignHCenter
 			verticalAlignment: Text.AlignVCenter
@@ -61,11 +96,6 @@ Button {
 
 			Layout.fillWidth: true
 			Layout.fillHeight: true
-
-			topPadding: form.textTopPadding
-			bottomPadding: form.textBottomPadding
-			leftPadding: form.textLeftPadding
-			rightPadding: form.textRightPadding
 
 			visible: (text.length > 0)
 		}

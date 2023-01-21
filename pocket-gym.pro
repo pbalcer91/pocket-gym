@@ -1,10 +1,16 @@
-QT += quick svg
+QT += quick svg charts network
 
 SOURCES += \
-        logging.cpp \
-        main.cpp
+	databasehandler.cpp \
+	exercise.cpp \
+	main.cpp \
+	maincontroller.cpp \
+	training.cpp \
+	trainingplan.cpp \
+	user.cpp \
+	usertrainingsmanager.cpp
 
-resources.files = main.qml 
+resources.files = main.qml
 resources.prefix = /$${TARGET}
 
 RESOURCES += qml.qrc \
@@ -37,5 +43,13 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 		$$PWD/android
 }
 
+include(android_openssl/openssl.pri)
+
 HEADERS += \
-	logging.h
+	databasehandler.h \
+	exercise.h \
+	maincontroller.h \
+	training.h \
+	trainingplan.h \
+	user.h \
+	usertrainingsmanager.h

@@ -83,6 +83,31 @@ QtObject {
 	})
 	readonly property int baseHeight: 24
 
+	readonly property font input: Qt.font({
+		family: nunito.regular.name,
+		weight: weight.regular,
+		pixelSize: 16,
+		letterSpacing: 0.6,
+	})
+	readonly property int inputHeight: 24
+
+	readonly property font inputLabel: Qt.font({
+		family: nunito.bold.name,
+		weight: weight.bold,
+		pixelSize: 12,
+		letterSpacing: 0.4,
+	})
+	readonly property int inputLabelHeight: 24
+
+	readonly property font info: Qt.font({
+		family: nunito.light.name,
+		weight: weight.light,
+		pixelSize: 12,
+		letterSpacing: 0.4,
+	})
+	readonly property int infoHeight: 18
+
+
 	readonly property font button: Qt.font({
 		family: nunito.extraBold.name,
 		weight: weight.extraBold,
@@ -91,5 +116,75 @@ QtObject {
 		capitalization: Font.AllUppercase
 	})
 	readonly property int buttonHeight: 24
+
+	readonly property font floatingButton: Qt.font({
+		family: nunito.bold.name,
+		weight: weight.bold,
+		pixelSize: 14,
+		letterSpacing: 1.2,
+		capitalization: Font.AllUppercase
+	})
+	readonly property int floatingButtonHeight: 24
+
+	readonly property font subTitle: Qt.font({
+		family: nunito.bold.name,
+		weight: weight.bold,
+		pixelSize: 18,
+		letterSpacing: 0.6,
+		capitalization: Font.AllUppercase
+	})
+	readonly property int subTitleHeight: 32
+
+
+	readonly property font list: Qt.font({
+		family: nunito.semiBold.name,
+		weight: weight.semiBold,
+		pixelSize: 18,
+		letterSpacing: 0.4,
+	})
+	readonly property int listHeight: 32
+
+	readonly property font captionBold: Qt.font({
+		family: nunito.bold.name,
+		weight: weight.bold,
+		pixelSize: 16,
+		letterSpacing: -0.4,
+	})
+	readonly property int captionBoldHeight: 20
+
+	readonly property font caption: Qt.font({
+		family: nunito.regular.name,
+		weight: weight.regular,
+		pixelSize: 16,
+		letterSpacing: -0.4,
+	})
+	readonly property int captionHeight: 20
+
+	readonly property font title: Qt.font({
+		family: nunito.extraBold.name,
+		weight: weight.extraBold,
+		pixelSize: 20,
+		letterSpacing: 0.6,
+		capitalization: Font.AllUppercase
+	})
+	readonly property int titleHeight: 38
+
+	readonly property font tumblerMainLabel: Qt.font({
+		family: nunito.bold.name,
+		weight: weight.bold,
+		pixelSize: 42,
+		letterSpacing: 0.6,
+		capitalization: Font.AllUppercase
+	})
+	readonly property int tumblerMainLabelHeight: 54
+
+	readonly property font tumblerSubLabel: Qt.font({
+		family: nunito.regular.name,
+		weight: weight.regular,
+		pixelSize: 24,
+		letterSpacing: 0.6,
+		capitalization: Font.AllUppercase
+	})
+	readonly property int tumblerSubLabelHeight: 32
 
 }

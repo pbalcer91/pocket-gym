@@ -5,5 +5,14 @@
         <file>icons/ic_progress.svg</file>
         <file>icons/ic_settings.svg</file>
         <file>icons/ic_training.svg</file>
+        <file>icons/ic_chevronLeft.svg</file>
+        <file>icons/ic_chevronRight.svg</file>
+        <file>icons/ic_add.svg</file>
+        <file>icons/ic_chevronDown.svg</file>
+        <file>icons/ic_chevronUp.svg</file>
+        <file>icons/ic_close.svg</file>
+        <file>icons/ic_delete.svg</file>
+        <file>icons/ic_edit.svg</file>
+        <file>icons/ic_list.svg</file>
     </qresource>
 </RCC>

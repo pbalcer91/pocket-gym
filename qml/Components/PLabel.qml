@@ -13,7 +13,7 @@ Label {
 
 	verticalAlignment: Text.AlignVCenter
 
-	color: "black"
+	color: Colors.text
 
 	wrapMode: Text.Wrap
 

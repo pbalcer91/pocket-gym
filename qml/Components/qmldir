@@ -2,6 +2,18 @@ module Components
 
 PIconImage	    1.0		PIconImage.qml
 PButton		    1.0		PButton.qml
+PCheckBox	    1.0		PCheckBox.qml
+PSwitch		    1.0		PSwitch.qml
+PTumbler	    1.0		PTumbler.qml
+PTextField	    1.0		PTextField.qml
+PInfoButton	    1.0		PInfoButton.qml
 PLabel		    1.0		PLabel.qml
 PListModel	    1.0		PListModel.qml
 PMessageDialog	    1.0		PMessageDialog.qml
+PDialog		    1.0		PDialog.qml
+PCalendar	    1.0		PCalendar.qml
+PCalendarForm	    1.0		PCalendarForm.ui.qml
+PListView	    1.0		PListView.qml
+PTimeSelector	    1.0		PTimeSelector.qml
+
+PMainLayout	    1.0		PMainLayout.qml

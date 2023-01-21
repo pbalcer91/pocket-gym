@@ -19,6 +19,7 @@ core
 tags
 .DS_Store
 .directory
+android-build
 *.debug
 Makefile*
 *.prl
@@ -26,7 +27,12 @@ Makefile*
 moc_*.cpp
 ui_*.h
 qrc_*.cpp
+.qtc_clangd
+app_process
+*-deployment-settings.json
 Thumbs.db
+linker
+linker64
 *.res
 *.rc
 /.qmake.cache
