@@ -10,10 +10,19 @@ ApplicationWindow {
 	visible: true
 	title: qsTr("Pocket Gym")
 
+	Component.onCompleted: {
+		Properties.appWindow = this
+	}
+
 	/*	ICONS CREDITS
 	  https://www.svgrepo.com/page/licensing
 	  CC Licence
 	*/
+
+	onClosing: (close) => {
+		console.warn("Closing app is blocked by developer")
+		close.accepted = false
+	}
 
 	Loader {
 		id: appLoader

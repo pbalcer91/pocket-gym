@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>ic_delete_black</title>
+    <desc>Created with Sketch.</desc>
+    <g id="ic_delete_black" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4,22 L20,22 L20,5 L4,5 L4,22 Z M2,5 L22,5 M12,9 L12,22 M8.5,13 L8.5,22 M15.5,13 L15.5,22 M8,4.99032306 C8.51914818,3.25990601 10.1129348,2 11.9988484,2 C13.8877918,2 15.483915,3.26460516 16,5" id="Stroke-175" stroke="#181818" stroke-width="1.5"></path>
+    </g>
+</svg>

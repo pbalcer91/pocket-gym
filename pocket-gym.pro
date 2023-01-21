@@ -1,12 +1,20 @@
-QT += quick svg
+QT += quick svg charts network
 
 SOURCES += \
-        main.cpp
+	databasehandler.cpp \
+	exercise.cpp \
+	main.cpp \
+	maincontroller.cpp \
+	training.cpp \
+	trainingplan.cpp \
+	user.cpp \
+	usertrainingsmanager.cpp
 
-resources.files = main.qml 
+resources.files = main.qml
 resources.prefix = /$${TARGET}
 
 RESOURCES += qml.qrc \
+	fonts.qrc \
 	icons.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -34,3 +42,14 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 	ANDROID_PACKAGE_SOURCE_DIR = \
 		$$PWD/android
 }
+
+include(android_openssl/openssl.pri)
+
+HEADERS += \
+	databasehandler.h \
+	exercise.h \
+	maincontroller.h \
+	training.h \
+	trainingplan.h \
+	user.h \
+	usertrainingsmanager.h

@@ -2,3 +2,4 @@ module Properties
 
 singleton Colors		1.0		Colors.qml
 singleton Properties		1.0		Properties.qml
+singleton Fonts			1.0		Fonts.qml

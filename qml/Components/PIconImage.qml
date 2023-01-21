@@ -18,8 +18,8 @@ Item {
 
 		anchors.fill: parent
 
-		sourceSize.width: parent.width
-		sourceSize.height: parent.height
+		sourceSize.width: parent.implicitWidth
+		sourceSize.height: parent.implicitHeight
 
 		antialiasing: true
 		visible: false

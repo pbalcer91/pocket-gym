@@ -5,8 +5,14 @@ import QtQuick.Controls
 import Properties
 import Components
 
+import pl.com.thesis
+
 Page {
 	id: window
+
+	background: Rectangle {
+		color: Colors.background
+	}
 
 	property int currentPage: -1
 
@@ -14,75 +20,63 @@ Page {
 		SETTINGS,
 		PROGRESS,
 		HOME,
-		TRAINING,
+		EXERCISES,
 		CALENDAR,
 		UNDEFINED
+	}
+
+	function showMessage(args) {
+		if (messageDialogLoader.status != Loader.Null){
+			console.warn("Multiple messageDialogs need to be handle!")
+		}
+
+		messageDialogLoader.setSource("qrc:/qml/Components/PMessageDialog.qml", args)
+	}
+
+	//TODO: usunac to
+	function showAppCloseMessage() {
+		console.log("Proba zamkniecia aplikacji")
+		showMessage({ "message": "Are you sure to close the app?",
+						"acceptButtonText": "Yes",
+						"rejectButtonText": "No" })	// do tłumaczenia
+	}
+
+	//TODO: obsluga klawisza back na telefonie
+	Keys.onBackPressed: {
+		//showAppCloseMessage()
+	}
+
+	Component.onCompleted: {
+		window.currentPage = AppWindow.PAGES.HOME
+		window.forceActiveFocus()
+
+		MainController.createUser()
 	}
 
 	PListModel {
 		id: navigationBarModel
 
-		fillModel: () => {
-					   append({"index": AppWindow.PAGES.SETTINGS,
-								  "icon": "qrc:/icons/ic_settings.svg"})
-					   append({"index": AppWindow.PAGES.PROGRESS,
-								  "icon": "qrc:/icons/ic_progress.svg"})
-					   append({"index": AppWindow.PAGES.HOME,
-								  "icon": "qrc:/icons/ic_home.svg"})
-					   append({"index": AppWindow.PAGES.TRAINING,
-								  "icon": "qrc:/icons/ic_training.svg"})
-					   append({"index": AppWindow.PAGES.CALENDAR,
-								  "icon": "qrc:/icons/ic_calendar.svg"})
-				   }
+		fillModel: function() {
+			append({"index": AppWindow.PAGES.SETTINGS,
+					   "icon": "qrc:/icons/ic_settings.svg",
+					   "url": "qrc:/qml/Settings/SettingsView.qml"})
+			append({"index": AppWindow.PAGES.PROGRESS,
+					   "icon": "qrc:/icons/ic_progress.svg",
+					   "url": "qrc:/qml/Progress/ProgressView.qml"})
+			append({"index": AppWindow.PAGES.HOME,
+					   "icon": "qrc:/icons/ic_home.svg",
+					   "url": "qrc:/qml/Home/HomeView.qml"})
+			append({"index": AppWindow.PAGES.EXERCISES,
+					   "icon": "qrc:/icons/ic_training.svg",
+					   "url": "qrc:/qml/Exercises/ExercisesView.qml"})
+			append({"index": AppWindow.PAGES.CALENDAR,
+					   "icon": "qrc:/icons/ic_calendar.svg",
+					   "url": "qrc:/qml/Calendar/CalendarView.qml"})
+		}
 
 		onModelReady: {
 			mainStack.currentIndex = window.currentPage
 			mainStack.positionViewAtIndex(window.currentPage, ListView.SnapPosition)
-		}
-	}
-
-	header: ToolBar {
-		id: header
-
-		height: Properties.toolBarHeight
-
-		background: Rectangle {
-			color: Colors.darkGray
-		}
-
-		RowLayout {
-			anchors.fill: parent
-
-		}
-	}
-
-	ListView {
-		id: mainStack
-
-		anchors.fill: parent
-
-		snapMode: ListView.SnapOneItem
-		orientation: ListView.Horizontal
-
-		model: navigationBarModel
-
-		highlightRangeMode: ListView.StrictlyEnforceRange
-		highlightMoveDuration: 100
-
-		delegate: Rectangle {
-			color: Colors.white
-			width: ListView.view.width
-			height: ListView.view.height
-
-			Text {
-				anchors.centerIn: parent
-				text: model.index
-			}
-		}
-
-		onCurrentIndexChanged: {
-			if (window.currentPage != currentIndex)
-				window.currentPage = currentIndex
 		}
 	}
 
@@ -99,8 +93,6 @@ Page {
 			anchors.fill: parent
 
 			Flow {
-				id: flow
-
 				Layout.fillWidth: true
 				height: navigationBar.implicitHeight
 
@@ -167,7 +159,50 @@ Page {
 		}
 	}
 
-	Component.onCompleted: {
-		window.currentPage = AppWindow.PAGES.HOME
+	ListView {
+		id: mainStack
+
+		anchors.fill: parent
+
+		snapMode: ListView.SnapOneItem
+		orientation: ListView.Horizontal
+
+		model: navigationBarModel
+
+		highlightRangeMode: ListView.StrictlyEnforceRange
+		highlightMoveDuration: 100
+
+		boundsBehavior: Flickable.StopAtBounds
+
+		interactive: false
+
+		delegate: Loader {
+			width: ListView.view.width
+			height: ListView.view.height
+
+			source: model.url
+
+			onLoaded: {
+				item.width = width
+			}
+		}
+
+		onCurrentIndexChanged: {
+			if (window.currentPage != currentIndex)
+				window.currentPage = currentIndex
+		}
+	}
+
+	Loader {
+		id: messageDialogLoader
+
+		onLoaded: {
+			messageDialogLoader.item.closed.connect(function() {
+				if (!messageDialogLoader)
+					return
+				messageDialogLoader.source = ""
+			})
+			messageDialogLoader.item.open()
+		}
 	}
 }
