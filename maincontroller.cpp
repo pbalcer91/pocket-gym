@@ -22,6 +22,18 @@ MainController::MainController(QObject *parent)
 
 		emit currentUserPlansReady();
 	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainingPlanChanged,
+					 this, [this](QString planId) {
+		m_database->getTrainingPlanById(planId);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainingPlanReceived,
+					 this, [this](QString planId, QString name, QString description, bool isDefault) {
+		m_currentUser->editTrainingPlanById(planId, name, description, isDefault);
+
+		emit trainingPlanReady(planId);
+	});
 }
 
 MainController::~MainController()
@@ -187,9 +199,16 @@ MainController::getExercisesFromDatabaseByTrainingId(QString planId, QString tra
 void
 MainController::addDatabaseTrainingPlan(QString ownerName, QString name, QString description, bool isDefault)
 {
-	m_database->addTrainingPlan(ownerName, name, description, isDefault);
+	if (isDefault) {
+		for (auto plan : m_currentUser->getUserTrainingPlans()) {
+			if (plan->isDefault()) {
+				m_database->editTrainingPlan(plan->id(), plan->owner(), plan->name(), plan->description(), false);
+				break;
+			}
+		}
+	}
 
-	//jezeli isDefault to zmien isDefault wszystkich innych (to samo dla edycji)
+	m_database->addTrainingPlan(ownerName, name, description, isDefault);
 
 	QObject::connect(m_database, &DatabaseHandler::trainingPlanAdded,
 					 this, [this, ownerName]() {
@@ -203,25 +222,16 @@ MainController::addDatabaseTrainingPlan(QString ownerName, QString name, QString
 void
 MainController::editDatabaseTrainingPlan(QString planId, QString ownerName, QString name, QString description, bool isDefault)
 {
+	if (isDefault) {
+		for (auto plan : m_currentUser->getUserTrainingPlans()) {
+			if (plan->isDefault()) {
+				m_database->editTrainingPlan(plan->id(), plan->owner(), plan->name(), plan->description(), false);
+				break;
+			}
+		}
+	}
+
 	m_database->editTrainingPlan(planId, ownerName, name, description, isDefault);
-
-	QObject::connect(m_database, &DatabaseHandler::trainingPlanReceived,
-					 this, [this](QString planId, QString name, QString description, bool isDefault) {
-		m_currentUser->editTrainingPlanById(planId, name, description, isDefault);
-
-		emit trainingPlanReady(planId);
-
-		QObject::disconnect(m_database, &DatabaseHandler::trainingPlanReceived,
-							nullptr, nullptr);
-	});
-
-	QObject::connect(m_database, &DatabaseHandler::trainingPlanChanged,
-					 this, [this](QString planId) {
-		m_database->getTrainingPlanById(planId);
-
-		QObject::disconnect(m_database, &DatabaseHandler::trainingPlanChanged,
-							nullptr, nullptr);
-	});
 }
 
 void
