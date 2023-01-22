@@ -79,7 +79,7 @@ PMessageDialog {
 
 		isMultiline: true
 
-		label: "Opis"
+		label: "Opis (opcjonalnie)"
 		placeholderText: "Wpisz opis"
 	}
 
