@@ -3,10 +3,28 @@
 
 #include <QDebug>
 
-Training::Training(QObject *parent, QString id)
+Training::Training(QObject *parent)
+	: QObject{parent},
+	  m_id(""),
+	  m_name(""),
+	  m_owner(""),
+	  m_planId("")
+{}
+
+Training::Training(QObject *parent, QString ownerName, QString planId)
+	: QObject{parent},
+	  m_id(""),
+	  m_name(""),
+	  m_owner(ownerName),
+	  m_planId(planId)
+{}
+
+Training::Training(QObject *parent, QString id, QString ownerName, QString name, QString planId)
 	: QObject{parent},
 	  m_id(id),
-	  m_name("")
+	  m_name(name),
+	  m_owner(ownerName),
+	  m_planId(planId)
 {}
 
 Training::~Training()

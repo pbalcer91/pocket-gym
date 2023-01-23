@@ -5,6 +5,11 @@ MainController::MainController(QObject *parent)
 	: QObject{parent},
 	  m_database(new DatabaseHandler(this))
 {
+	QObject::connect(m_database, &DatabaseHandler::trainingPlanAdded,
+					 this, [this](QString ownerName) {
+		m_database->getUserTrainingPlans(ownerName);
+	});
+
 	QObject::connect(m_database, &DatabaseHandler::trainingPlansReceived,
 					 this, [this](QList<TrainingPlan*> planList) {
 		for (auto plan : planList) {
@@ -31,8 +36,51 @@ MainController::MainController(QObject *parent)
 	QObject::connect(m_database, &DatabaseHandler::trainingPlanReceived,
 					 this, [this](QString planId, QString name, QString description, bool isDefault) {
 		m_currentUser->editTrainingPlanById(planId, name, description, isDefault);
+	});
 
-		emit trainingPlanReady(planId);
+	QObject::connect(m_database, &DatabaseHandler::trainingPlanRemoved,
+					 this, [this](QString planId) {
+		m_currentUser->removeTrainingPlanById(planId);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainingAdded,
+					 this, [this](QString planId) {
+		m_database->getTrainingsByPlanId(planId);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainingsReceived,
+					 this, [this](QString planId, QList<Training*> trainingList) {
+		TrainingPlan* plan = m_currentUser->getTrainingPlanById(planId);
+
+		for (auto training : trainingList) {
+			if (plan->getTrainingById(training->id()))
+				continue;
+
+			Training* trainingToAdd = new Training(plan,
+												   training->id(),
+												   training->owner(),
+												   training->name(),
+												   training->planId());
+
+			plan->addTraining(trainingToAdd);
+		}
+
+		emit trainingsReady();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainingChanged,
+					 this, [this](QString trainingId) {
+		m_database->getTrainingById(trainingId);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainingReceived,
+					 this, [this](QString trainingId, QString ownerName, QString name, QString planId) {
+		m_currentUser->editTrainingById(trainingId, ownerName, name, planId);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainingRemoved,
+					 this, [this](QString planId, QString trainingId) {
+		m_currentUser->removeTrainingById(planId, trainingId);
 	});
 }
 
@@ -68,12 +116,21 @@ MainController::createUser()
 }
 
 User*
-MainController::getUser()
+MainController::getCurrentUser()
 {
 	if (!m_currentUser)
 		return nullptr;
 
 	return m_currentUser;
+}
+
+QString
+MainController::getCurrentUserName()
+{
+	if (!m_currentUser)
+		return "";
+
+	return m_currentUser->name();
 }
 
 Exercise*
@@ -85,15 +142,6 @@ MainController::createExercise()
 	return m_currentUser->createExercise();
 }
 
-Training*
-MainController::createTraining()
-{
-	if (!m_currentUser)
-		return nullptr;
-
-	return m_currentUser->createTraining();
-}
-
 TrainingPlan*
 MainController::newTrainingPlan()
 {
@@ -101,6 +149,15 @@ MainController::newTrainingPlan()
 		return nullptr;
 
 	return m_currentUser->createTrainingPlan();
+}
+
+Training*
+MainController::newTraining(QString ownerName, QString planId)
+{
+	if (!m_currentUser)
+		return nullptr;
+
+	return m_currentUser->createTraining(ownerName, planId);
 }
 
 TrainingPlan*
@@ -140,30 +197,9 @@ MainController::getDatabaseUserTrainingPlans()
 }
 
 void
-MainController::getTrainigsFromDatabaseByPlanId(QString planId)
+MainController::getDatabaseTrainingsByPlanId(QString planId)
 {
-	m_database->getPlanTrainings(planId);
-
-	QObject::connect(m_database, &DatabaseHandler::planTrainingsReceived,
-					 this, [this, planId](QList<Training*> trainingList) {
-		TrainingPlan* plan = m_currentUser->getTrainingPlanById(planId);
-		plan->clearTrainings();
-
-		for (auto training : trainingList) {
-			Training* trainingToAdd = new Training(plan, training->id());
-
-			trainingToAdd->setName(training->name());
-			trainingToAdd->setOwner(training->owner());
-			trainingToAdd->setPlanId(plan->id());
-
-			plan->addTraining(trainingToAdd);
-		}
-
-		emit trainingsReady();
-
-		QObject::disconnect(m_database, &DatabaseHandler::planTrainingsReceived,
-							nullptr, nullptr);
-	});
+	m_database->getTrainingsByPlanId(planId);
 }
 
 void
@@ -209,14 +245,12 @@ MainController::addDatabaseTrainingPlan(QString ownerName, QString name, QString
 	}
 
 	m_database->addTrainingPlan(ownerName, name, description, isDefault);
+}
 
-	QObject::connect(m_database, &DatabaseHandler::trainingPlanAdded,
-					 this, [this, ownerName]() {
-		m_database->getUserTrainingPlans(ownerName);
-
-		QObject::disconnect(m_database, &DatabaseHandler::trainingPlanAdded,
-							nullptr, nullptr);
-	});
+void
+MainController::addDatabaseTraining(QString ownerName, QString name, QString planId)
+{
+	m_database->addTraining(ownerName, name, planId);
 }
 
 void
@@ -235,6 +269,12 @@ MainController::editDatabaseTrainingPlan(QString planId, QString ownerName, QStr
 }
 
 void
+MainController::editDatabaseTraining(QString trainingId, QString ownerName, QString name, QString planId)
+{
+	m_database->editTraining(trainingId, ownerName, name, planId);
+}
+
+void
 MainController::editDatabaseExercise(QString trainingId, Exercise* exercise)
 {
 	m_database->editExercise(trainingId, exercise);
@@ -246,14 +286,12 @@ void
 MainController::deleteDatabaseTrainingPlan(QString planId)
 {
 	m_database->deleteTrainingPlan(planId);
+}
 
-	QObject::connect(m_database, &DatabaseHandler::trainingPlanRemoved,
-					 this, [this](QString planId) {
-		m_currentUser->removeTrainingPlanById(planId);
-
-		QObject::disconnect(m_database, &DatabaseHandler::trainingPlanRemoved,
-							nullptr, nullptr);
-	});
+void
+MainController::deleteDatabaseTraining(QString planId, QString trainingId)
+{
+	m_database->deleteTraining(planId, trainingId);
 }
 
 //void

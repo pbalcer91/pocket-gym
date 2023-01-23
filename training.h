@@ -14,8 +14,9 @@ class Training : public QObject
 	Q_PROPERTY(QString planId READ planId WRITE setPlanId NOTIFY trainingChanged)
 
 public:
-	explicit Training(QObject *parent = nullptr,
-					  QString id= "");
+	explicit Training(QObject *parent = nullptr);
+	Training(QObject *parent, QString ownerName, QString planId);
+	Training(QObject *parent, QString id, QString ownerName, QString name, QString planId);
 	~Training();
 
 	QString id() const;

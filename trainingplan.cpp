@@ -120,16 +120,38 @@ TrainingPlan::getTrainings()
 	return m_trainings;
 }
 
-QList<Training*>
-TrainingPlan::getTrainingsToAdd()
+Training*
+TrainingPlan::getTrainingById(QString id)
 {
-	return m_trainingsToAdd;
+	for (auto training : m_trainings) {
+		if (training->id() == id)
+			return training;
+	}
+
+	return nullptr;
 }
 
 void
-TrainingPlan::clearTrainingsToAdd()
+TrainingPlan::editTrainingById(QString trainingId, QString ownerName, QString name, QString planId)
 {
-	m_trainingsToAdd.clear();
+	if (!getTrainingById(trainingId))
+		return;
+
+	getTrainingById(trainingId)->setOwner(ownerName);
+	getTrainingById(trainingId)->setName(name);
+	getTrainingById(trainingId)->setPlanId(planId);
+
+	emit trainingPlanChanged();
+}
+
+void
+TrainingPlan::removeTrainingById(QString id)
+{
+	auto trainingToRemove = getTrainingById(id);
+
+	m_trainings.removeOne(trainingToRemove);
+
+	trainingToRemove->deleteLater();
 }
 
 void
@@ -146,23 +168,3 @@ TrainingPlan::addTraining(Training* training)
 	return true;
 }
 
-bool
-TrainingPlan::addTrainingList()
-{
-	if (m_trainingsToAdd.empty())
-		return false;
-
-	for (Training* training : m_trainingsToAdd) {
-		m_trainings.append(training);
-	}
-
-	clearTrainingsToAdd();
-
-	return true;
-}
-
-void
-TrainingPlan::clearTrainings()
-{
-	m_trainings.clear();
-}

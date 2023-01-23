@@ -10,25 +10,28 @@ import pl.com.thesis
 PDialog {
 	id: dialog
 
-	property string planId
-	property string trainingId
+	editModeAvailable: true
 
 	property Training training: MainController.getTrainingById(planId, trainingId)
 
-	editModeAvailable: true
+	Connections {
+		target: training
 
-	signal saved
+		function onTrainingChanged() {
+			dialog.fill();
+		}
+	}
 
 	Connections {
 		target: MainController
 
-		function onExercisesReady() {
-			exercisesModel.fillModel()
-		}
+//		function onExercisesReady() {
+//			exercisesModel.fillModel()
+//		}
 	}
 
 	editButton.onClicked: {
-		loader.setSource("qrc:/qml/Home/EditTrainingDialog.qml",
+		loader.setSource("qrc:/qml/Home/EditTrainingModal.qml",
 						 {
 							 "training": dialog.training,
 							 "editMode": true
@@ -37,9 +40,7 @@ PDialog {
 
 	Component.onCompleted: {
 		dialog.fill()
-		MainController.getExercisesFromDatabaseByTrainingId(dialog.planId, dialog.trainingId)
-
-		console.log("DETAILS: ", training.planId)
+		//MainController.getExercisesFromDatabaseByTrainingId(dialog.planId, dialog.trainingId)
 	}
 
 	function fill() {
@@ -53,7 +54,7 @@ PDialog {
 		anchors.fill: parent
 
 		Column {
-			id: trainingsColumn
+			id: exercisesColumn
 
 			Layout.fillHeight: true
 			Layout.fillWidth: true
@@ -62,7 +63,7 @@ PDialog {
 				implicitWidth: parent.implicitWidth
 
 				PLabel {
-					id: trainingListLabel
+					id: exercisesListLabel
 
 					font: Fonts.subTitle
 					lineHeight: Fonts.subTitleHeight
@@ -72,6 +73,21 @@ PDialog {
 
 				Item {
 					Layout.fillWidth: true
+				}
+
+				PButton {
+					id: addExerciseButton
+
+					icon.source: "qrc:/icons/ic_add.svg"
+
+					Layout.alignment: Qt.AlignHCenter
+
+					onClicked: {
+//						loader.setSource("qrc:/qml/Home/EditTrainingModal.qml",
+//										 {
+//											 "training": MainController.newTraining(MainController.getCurrentUserName(), dialog.planId)
+//										 })
+					}
 				}
 			}
 
@@ -112,8 +128,8 @@ PDialog {
 				leftPadding: Properties.smallMargin
 				rightPadding: Properties.smallMargin
 
-				contentHeight: trainingsColumn.height
-				contentWidth: trainingsColumn.width
+				contentHeight: exercisesColumn.height
+				contentWidth: exercisesColumn.width
 
 				clip: true
 
@@ -127,14 +143,14 @@ PDialog {
 
 					emptyInfo: "Nie dodałeś jeszcze żadnego ćwiczenia"
 
-					model: ExercisesModel {
+					model: 0/*ExercisesModel {
 						id: exercisesModel
 
 						training: MainController.getTrainingById(dialog.planId, dialog.trainingId)
-					}
+					}*/
 
 					delegate: ExerciseItem {
-						exercise: MainController.getExercisegById(dialog.planId, dialog.trainingId, model.id)
+						exercise: MainController.getExercisegById(training.planId, training.id, model.id)
 
 						implicitWidth: listView.width
 					}
@@ -151,7 +167,14 @@ PDialog {
 			Layout.alignment: Qt.AlignHCenter
 
 			onClicked: {
-				console.log("PLAN REMOVED")
+				showMessage({ "message": "Czy na pewno chcesz bezpowrotnie usunąć trening?",
+								"acceptButton.text": "Usuń",
+								"rejectButton.text": "Anuluj",
+								"acceptAction": function() {
+									MainController.deleteDatabaseTraining(training.planId, training.id)
+									dialog.close()
+								}
+							})
 			}
 		}
 	}

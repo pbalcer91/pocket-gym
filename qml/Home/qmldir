@@ -3,7 +3,7 @@ module Home
 HomeView		    1.0	    HomeView.qml
 HomeSection		    1.0	    HomeSection.qml
 EditTrainingPlanModal	    1.0	    EditTrainingPlanModal.qml
-EditTrainingDialog	    1.0	    EditTrainingDialog.qml
+EditTrainingModal	    1.0	    EditTrainingModal.qml
 
 TrainingPlanDetails	    1.0	    TrainingPlanDetails.qml
 TrainingDetails		    1.0	    TrainingDetails.qml

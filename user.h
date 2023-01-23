@@ -26,8 +26,9 @@ public:
 	void setPassword(QString password);
 
 	Exercise* createExercise();
-	Training* createTraining();
+
 	TrainingPlan* createTrainingPlan();
+	Training* createTraining(QString ownerName, QString planId);
 
 	TrainingPlan* getTrainingPlanById(QString id);
 	QList<TrainingPlan*> getUserTrainingPlans();
@@ -36,6 +37,8 @@ public:
 	void removeTrainingPlanById(QString planId);
 
 	Training* getTrainingById(QString planId, QString trainingId);
+	void editTrainingById(QString trainingId, QString ownerName, QString name, QString planId);
+	void removeTrainingById(QString planId, QString trainingId);
 
 	Exercise* getExercisegById(QString planId, QString trainingId, QString exerciseId);
 
