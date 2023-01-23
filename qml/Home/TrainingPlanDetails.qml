@@ -12,9 +12,17 @@ PDialog {
 
 	property var planId
 
+	editModeAvailable: true
+
 	property TrainingPlan trainingPlan: MainController.getTrainingPlanById(dialog.planId)
 
-	editModeAvailable: true
+	Connections {
+		target: trainingPlan
+
+		function onTrainingPlanChanged() {
+			dialog.fill();
+		}
+	}
 
 	Connections {
 		target: MainController
@@ -34,13 +42,14 @@ PDialog {
 
 	Component.onCompleted: {
 		dialog.fill()
-		MainController.getTrainigsFromDatabaseByPlanId(dialog.planId)
+		MainController.getDatabaseTrainingsByPlanId(dialog.planId)
 	}
 
 	function fill() {
 		dialog.title = dialog.trainingPlan.name
 		isDefaultLabel.visible = dialog.trainingPlan.isDefault
 		descriptionLabel.text = dialog.trainingPlan.description
+		trainingsModel.fillModel()
 	}
 
 
@@ -113,7 +122,10 @@ PDialog {
 					Layout.alignment: Qt.AlignHCenter
 
 					onClicked: {
-
+						loader.setSource("qrc:/qml/Home/EditTrainingModal.qml",
+										 {
+											 "training": MainController.newTraining(MainController.getCurrentUserName(), dialog.planId)
+										 })
 					}
 				}
 			}
@@ -184,8 +196,7 @@ PDialog {
 						detailsButton.onClicked: {
 							loader.setSource("qrc:/qml/Home/TrainingDetails.qml",
 											 {
-												"planId": dialog.planId,
-												 "trainingId": model.id
+												 "training": MainController.getTrainingById(dialog.planId, model.id)
 											 })
 						}
 					}

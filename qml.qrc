@@ -37,7 +37,6 @@
         <file>qml/Components/PSwitch.qml</file>
         <file>qml/Components/PDialog.qml</file>
         <file>qml/Home/TrainingItem.qml</file>
-        <file>qml/Home/EditTrainingDialog.qml</file>
         <file>qml/Home/EditExerciseModal.qml</file>
         <file>qml/Components/PTimeSelector.qml</file>
         <file>qml/Components/PTumbler.qml</file>
@@ -48,5 +47,6 @@
         <file>qml/Home/ExerciseItem.qml</file>
         <file>qml/Home/Models/ExercisesModel.qml</file>
         <file>qml/Home/EditTrainingPlanModal.qml</file>
+        <file>qml/Home/EditTrainingModal.qml</file>
     </qresource>
 </RCC>

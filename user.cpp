@@ -64,15 +64,6 @@ User::createExercise()
 	return m_trainingsManager->createExercise();
 }
 
-Training*
-User::createTraining()
-{
-	if (!m_trainingsManager)
-		return nullptr;
-
-	return m_trainingsManager->createTraining();
-}
-
 TrainingPlan*
 User::createTrainingPlan()
 {
@@ -80,6 +71,15 @@ User::createTrainingPlan()
 		return nullptr;
 
 	return m_trainingsManager->createTrainingPlan(this->name());
+}
+
+Training*
+User::createTraining(QString ownerName, QString planId)
+{
+	if (!m_trainingsManager)
+		return nullptr;
+
+	return m_trainingsManager->createTraining(ownerName, planId);
 }
 
 TrainingPlan*
@@ -129,6 +129,22 @@ Training*
 User::getTrainingById(QString planId, QString trainingId)
 {
 	return m_trainingsManager->getTrainingById(planId, trainingId);
+}
+
+void
+User::editTrainingById(QString trainingId, QString ownerName, QString name, QString planId)
+{
+	getTrainingPlanById(planId)->editTrainingById(trainingId, ownerName, name, planId);
+
+	emit m_trainingsManager->getTrainingById(planId, trainingId)->trainingChanged();
+}
+
+void
+User::removeTrainingById(QString planId, QString trainingId)
+{
+	m_trainingsManager->removeTrainingById(planId, trainingId);
+
+	emit getTrainingPlanById(planId)->trainingPlanChanged();
 }
 
 Exercise*

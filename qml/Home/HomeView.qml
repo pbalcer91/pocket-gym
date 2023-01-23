@@ -14,7 +14,7 @@ Item {
 	implicitHeight: content.implicitHeight + Properties.smallMargin * 2
 
 	Connections {
-		target: MainController.getUser()
+		target: MainController.getCurrentUser()
 
 		function onUserTrainingPlansChanged() {
 			trainingPlanModel.fillModel()

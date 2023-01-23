@@ -33,15 +33,13 @@ public:
 	void setOwner(QString owner);
 
 	Q_INVOKABLE QList<Training*> getTrainings();
-	Q_INVOKABLE QList<Training*> getTrainingsToAdd();
+	Training* getTrainingById(QString id);
+	void editTrainingById(QString trainingId, QString ownerName, QString name, QString planId);
+	void removeTrainingById(QString id);
 
-	Q_INVOKABLE void clearTrainingsToAdd();
 	Q_INVOKABLE void removeTrainingPlan();
 
 	Q_INVOKABLE bool addTraining(Training* training);
-	Q_INVOKABLE bool addTrainingList();
-
-	void clearTrainings();
 
 signals:
 	void trainingPlanChanged();
@@ -54,7 +52,6 @@ private:
 	QString m_owner;
 
 	QList<Training*> m_trainings;
-	QList<Training*> m_trainingsToAdd;
 };
 
 #endif // TRAININGPLAN_H

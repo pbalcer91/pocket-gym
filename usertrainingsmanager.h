@@ -16,8 +16,8 @@ public:
 	~UserTrainingsManager();
 
 	Exercise* createExercise();
-	Training* createTraining();
 	TrainingPlan* createTrainingPlan(QString ownerName);
+	Training* createTraining(QString ownerName, QString planId);
 
 	TrainingPlan* getTrainingPlanById(QString id);
 	QList<TrainingPlan*> getTrainingPlans();
@@ -25,6 +25,7 @@ public:
 	void removeTrainingPlanById(QString id);
 
 	Training* getTrainingById(QString planId, QString trainingId);
+	void removeTrainingById(QString planId, QString trainingId);
 
 	Exercise* getExercisegById(QString planId, QString trainingId, QString exerciseId);
 

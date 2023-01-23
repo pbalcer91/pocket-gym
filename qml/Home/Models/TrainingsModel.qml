@@ -9,15 +9,8 @@ PListModel {
 
 	required property TrainingPlan trainingPlan
 
-	//TODO usunac to ?
-	property bool isInTrainingPlan: true
-
 	fillModel: function() {
 		clear()
-
-//		if (!trainingsModel.isInTrainingPlan) {
-//			return
-//		}
 
 		var trainings = trainingPlan.getTrainings()
 
@@ -25,11 +18,5 @@ PListModel {
 			append({"id": trainings[i].id,
 					   "name": trainings[i].name})
 		}
-
-//		var trainingsToAdd = trainingPlan.getTrainingsToAdd()
-
-//		for(var j = 0; j < trainingsToAdd.length; j++) {
-//			append({"name": trainingsToAdd[j].name})
-//		}
 	}
 }

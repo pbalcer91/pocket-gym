@@ -105,7 +105,7 @@ DatabaseHandler::getTrainingPlanById(QString id)
 }
 
 void
-DatabaseHandler::getPlanTrainings(QString planId)
+DatabaseHandler::getTrainingsByPlanId(QString planId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
@@ -121,35 +121,25 @@ DatabaseHandler::getPlanTrainings(QString planId)
 		QList<Training*> trainingList;
 
 		for (const auto &key : rootObject.keys()) {
-			Training* trainingToAdd = new Training(this, key);
-
 			auto trainingDocument = rootObject.value(key);
 			auto trainingObject = trainingDocument.toObject();
 
-			for (const auto &trainingKey : trainingObject.keys()) {
-				if (trainingKey == "name") {
-					trainingToAdd->setName(trainingObject.value(trainingKey).toString());
-					continue;
-				}
+			QString id = key;
+			QString ownerName = trainingObject.value("owner").toString();
+			QString name = trainingObject.value("name").toString();
+			QString planId = trainingObject.value("planId").toString();
 
-				if (trainingKey == "owner") {
-					trainingToAdd->setOwner(trainingObject.value(trainingKey).toString());
-					continue;
-				}
+			Training* training = new Training(this, id, ownerName, name, planId);
 
-				if (trainingKey == "planId")
-					trainingToAdd->setPlanId(trainingObject.value(trainingKey).toString());
-			}
-
-			trainingList.push_back(trainingToAdd);
+			trainingList.push_back(training);
 		}
 
-		emit planTrainingsReceived(trainingList);
+		emit trainingsReceived(planId, trainingList);
 	});
 }
 
 void
-DatabaseHandler::getTraining(QString trainingId)
+DatabaseHandler::getTrainingById(QString trainingId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
@@ -158,67 +148,15 @@ DatabaseHandler::getTraining(QString trainingId)
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, trainingId, reply](){
 		reply->deleteLater();
-		Training* training = new Training(this, trainingId);
 
 		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
 		auto rootObject = rootDocument.object();
 
-		for (const auto &key : rootObject.keys()) {
-			if (key == "exercises") {
-				auto exerciseListDocument = rootObject.value(key);
-				auto exerciseListObject = exerciseListDocument.toObject();
+		QString ownerName = rootObject.value("owner").toString();
+		QString name = rootObject.value("name").toString();
+		QString planId = rootObject.value("planId").toString();
 
-				for (const auto &exerciseListKey : exerciseListObject.keys()) {
-					Exercise* exerciseToAdd = new Exercise(this, exerciseListKey);
-
-					auto exerciseDocument = exerciseListObject.value(exerciseListKey);
-					auto exerciseObject = exerciseDocument.toObject();
-
-					for (const auto &exerciseKey : exerciseObject.keys()) {
-						if (exerciseKey.toUInt()) {
-							auto bitArray = stringToBitArray(rootObject.value(exerciseKey).toString());
-
-							bool isMax = getIsMaxFromBitArray(bitArray);
-
-							if (isMax)
-								bitArray.clearBit(bitArray.count() - 1);
-
-							auto repeats =  bitArray.toUInt32(QSysInfo::LittleEndian);
-
-							exerciseToAdd->addSet(exerciseKey.toUInt(), repeats, isMax);
-							continue;
-						}
-
-						if (exerciseKey == "breakTime") {
-							exerciseToAdd->setRestTime(rootObject.value(exerciseKey).toInt());
-							continue;
-						}
-
-						if (exerciseKey == "name")
-							exerciseToAdd->setName(rootObject.value(exerciseKey).toString());
-
-					}
-
-					training->addExercise(exerciseToAdd);
-				}
-				continue;
-			}
-
-			if (key == "name") {
-				training->setName(rootObject.value(key).toString());
-				continue;
-			}
-
-			if (key == "owner") {
-				training->setOwner(rootObject.value(key).toString());
-				continue;
-			}
-
-			if (key == "planId")
-				training->setPlanId(rootObject.value(key).toString());
-		}
-
-		emit trainingReceived(training);
+		emit trainingReceived(trainingId, ownerName, name, planId);
 	});
 }
 
@@ -345,29 +283,32 @@ DatabaseHandler::addTrainingPlan(QString ownerName, QString name, QString descri
 	auto reply = m_networkManager->post(request, jsonDoc.toJson());
 
 	QObject::connect(reply, &QNetworkReply::finished,
-					 this, [this, reply](){
+					 this, [this, ownerName, reply](){
 		reply->deleteLater();
-		emit trainingPlanAdded();
+		emit trainingPlanAdded(ownerName);
 	});
 }
 
 void
-DatabaseHandler::addTraining(QString username, QString planId, QString name, QDateTime date)
+DatabaseHandler::addTraining(QString ownerName, QString name, QString planId)
 {
-	QVariantMap newTraining;
-	newTraining["owner"] = username;
-	newTraining["planId"] = planId;
-	newTraining["name"] = name;
+	QVariantMap databaseTraining;
+	databaseTraining["owner"] = ownerName;
+	databaseTraining["name"] = name;
+	databaseTraining["planId"] = planId;
 
-	if (!date.isNull())
-		newTraining["date"] = date.toSecsSinceEpoch();
-
-	QJsonDocument jsonDoc = QJsonDocument::fromVariant(newTraining);
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseTraining);
 
 	QNetworkRequest request(QUrl(m_url + "trainings.json"));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
-	m_networkManager->post(request, jsonDoc.toJson());
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, planId, reply](){
+		reply->deleteLater();
+		emit trainingAdded(planId);
+	});
 }
 
 void
@@ -413,6 +354,28 @@ DatabaseHandler::editTrainingPlan(QString planId, QString ownerName, QString nam
 }
 
 void
+DatabaseHandler::editTraining(QString trainingId, QString ownerName, QString name, QString planId)
+{
+	QVariantMap databaseTraining;
+	databaseTraining["owner"] = ownerName;
+	databaseTraining["name"] = name;
+	databaseTraining["planId"] = planId;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseTraining);
+
+	QNetworkRequest request(QUrl(m_url + "trainings/" + trainingId + ".json"));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->put(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, trainingId, reply](){
+		reply->deleteLater();
+		emit trainingChanged(trainingId);
+	});
+}
+
+void
 DatabaseHandler::editExercise(QString trainingId, Exercise* exercise)
 {
 	QVariantMap newExercise;
@@ -451,6 +414,22 @@ DatabaseHandler::deleteTrainingPlan(QString planId)
 		reply->deleteLater();
 
 		emit trainingPlanRemoved(planId);
+	});
+}
+
+void
+DatabaseHandler::deleteTraining(QString planId, QString trainingId)
+{
+	QNetworkRequest request(QUrl(m_url + "trainings/" + trainingId + ".json"));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->deleteResource(request);
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, planId, trainingId, reply](){
+		reply->deleteLater();
+
+		emit trainingRemoved(planId, trainingId);
 	});
 }
 

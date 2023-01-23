@@ -19,16 +19,18 @@ UserTrainingsManager::createExercise()
 	return new Exercise();
 }
 
-Training*
-UserTrainingsManager::createTraining()
-{
-	return new Training();
-}
-
 TrainingPlan*
 UserTrainingsManager::createTrainingPlan(QString ownerName)
 {
 	return new TrainingPlan(this, ownerName);
+}
+
+Training*
+UserTrainingsManager::createTraining(QString ownerName, QString planId)
+{
+	auto trainingParent = this->getTrainingPlanById(planId);
+
+	return new Training(trainingParent, ownerName, planId);
 }
 
 TrainingPlan*
@@ -59,11 +61,11 @@ UserTrainingsManager::addTraningPlan(TrainingPlan* trainingPlan)
 void
 UserTrainingsManager::removeTrainingPlanById(QString id)
 {
-	auto trainingToRemove = getTrainingPlanById(id);
+	auto trainingPlanToRemove = getTrainingPlanById(id);
 
-	m_trainingPlans.removeOne(trainingToRemove);
+	m_trainingPlans.removeOne(trainingPlanToRemove);
 
-	trainingToRemove->deleteLater();
+	trainingPlanToRemove->deleteLater();
 }
 
 Training*
@@ -77,6 +79,12 @@ UserTrainingsManager::getTrainingById(QString planId, QString trainingId)
 	}
 
 	return nullptr;
+}
+
+void
+UserTrainingsManager::removeTrainingById(QString planId, QString trainingId)
+{
+	getTrainingPlanById(planId)->removeTrainingById(trainingId);
 }
 
 Exercise*
