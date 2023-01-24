@@ -55,6 +55,13 @@ PMessageDialog {
 		modal.save()
 	}
 
+	onClosed: {
+		if (editMode)
+			return
+
+		training.removeExercise()
+	}
+
 	rejectButton.text: "Anuluj"
 
 	PTextField {

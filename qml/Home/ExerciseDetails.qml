@@ -15,13 +15,12 @@ PDialog {
 	property string planId
 	property Exercise exercise
 
-	property int breakTime: exercise.breakTime
+	property int breakTime
 
 	Connections {
 		target: exercise
 
 		function onExerciseChanged() {
-			console.log("EXERCISE CHANGED")
 			dialog.fill();
 		}
 	}
@@ -42,6 +41,7 @@ PDialog {
 	function fill() {
 		dialog.title = dialog.exercise.name
 		setsModel.fillModel()
+		dialog.breakTime = dialog.exercise.breakTime
 	}
 
 	function breakTimeToString(breakTime) {

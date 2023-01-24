@@ -17,7 +17,7 @@ public:
 	explicit Exercise(QObject *parent = nullptr);
 	Exercise(QObject *parent, QString trainingId);
 	Exercise(QObject *parent, QString id, QString name, int breakTime, QString trainingId);
-	~Exercise() = default;
+	~Exercise();
 
 	QString id() const;
 	QString name() const;
@@ -38,6 +38,8 @@ public:
 	Q_INVOKABLE int getSetRepeats(QByteArray set);
 	Q_INVOKABLE bool getSetIsMax(QByteArray set);
 	Q_INVOKABLE QString setToString(int repeats, bool isMax);
+
+	Q_INVOKABLE void removeExercise();
 
 signals:
 	void exerciseChanged();
