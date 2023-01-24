@@ -1,10 +1,29 @@
 #include "exercise.h"
+#include <bitset>
+#include <QDebug>
 
-Exercise::Exercise(QObject *parent, QString id)
+Exercise::Exercise(QObject *parent)
+	: QObject{parent},
+	  m_id(""),
+	  m_name(""),
+	  m_breakTime(0),
+	  m_trainingId("")
+{}
+
+Exercise::Exercise(QObject *parent, QString trainingId)
+	: QObject{parent},
+	  m_id(""),
+	  m_name(""),
+	  m_breakTime(0),
+	  m_trainingId(trainingId)
+{}
+
+Exercise::Exercise(QObject *parent, QString id, QString name, int breakTime, QString trainingId)
 	: QObject{parent},
 	  m_id(id),
-	  m_name(""),
-	  m_restTime(0)
+	  m_name(name),
+	  m_breakTime(breakTime),
+	  m_trainingId(trainingId)
 {}
 
 QString
@@ -20,22 +39,28 @@ Exercise::name() const
 }
 
 int
-Exercise::restTime() const
+Exercise::breakTime() const
 {
-	return m_restTime;
+	return m_breakTime;
 }
 
-QList<SetStruct>
+QString
+Exercise::trainingId() const
+{
+	return m_trainingId;
+}
+
+QList<QByteArray>
 Exercise::sets()
 {
 	return m_sets;
 }
 
-SetStruct
+QByteArray
 Exercise::getSet(int index)
 {
 	if (index < 0 || index >= m_sets.size())
-		return SetStruct();
+		return QByteArray(2, 0);
 
 	return m_sets.at(index);
 }
@@ -45,6 +70,8 @@ Exercise::setId(QString id)
 {
 	if (id != m_id)
 		m_id = id;
+
+	emit exerciseChanged();
 }
 
 void
@@ -52,55 +79,114 @@ Exercise::setName(QString name)
 {
 	if (name != m_name)
 		m_name = name;
+
+	emit exerciseChanged();
 }
 
 void
-Exercise::setRestTime(int restTime)
+Exercise::setBreakTime(int breakTime)
 {
-	if (restTime != m_restTime)
-		m_restTime = restTime;
+	if (breakTime != m_breakTime)
+		m_breakTime = breakTime;
+
+	emit exerciseChanged();
 }
 
 void
-Exercise::addSet(int index, int repeats, bool isMax)
+Exercise::setTrainingId(QString trainingId)
 {
-	m_sets.push_back(SetStruct(index, repeats, isMax));
+	if (trainingId != m_trainingId)
+		m_trainingId = trainingId;
+
+	emit exerciseChanged();
+}
+
+void
+Exercise::setSets(QList<QByteArray> sets)
+{
+	m_sets = sets;
+
+	emit exerciseChanged();
+}
+
+void
+Exercise::replaceSetsList(QList<QString> setList)
+{
+	m_sets.clear();
+
+	for (const auto &set : setList) {
+		auto convertedSet = stringToByteArray(set);
+		m_sets.push_back(convertedSet);
+	}
+
+	emit exerciseChanged();
+}
+
+int
+Exercise::getSetRepeats(QByteArray set)
+{
+	if (set.isEmpty())
+		return -1;
+
+
+	return set.at(set.size() - 1);
 }
 
 bool
-Exercise::removeSet(int index)
+Exercise::getSetIsMax(QByteArray set)
 {
-	if (index < 0 || index >= m_sets.size())
+	if (set.isEmpty())
 		return false;
 
-	m_sets.removeAt(index);
-	return true;
+	return set.at(0);
 }
 
-bool
-Exercise::editSet(int index, int repeats, bool isMax)
+QString
+Exercise::setToString(int repeats, bool isMax)
 {
-	if (index < 0 || index >= m_sets.size())
-		return false;
+	QString result = (isMax ? "1" : "0");
 
-	m_sets[index].repeats = repeats;
-	m_sets[index].isMax = isMax;
+	std::string stringRepeats = std::bitset<4>(repeats).to_string();
 
-	return true;
+	result += QString::fromUtf8(stringRepeats.c_str());
+
+	return result;
 }
 
-SetStruct::SetStruct()
-	: index(0),
-	  repeats(0),
-	  weight(0),
-	  isMax(false)
-{}
+QString
+Exercise::byteArrayToString(QByteArray bits)
+{
+	if (bits.isEmpty())
+		return "00000";
 
-SetStruct::SetStruct(int index, int repeats, bool isMax)
-	: index(index),
-	  repeats(repeats),
-	  weight(0),
-	  isMax(isMax)
-{}
+	QString convertedSet;
 
+	for (int i = bits.size() - 1; i >= 0; i--) {
+		convertedSet.push_back(bits.at(i) ? '1' : '0');
+	}
+
+	return convertedSet;
+}
+
+QByteArray
+Exercise::stringToByteArray(QString bitsString)
+{
+	auto result = QByteArray(2, 0);
+
+	if (bitsString[0] == '1')
+		result[0] = 1;
+
+	char repeats = 0;
+
+	for (int i = 1; i < bitsString.size(); i++) {
+		if (bitsString[i] == '0')
+			continue;
+
+		repeats += static_cast<int>(pow(2, bitsString.size() - i - 1));
+	}
+
+	result[result.size() - 1] = repeats;
+
+	return result;
+}
 

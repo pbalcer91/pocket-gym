@@ -1,8 +1,5 @@
 #include "training.h"
 
-
-#include <QDebug>
-
 Training::Training(QObject *parent)
 	: QObject{parent},
 	  m_id(""),
@@ -98,6 +95,8 @@ void
 Training::addExercise(Exercise* exercise)
 {
 	m_exercises.push_back(exercise);
+
+	emit trainingChanged();
 }
 
 QList<Exercise*>
@@ -118,9 +117,29 @@ Training::getExerciseById(QString id)
 }
 
 void
-Training::clearExercises()
+Training::editExerciseById(QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList)
 {
-	m_exercises.clear();
+	if (!getExerciseById(exerciseId))
+		return;
+
+	getExerciseById(exerciseId)->setName(name);
+	getExerciseById(exerciseId)->setBreakTime(breakTime);
+	getExerciseById(exerciseId)->setTrainingId(trainingId);
+	getExerciseById(exerciseId)->replaceSetsList(setList);
+
+	emit trainingChanged();
+}
+
+void
+Training::removeExerciseById(QString exerciseId)
+{
+	auto exerciseToRemove = getExerciseById(exerciseId);
+
+	m_exercises.removeOne(exerciseToRemove);
+
+	exerciseToRemove->deleteLater();
+
+	emit trainingChanged();
 }
 
 void

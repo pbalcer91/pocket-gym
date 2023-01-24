@@ -32,8 +32,8 @@ public:
 	void addExercise(Exercise* exercise);
 	Q_INVOKABLE QList<Exercise*> getAllExercises();
 	Exercise* getExerciseById(QString id);
-
-	void clearExercises();
+	void editExerciseById(QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList);
+	void removeExerciseById(QString exerciseId);
 
 	Q_INVOKABLE void removeTraining();
 
@@ -47,7 +47,6 @@ private:
 	QString m_planId;
 
 	QList<Exercise*> m_exercises;
-
 };
 
 #endif // TRAINING_H

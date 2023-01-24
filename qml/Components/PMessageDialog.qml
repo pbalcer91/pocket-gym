@@ -31,6 +31,8 @@ Drawer {
 
 	default property alias mainContent: mainContent.data
 
+	property bool autoCloseMode: true
+
 	property alias acceptButton: acceptButton
 	property alias rejectButton: rejectButton
 
@@ -153,7 +155,9 @@ Drawer {
 							rejectAction()
 
 						messageDialog.rejected()
-						messageDialog.close()
+
+						if (autoCloseMode)
+							messageDialog.close()
 					}
 				}
 
@@ -169,7 +173,9 @@ Drawer {
 							acceptAction()
 
 						messageDialog.accepted()
-						messageDialog.close()
+
+						if (autoCloseMode)
+							messageDialog.close()
 					}
 				}
 

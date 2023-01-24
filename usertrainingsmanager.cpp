@@ -13,12 +13,6 @@ UserTrainingsManager::~UserTrainingsManager()
 
 }
 
-Exercise*
-UserTrainingsManager::createExercise()
-{
-	return new Exercise();
-}
-
 TrainingPlan*
 UserTrainingsManager::createTrainingPlan(QString ownerName)
 {
@@ -31,6 +25,14 @@ UserTrainingsManager::createTraining(QString ownerName, QString planId)
 	auto trainingParent = this->getTrainingPlanById(planId);
 
 	return new Training(trainingParent, ownerName, planId);
+}
+
+Exercise*
+UserTrainingsManager::createExercise(QString planId, QString trainingId)
+{
+	auto exerciseParent = this->getTrainingById(planId, trainingId);
+
+	return new Exercise(exerciseParent, trainingId);
 }
 
 TrainingPlan*
@@ -98,4 +100,10 @@ UserTrainingsManager::getExercisegById(QString planId, QString trainingId, QStri
 	}
 
 	return nullptr;
+}
+
+void
+UserTrainingsManager::removeExerciseById(QString planId, QString trainingId, QString exerciseId)
+{
+	getTrainingById(planId, trainingId)->removeExerciseById(exerciseId);
 }

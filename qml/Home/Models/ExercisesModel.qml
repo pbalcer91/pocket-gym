@@ -17,7 +17,7 @@ PListModel {
 		for (var i = 0; i < exercises.length; i++) {
 			append({"id": exercises[i].id,
 					   "name": exercises[i].name,
-					   "restTime": exercises[i].restTime})
+					   "breakTime": exercises[i].breakTime})
 		}
 	}
 }

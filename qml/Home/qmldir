@@ -7,6 +7,7 @@ EditTrainingModal	    1.0	    EditTrainingModal.qml
 
 TrainingPlanDetails	    1.0	    TrainingPlanDetails.qml
 TrainingDetails		    1.0	    TrainingDetails.qml
+ExerciseDetails		    1.0	    ExerciseDetails.qml
 
 TrainingPlanItem	    1.0	    TrainingPlanItem.qml
 TrainingItem		    1.0	    TrainingItem.qml

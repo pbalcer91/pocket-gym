@@ -15,9 +15,9 @@ public:
 	explicit UserTrainingsManager(QObject *parent = nullptr);
 	~UserTrainingsManager();
 
-	Exercise* createExercise();
 	TrainingPlan* createTrainingPlan(QString ownerName);
 	Training* createTraining(QString ownerName, QString planId);
+	Exercise* createExercise(QString planId, QString trainingId);
 
 	TrainingPlan* getTrainingPlanById(QString id);
 	QList<TrainingPlan*> getTrainingPlans();
@@ -28,10 +28,7 @@ public:
 	void removeTrainingById(QString planId, QString trainingId);
 
 	Exercise* getExercisegById(QString planId, QString trainingId, QString exerciseId);
-
-	////////////////////////////////////
-
-
+	void removeExerciseById(QString planId, QString trainingId, QString exerciseId);
 
 signals:
 

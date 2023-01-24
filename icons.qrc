@@ -14,5 +14,7 @@
         <file>icons/ic_delete.svg</file>
         <file>icons/ic_edit.svg</file>
         <file>icons/ic_list.svg</file>
+        <file>icons/ic_info.svg</file>
+        <file>icons/ic_more.svg</file>
     </qresource>
 </RCC>

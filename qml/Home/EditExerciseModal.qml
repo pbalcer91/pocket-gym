@@ -10,9 +10,14 @@ import pl.com.thesis
 PMessageDialog {
 	id: modal
 
+	required property string planId
 	required property Exercise exercise
 
 	property int currentIndex: EditExerciseModal.CREATOR_STEPS.NAME
+
+	property bool editMode: false
+
+	autoCloseMode: false
 
 	enum CREATOR_STEPS {
 		NAME,
@@ -31,11 +36,51 @@ PMessageDialog {
 			return false
 
 		if (currentIndex === EditExerciseModal.CREATOR_STEPS.REST
-				&& restTime.minutes == 0
-				&& restTime.seconds == 0)
+				&& breakTime.minutes == 0
+				&& breakTime.seconds == 0)
 			return false
 
 		return true
+	}
+
+	function fill() {
+		nameField.text = training.name
+		breakTime.minutes = modal.exercise.breakTime / 60
+		breakTime.seconds = (modal.exercise.breakTime % 60) / 15
+		setsListModel.fillModel()
+	}
+
+	function save() {
+		if (!modal.validate())
+			return
+
+		var setList = []
+
+		for (var i = 0; i < setsListModel.count; i++) {
+			setList.push(exercise.setToString(setsListModel.get(i).repeats,
+											  setsListModel.get	(i).isMax))
+		}
+
+		if (editMode) {
+			MainController.editDatabaseExercise(planId,
+												exercise.id,
+												exercise.trainingId,
+												nameField.text,
+												getBreakTime(),
+												setList)
+
+			return
+		}
+
+		MainController.addDatabaseExercise(planId,
+										   exercise.trainingId,
+										   nameField.text,
+										   getBreakTime(),
+										   setList)
+	}
+
+	function getBreakTime() {
+		return (breakTime.minutes * 60 + breakTime.seconds)
 	}
 
 	closeButtonAvailable: (currentIndex > EditExerciseModal.CREATOR_STEPS.NAME)
@@ -57,7 +102,7 @@ PMessageDialog {
 	acceptButton.text: (currentIndex === EditExerciseModal.CREATOR_STEPS.SUMMARY ? "Zapisz" : "Dalej")
 	acceptButton.onClicked: {
 		if (currentIndex === EditExerciseModal.CREATOR_STEPS.SUMMARY) {
-			//saveExercise
+			save()
 			modal.close()
 			return
 		}
@@ -85,14 +130,6 @@ PMessageDialog {
 		label: "Nazwa"
 		placeholderText: "Wpisz nazwę"
 		text: modal.exercise.name
-	}
-
-	PListModel {
-		id: setsListModel
-
-		fillModel: function() {
-			//pobrac z vectora
-		}
 	}
 
 	ScrollView {
@@ -153,7 +190,20 @@ PMessageDialog {
 
 			emptyInfo: "Nie dodałeś jeszcze żadnej serii"
 
-			model: setsListModel
+			model: PListModel {
+				id: setsListModel
+
+				fillModel: function() {
+					clear()
+
+					var sets = exercise.sets
+
+					for (var i = 0; i < sets.length; i++) {
+						append({"repeats": exercise.getSetRepeats(sets[i]),
+								   "isMax": exercise.getSetIsMax(sets[i])})
+					}
+				}
+			}
 
 			delegate: ExerciseSetItem {
 				label: (index + 1)
@@ -164,7 +214,7 @@ PMessageDialog {
 
 				repeatsCount: model.repeats
 
-				isMax: model.max
+				isMax: model.isMax
 
 				onRepeatsIncreased: {
 					setsListModel.get(index).repeats++
@@ -175,7 +225,12 @@ PMessageDialog {
 				}
 
 				onMaxChanged: {
-					setsListModel.get(index).max = !isMax
+					if (setsListModel.get(index).isMax) {
+						setsListModel.get(index).isMax = false
+						return
+					}
+
+					setsListModel.get(index).isMax = true
 				}
 
 				onRemoved: {
@@ -200,21 +255,21 @@ PMessageDialog {
 								 : setsListModel.get(setsListModel.count - 1).repeats)
 
 			setsListModel.append({"repeats": lastRepeats,
-									 "max": false})
+									 "isMax": false})
 
 			setsList.positionViewAtEnd()
 		}
 	}
 
 	PTimeSelector {
-		id: restTime
+		id: breakTime
 
 		Layout.fillWidth: true
 
 		visible: modal.currentIndex === EditExerciseModal.CREATOR_STEPS.REST
 
-		minutes: modal.exercise.restTime / 60
-		seconds: (modal.exercise.restTime % 60) / 15
+		minutes: modal.exercise.breakTime / 60
+		seconds: (modal.exercise.breakTime % 60) / 15
 	}
 
 	RowLayout {
@@ -273,7 +328,7 @@ PMessageDialog {
 				font: Fonts.caption
 				lineHeight: Fonts.captionHeight
 
-				visible: model.max
+				visible: model.isMax
 
 				text: "(max)"
 			}
@@ -281,7 +336,7 @@ PMessageDialog {
 	}
 
 	RowLayout {
-		id: summaryRestTime
+		id: summaryBrekTime
 
 		Layout.fillWidth: true
 
@@ -298,7 +353,7 @@ PMessageDialog {
 			font: Fonts.caption
 			lineHeight: Fonts.captionHeight
 
-			text: restTime.getTimeDescription()
+			text: breakTime.getTimeDescription()
 		}
 	}
 }

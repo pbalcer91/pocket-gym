@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 import Components
 import Properties
@@ -12,22 +13,12 @@ Item {
 	implicitWidth: content.implicitWidth + Properties.margin * 2
 	implicitHeight: content.implicitHeight + Properties.smallMargin * 2
 
-	property bool editMode: false
+	signal exerciseClicked(var exercise)
 
-	property Exercise exercise
+	property Exercise exercise: MainController.getExercisegById(planId, trainingId, exerciseId)
 
-	property int restTime: form.exercise.restTime
-
-	function restTimeToString(restTime) {
-		var minutes = restTime / 60
-		if (minutes < 10)
-			minutes = "0" + minutes
-
-		var seconds = restTime % 60
-		if (seconds < 10)
-			seconds = "0" + seconds
-
-		return (minutes + ":" + seconds)
+	Component.onCompleted: {
+		label.text = exercise.name
 	}
 
 	Rectangle {
@@ -41,7 +32,7 @@ Item {
 		border.width: 1
 	}
 
-	ColumnLayout {
+	RowLayout {
 		id: content
 
 		anchors.fill: parent
@@ -56,56 +47,24 @@ Item {
 		PLabel {
 			id: label
 
-			text: form.exercise.name
 			color: Colors.text
 
 			font: Fonts.list
 			lineHeight: Fonts.listHeight
 		}
 
-		Repeater {
-			id: listView
-
+		Item {
 			Layout.fillWidth: true
-
-			model: PListModel {
-				id: setsModel
-
-				fillModel: function() {
-					var sets = form.exercise.sets
-
-					for (var i = 0; i < sets.length; i++) {
-						append({"index": sets[i].index,
-							   "repeats": sets[i].repeats,
-							   "isMax": sets[i].isMax})
-					}
-				}
-			}
-
-			delegate: ExerciseSetItem {
-				Layout.fillWidth: true
-
-				label: model.index
-				repeatsCount: model.repeats
-				isMax: model.isMax
-
-				editMode: form.editMode
-
-				Layout.bottomMargin: 10
-			}
 		}
 
-		PLabel {
-			id: restTimeLabel
+		PButton {
+			id: detailsButton
 
-			Layout.alignment: Qt.AlignRight
-			horizontalAlignment: Text.AlignRight
+			icon.source: "qrc:/icons/ic_chevronRight.svg"
 
-			text: "Odpoczynek - " + restTimeToString(form.restTime)
-			color: Colors.text
-
-			font: Fonts.button
-			lineHeight: Fonts.buttonHeight
+			onClicked: {
+				exerciseClicked(exercise)
+			}
 		}
 	}
 }
