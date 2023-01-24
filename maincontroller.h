@@ -25,10 +25,9 @@ public:
 	Q_INVOKABLE User* getCurrentUser();
 	Q_INVOKABLE QString getCurrentUserName();
 
-	Q_INVOKABLE Exercise* createExercise();
-
 	Q_INVOKABLE TrainingPlan* newTrainingPlan();
 	Q_INVOKABLE Training* newTraining(QString ownerName, QString planId);
+	Q_INVOKABLE Exercise* newExercise(QString planId, QString trainingId);
 
 	Q_INVOKABLE TrainingPlan* getTrainingPlanById(QString id);
 	Q_INVOKABLE QList<TrainingPlan*> getUserTrainingPlans();
@@ -42,21 +41,19 @@ public:
 	//DATABASE INTERFACE
 	Q_INVOKABLE void getDatabaseUserTrainingPlans();
 	Q_INVOKABLE void getDatabaseTrainingsByPlanId(QString planId);
-
-
-	Q_INVOKABLE void getExercisesFromDatabaseByTrainingId(QString planId, QString trainingId);
-	//Q_INVOKABLE void getExercise(QString trainingId, QString exerciseId);
+	Q_INVOKABLE void getDatabaseExercisesByTrainingId(QString planId, QString trainingId);
 
 	Q_INVOKABLE void addDatabaseTrainingPlan(QString ownerName, QString name, QString description, bool isDefault);
 	Q_INVOKABLE void addDatabaseTraining(QString ownerName, QString name, QString planId);
+	Q_INVOKABLE void addDatabaseExercise(QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets);
 
 	Q_INVOKABLE void editDatabaseTrainingPlan(QString planId, QString ownerName, QString name, QString description, bool isDefault);
 	Q_INVOKABLE void editDatabaseTraining(QString trainingId, QString ownerName, QString name, QString planId);
-
-	Q_INVOKABLE void editDatabaseExercise(QString trainingId, Exercise* exercise);
+	Q_INVOKABLE void editDatabaseExercise(QString planId, QString exerciseId, QString trainingId, QString name, int breakTime, QList<QString> sets);
 
 	Q_INVOKABLE void deleteDatabaseTrainingPlan(QString planId);
 	Q_INVOKABLE void deleteDatabaseTraining(QString planId, QString trainingId);
+	Q_INVOKABLE void deleteDatabaseExercise(QString planId, QString trainingId, QString exerciseId);
 
 
 signals:
@@ -64,11 +61,8 @@ signals:
 	void trainingsReady();
 	void exercisesReady();
 
-	void exerciseReady();
-
 private:
 	User* m_currentUser;
-
 	DatabaseHandler* m_database;
 };
 

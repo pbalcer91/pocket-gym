@@ -25,9 +25,9 @@ PDialog {
 	Connections {
 		target: MainController
 
-//		function onExercisesReady() {
-//			exercisesModel.fillModel()
-//		}
+		function onExercisesReady() {
+			exercisesModel.fillModel()
+		}
 	}
 
 	editButton.onClicked: {
@@ -40,13 +40,13 @@ PDialog {
 
 	Component.onCompleted: {
 		dialog.fill()
-		//MainController.getExercisesFromDatabaseByTrainingId(dialog.planId, dialog.trainingId)
+		MainController.getDatabaseExercisesByTrainingId(training.planId, training.id)
 	}
 
 	function fill() {
 		dialog.title = dialog.training.name
+		exercisesModel.fillModel()
 	}
-
 
 	ColumnLayout {
 		id: mainColumn
@@ -83,10 +83,11 @@ PDialog {
 					Layout.alignment: Qt.AlignHCenter
 
 					onClicked: {
-//						loader.setSource("qrc:/qml/Home/EditTrainingModal.qml",
-//										 {
-//											 "training": MainController.newTraining(MainController.getCurrentUserName(), dialog.planId)
-//										 })
+						loader.setSource("qrc:/qml/Home/EditExerciseModal.qml",
+										 {
+											 "planId": training.planId,
+											 "exercise": MainController.newExercise(training.planId, training.id)
+										 })
 					}
 				}
 			}
@@ -128,7 +129,7 @@ PDialog {
 				leftPadding: Properties.smallMargin
 				rightPadding: Properties.smallMargin
 
-				contentHeight: exercisesColumn.height
+				contentHeight: exercisesColumn.height - removeButton.height - Properties.smallMargin
 				contentWidth: exercisesColumn.width
 
 				clip: true
@@ -143,16 +144,24 @@ PDialog {
 
 					emptyInfo: "Nie dodałeś jeszcze żadnego ćwiczenia"
 
-					model: 0/*ExercisesModel {
+					model: ExercisesModel {
 						id: exercisesModel
 
-						training: MainController.getTrainingById(dialog.planId, dialog.trainingId)
-					}*/
+						training: dialog.training
+					}
 
 					delegate: ExerciseItem {
 						exercise: MainController.getExercisegById(training.planId, training.id, model.id)
 
 						implicitWidth: listView.width
+
+						onExerciseClicked: function(exercise) {
+							loader.setSource("qrc:/qml/Home/ExerciseDetails.qml",
+											 {
+												 "planId": dialog.training.planId,
+												 "exercise": exercise
+											 })
+						}
 					}
 				}
 			}

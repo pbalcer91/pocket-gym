@@ -55,15 +55,6 @@ User::setPassword(QString password)
 		m_password = password;
 }
 
-Exercise*
-User::createExercise()
-{
-	if (!m_trainingsManager)
-		return nullptr;
-
-	return m_trainingsManager->createExercise();
-}
-
 TrainingPlan*
 User::createTrainingPlan()
 {
@@ -80,6 +71,15 @@ User::createTraining(QString ownerName, QString planId)
 		return nullptr;
 
 	return m_trainingsManager->createTraining(ownerName, planId);
+}
+
+Exercise*
+User::createExercise(QString planId, QString trainingId)
+{
+	if (!m_trainingsManager)
+		return nullptr;
+
+	return m_trainingsManager->createExercise(planId, trainingId);
 }
 
 TrainingPlan*
@@ -135,20 +135,28 @@ void
 User::editTrainingById(QString trainingId, QString ownerName, QString name, QString planId)
 {
 	getTrainingPlanById(planId)->editTrainingById(trainingId, ownerName, name, planId);
-
-	emit m_trainingsManager->getTrainingById(planId, trainingId)->trainingChanged();
 }
 
 void
 User::removeTrainingById(QString planId, QString trainingId)
 {
 	m_trainingsManager->removeTrainingById(planId, trainingId);
-
-	emit getTrainingPlanById(planId)->trainingPlanChanged();
 }
 
 Exercise*
 User::getExercisegById(QString planId, QString trainingId, QString exerciseId)
 {
 	return m_trainingsManager->getExercisegById(planId, trainingId, exerciseId);
+}
+
+void
+User::editExerciseById(QString planId, QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList)
+{
+	getTrainingById(planId, trainingId)->editExerciseById(exerciseId, name, breakTime, trainingId, setList);
+}
+
+void
+User::removeExerciseById(QString planId, QString trainingId, QString exerciseId)
+{
+	m_trainingsManager->removeExerciseById(planId, trainingId, exerciseId);
 }

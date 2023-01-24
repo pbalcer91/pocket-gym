@@ -14,8 +14,8 @@ Item {
 
 	property bool editMode: false
 
-	property int repeatsCount: 1
-	property bool isMax: false
+	property int repeatsCount
+	property alias isMax: isMaxCheckBox.checked
 
 	signal repeatsIncreased
 	signal repeatDecreased
@@ -198,16 +198,14 @@ Item {
 			}
 
 			PCheckBox {
-				id: maxCheckBox
+				id: isMaxCheckBox
 
 				Layout.alignment: Qt.AlignHCenter
 
 				visible: editMode
 
-				checked: form.isMax
-
-				onCheckedChanged: {
-					form.maxChanged()
+				onToggled: {
+					maxChanged()
 				}
 			}
 		}

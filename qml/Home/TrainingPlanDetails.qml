@@ -52,7 +52,6 @@ PDialog {
 		trainingsModel.fillModel()
 	}
 
-
 	ColumnLayout {
 		id: mainColumn
 
@@ -167,7 +166,7 @@ PDialog {
 				leftPadding: Properties.smallMargin
 				rightPadding: Properties.smallMargin
 
-				contentHeight: trainingsColumn.height
+				contentHeight: trainingsColumn.height - removeButton.height - Properties.smallMargin
 				contentWidth: trainingsColumn.width
 
 				clip: true

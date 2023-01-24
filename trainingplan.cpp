@@ -152,6 +152,8 @@ TrainingPlan::removeTrainingById(QString id)
 	m_trainings.removeOne(trainingToRemove);
 
 	trainingToRemove->deleteLater();
+
+	emit trainingPlanChanged();
 }
 
 void

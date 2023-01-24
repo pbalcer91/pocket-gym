@@ -161,95 +161,78 @@ DatabaseHandler::getTrainingById(QString trainingId)
 }
 
 void
-DatabaseHandler::getTrainingExercises(QString trainingId)
+DatabaseHandler::getExercisesByTrainingId(QString planId, QString trainingId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "trainings/" + trainingId + "/exercises.json")));
+					QUrl(m_url + "exercises.json?orderBy=\"trainingId\"&equalTo=\"" + trainingId + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
-					 this, [this, reply](){
+					 this, [this, planId, trainingId, reply](){
 		reply->deleteLater();
-		QList<Exercise*> exercises;
 
 		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
 		auto rootObject = rootDocument.object();
 
-		for (const auto &key : rootObject.keys()) {
-			Exercise* exerciseToAdd = new Exercise(this, key);
+		QList<Exercise*> exerciseList;
 
+		for (const auto &key : rootObject.keys()) {
 			auto exerciseDocument = rootObject.value(key);
 			auto exerciseObject = exerciseDocument.toObject();
 
+			QString id = key;
+			QString name = exerciseObject.value("name").toString();
+			int breakTime = exerciseObject.value("breakTime").toInt();
+			QString trainingId = exerciseObject.value("trainingId").toString();
+
+			Exercise* exercise = new Exercise(this, id, name, breakTime, trainingId);
+
+			QList<QString> setList;
+
 			for (const auto &key : exerciseObject.keys()) {
 				if (key.toUInt()) {
-					auto bitArray = stringToBitArray(exerciseObject.value(key).toString());
-
-					bool isMax = getIsMaxFromBitArray(bitArray);
-
-					if (isMax)
-						bitArray.clearBit(bitArray.count() - 1);
-
-					auto repeats =  bitArray.toUInt32(QSysInfo::LittleEndian);
-
-					exerciseToAdd->addSet(key.toUInt(), repeats, isMax);
-					continue;
+					auto set = exerciseObject.value(key).toString();
+					setList.push_back(set);
 				}
-
-				if (key == "breakTime") {
-					exerciseToAdd->setRestTime(exerciseObject.value(key).toInt());
-					continue;
-				}
-
-				if (key == "name")
-					exerciseToAdd->setName(exerciseObject.value(key).toString());
 			}
 
-			exercises.push_back(exerciseToAdd);
-			//exerciseToAdd->deleteLater();
+			exercise->replaceSetsList(setList);
+
+			exerciseList.push_back(exercise);		
 		}
 
-		emit this->trainingExercisesReceived(exercises);
+		emit exercisesReceived(planId, trainingId, exerciseList);
 	});
 }
 
 void
-DatabaseHandler::getExercise(QString trainingId, QString exerciseId)
+DatabaseHandler::getExerciseById(QString planId, QString exerciseId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "trainings/" + trainingId + "/exercises/" + exerciseId + ".json")));
+					QUrl(m_url + "exercises/" + exerciseId + ".json")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
-					 this, [this, exerciseId, reply](){
+					 this, [this, planId, exerciseId, reply](){
 		reply->deleteLater();
-		Exercise* newExercise = new Exercise(this, exerciseId);
 
 		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
 		auto rootObject = rootDocument.object();
 
+		QString name = rootObject.value("name").toString();
+		int breakTime = rootObject.value("breakTime").toInt();
+		QString trainingId = rootObject.value("trainingId").toString();
+
+		QList<QString> setList;
+
 		for (const auto &key : rootObject.keys()) {
 			if (key.toUInt()) {
-				auto bitArray = stringToBitArray(rootObject.value(key).toString());
-
-				bool isMax = getIsMaxFromBitArray(bitArray);
-				auto repeats = getRepeatsFromBitArray(bitArray);
-
-				newExercise->addSet(key.toUInt(), repeats, isMax);
-				continue;
+				auto set = rootObject.value(key).toString();
+				setList.push_back(set);
 			}
-
-			if (key == "breakTime") {
-				newExercise->setRestTime(rootObject.value(key).toInt());
-				continue;
-			}
-
-			if (key == "name")
-				newExercise->setName(rootObject.value(key).toString());
 		}
 
-		emit this->exerciseReceived(newExercise);
-		//newExercise->deleteLater();
+		emit exerciseReceived(planId, exerciseId, name, breakTime, trainingId, setList);
 	});
 }
 
@@ -312,22 +295,29 @@ DatabaseHandler::addTraining(QString ownerName, QString name, QString planId)
 }
 
 void
-DatabaseHandler::addExercise(QString trainingId, QString name, int breakTime, QList<QString> sets)
+DatabaseHandler::addExercise(QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets)
 {
-	QVariantMap newExercise;
-	newExercise["name"] = name;
-	newExercise["breakTime"] = breakTime;
+	QVariantMap databaseExercise;
+	databaseExercise["name"] = name;
+	databaseExercise["breakTime"] = breakTime;
+	databaseExercise["trainingId"] = trainingId;
 
 	for (int i = 0; i < sets.size(); i++) {
-		newExercise[QString::number(i + 1)] = sets[i];
+		databaseExercise[QString::number(i + 1)] = sets[i];
 	}
 
-	QJsonDocument jsonDoc = QJsonDocument::fromVariant(newExercise);
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseExercise);
 
-	QNetworkRequest request(QUrl(m_url + "trainings/" + trainingId + "/exercises.json"));
+	QNetworkRequest request(QUrl(m_url + "exercises.json"));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
-	m_networkManager->post(request, jsonDoc.toJson());
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, planId, trainingId, reply](){
+		reply->deleteLater();
+		emit exerciseAdded(planId, trainingId);
+	});
 }
 
 void
@@ -376,28 +366,28 @@ DatabaseHandler::editTraining(QString trainingId, QString ownerName, QString nam
 }
 
 void
-DatabaseHandler::editExercise(QString trainingId, Exercise* exercise)
+DatabaseHandler::editExercise(QString planId, QString exerciseId, QString trainingId, QString name, int breakTime, QList<QString> sets)
 {
-	QVariantMap newExercise;
-	newExercise["name"] = exercise->name();
-	newExercise["breakTime"] = exercise->restTime();
+	QVariantMap databaseExercise;
+	databaseExercise["name"] = name;
+	databaseExercise["breakTime"] = breakTime;
+	databaseExercise["trainingId"] = trainingId;
 
-	for (auto set : exercise->sets()) {
-		newExercise[QString::number(set.index) = setToString(set.repeats, set.isMax)];
+	for (const auto &set : sets) {
+		databaseExercise[QString::number(sets.indexOf(set) + 1)] = set;
 	}
 
-	QJsonDocument jsonDoc = QJsonDocument::fromVariant(newExercise);
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseExercise);
 
-	QNetworkRequest request(QUrl(m_url + "trainings/" + trainingId + "/exercises/" + exercise->id() + ".json"));
+	QNetworkRequest request(QUrl(m_url + "exercises/" + exerciseId + ".json"));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->put(request, jsonDoc.toJson());
 
 	QObject::connect(reply, &QNetworkReply::finished,
-					 this, [reply](){
+					 this, [this, planId, exerciseId, reply](){
 		reply->deleteLater();
-
-		qDebug() << "DATABASE RESPONDED";
+		emit exerciseChanged(planId, exerciseId);
 	});
 }
 
@@ -433,55 +423,18 @@ DatabaseHandler::deleteTraining(QString planId, QString trainingId)
 	});
 }
 
-QBitArray
-DatabaseHandler::stringToBitArray(QString bitString)
+void
+DatabaseHandler::deleteExercise(QString planId, QString trainingId, QString exerciseId)
 {
-	QBitArray result(bitString.size());
+	QNetworkRequest request(QUrl(m_url + "exercises/" + exerciseId + ".json"));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
-	for (int i = bitString.size() - 1; i >= 0; i--) {
-		if (bitString[i] == '1')
-			result[bitString.size() - 1 - i] = 1;
-	}
+	auto reply = m_networkManager->deleteResource(request);
 
-	return result;
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, planId, trainingId, exerciseId, reply](){
+		reply->deleteLater();
+
+		emit exerciseRemoved(planId, trainingId, exerciseId);
+	});
 }
-
-QString
-DatabaseHandler::setToString(int repeats, bool isMax)
-{
-	QString result = "";
-
-	result += (isMax ? "1" : "0");
-
-	QString stringRepeats = (QString::number(repeats, 2));
-
-	for (int i = 0; i < 5 - stringRepeats.length(); i++) {
-		result += "0";
-	}
-
-	result += stringRepeats;
-
-	return result;
-}
-
-bool
-DatabaseHandler::getIsMaxFromBitArray(QBitArray bitArray)
-{
-	if (bitArray.isEmpty())
-		return false;
-
-	return bitArray[bitArray.count() - 1];
-}
-
-int
-DatabaseHandler::getRepeatsFromBitArray(QBitArray bitArray)
-{
-	if (bitArray.isEmpty())
-		return -1;
-
-	if (getIsMaxFromBitArray(bitArray))
-		bitArray.clearBit(bitArray.count() - 1);
-
-	return bitArray.toUInt32(QSysInfo::LittleEndian);
-}
-

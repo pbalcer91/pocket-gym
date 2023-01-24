@@ -25,10 +25,9 @@ public:
 	void setEmail(QString email);
 	void setPassword(QString password);
 
-	Exercise* createExercise();
-
 	TrainingPlan* createTrainingPlan();
 	Training* createTraining(QString ownerName, QString planId);
+	Exercise* createExercise(QString planId, QString trainingId);
 
 	TrainingPlan* getTrainingPlanById(QString id);
 	QList<TrainingPlan*> getUserTrainingPlans();
@@ -41,6 +40,8 @@ public:
 	void removeTrainingById(QString planId, QString trainingId);
 
 	Exercise* getExercisegById(QString planId, QString trainingId, QString exerciseId);
+	void editExerciseById(QString planId, QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList);
+	void removeExerciseById(QString planId, QString trainingId, QString exerciseId);
 
 signals:
 	void userDataChanged();

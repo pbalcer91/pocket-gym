@@ -29,8 +29,6 @@ int main(int argc, char *argv[])
 	qmlRegisterType<User>("pl.com.thesis", 1, 0, "User");
 	qmlRegisterType<UserTrainingsManager>("pl.com.thesis", 1, 0, "UserTrainingsManager");
 
-	qRegisterMetaType<SetStruct>();
-
 	QQmlApplicationEngine engine;
 	engine.addImportPath("qrc:///qml");
 

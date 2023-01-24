@@ -83,10 +83,6 @@ Item {
 
 			currentIndex: root.minutes
 
-			onCurrentIndexChanged: {
-				console.log("CURRENT INDEX:", currentIndex)
-			}
-
 			listModel: PListModel {
 				fillModel: function() {
 					for (var i = 0; i <= 10; ++i)
@@ -97,6 +93,10 @@ Item {
 			}
 
 			textRole: "description"
+
+			onCurrentIndexChanged: {
+				root.minutes = currentIndex
+			}
 		}
 
 		PLabel {
@@ -129,6 +129,10 @@ Item {
 			}
 
 			textRole: "description"
+
+			onCurrentIndexChanged: {
+				root.seconds = currentIndex * 15
+			}
 		}
 	}
 }
