@@ -88,7 +88,7 @@ Item {
 					sectionButton.onClicked: {
 						loader.setSource("qrc:/qml/Home/EditTrainingPlanModal.qml",
 										 {
-											 "plan": MainController.newTrainingPlan(),
+											 "plan": MainController.newTrainingPlan()
 										 })
 					}
 

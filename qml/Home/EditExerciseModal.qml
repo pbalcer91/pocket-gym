@@ -44,7 +44,7 @@ PMessageDialog {
 	}
 
 	function fill() {
-		nameField.text = training.name
+		nameField.text = modal.exercise.name
 		breakTime.minutes = modal.exercise.breakTime / 60
 		breakTime.seconds = (modal.exercise.breakTime % 60) / 15
 		setsListModel.fillModel()
@@ -98,6 +98,10 @@ PMessageDialog {
 		}
 	}
 
+	Component.onCompleted: {
+		modal.fill()
+	}
+
 	acceptButton.enabled: validate()
 	acceptButton.text: (currentIndex === EditExerciseModal.CREATOR_STEPS.SUMMARY ? "Zapisz" : "Dalej")
 	acceptButton.onClicked: {
@@ -108,6 +112,13 @@ PMessageDialog {
 		}
 
 		currentIndex++
+	}
+
+	onClosed: {
+		if (editMode)
+			return
+
+		exercise.removeExercise()
 	}
 
 	rejectButton.text: (currentIndex == 0 ? "Anuluj" : "Wróć")
@@ -129,7 +140,6 @@ PMessageDialog {
 
 		label: "Nazwa"
 		placeholderText: "Wpisz nazwę"
-		text: modal.exercise.name
 	}
 
 	ScrollView {

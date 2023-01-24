@@ -35,6 +35,7 @@ Drawer {
 
 	property alias acceptButton: acceptButton
 	property alias rejectButton: rejectButton
+	property alias closeButton: closeButton
 
 	property var acceptAction
 	property var rejectAction
@@ -107,7 +108,7 @@ Drawer {
 					visible: messageDialog.closeButtonAvailable
 
 					onClicked: {
-						messageDialog.close()
+						close()
 					}
 				}
 			}

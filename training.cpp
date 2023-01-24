@@ -25,9 +25,7 @@ Training::Training(QObject *parent, QString id, QString ownerName, QString name,
 {}
 
 Training::~Training()
-{
-
-}
+{}
 
 QString
 Training::id() const
@@ -145,5 +143,5 @@ Training::removeExerciseById(QString exerciseId)
 void
 Training::removeTraining()
 {
-	delete this;
+	this->deleteLater();
 }

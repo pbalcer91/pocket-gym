@@ -22,6 +22,8 @@ MainController::MainController(QObject *parent)
 			planToAdd->setDescription(plan->description());
 			planToAdd->setIsDefault(plan->isDefault());
 
+			plan->deleteLater();
+
 			m_currentUser->addTraningPlan(planToAdd);
 		}
 
@@ -45,7 +47,6 @@ MainController::MainController(QObject *parent)
 
 	QObject::connect(m_database, &DatabaseHandler::trainingAdded,
 					 this, [this](QString planId) {
-		// TODO: dodaj id cwiczenia do treningu
 		m_database->getTrainingsByPlanId(planId);
 	});
 
@@ -62,6 +63,8 @@ MainController::MainController(QObject *parent)
 												   training->owner(),
 												   training->name(),
 												   training->planId());
+
+			training->deleteLater();
 
 			plan->addTraining(trainingToAdd);
 		}
@@ -102,6 +105,8 @@ MainController::MainController(QObject *parent)
 												   exercise->name(),
 												   exercise->breakTime(),
 												   exercise->trainingId());
+
+			exercise->deleteLater();
 
 			exerciseToAdd->setSets(exercise->sets());
 

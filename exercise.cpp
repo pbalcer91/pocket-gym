@@ -26,6 +26,9 @@ Exercise::Exercise(QObject *parent, QString id, QString name, int breakTime, QSt
 	  m_trainingId(trainingId)
 {}
 
+Exercise::~Exercise()
+{}
+
 QString
 Exercise::id() const
 {
@@ -151,6 +154,12 @@ Exercise::setToString(int repeats, bool isMax)
 	result += QString::fromUtf8(stringRepeats.c_str());
 
 	return result;
+}
+
+void
+Exercise::removeExercise()
+{
+	this->deleteLater();
 }
 
 QString
