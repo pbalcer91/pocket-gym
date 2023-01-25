@@ -24,20 +24,6 @@ Item {
 			contentWidth: width
 			contentHeight: mainColumn.implicitHeight + content.margin * 2
 
-			Component.onCompleted: {
-				console.log("CONTENT HEIGHT:", content.height)
-				console.log("CONTENT WIDTH:", content.width)
-
-				console.log("SCROLL HEIGHT:", scroll.height)
-				console.log("SCROLL WIDTH:", scroll.width)
-
-				console.log("FLICKABLE HEIGHT:", height)
-				console.log("FLICKABLE WIDTH:", width)
-
-				console.log("FLICKABLE CONTENT HEIGHT:", contentHeight)
-				console.log("FLICKABLE CONTENT WIDTH:", contentWidth)
-			}
-
 			ColumnLayout {
 				id: mainColumn
 
@@ -45,16 +31,8 @@ Item {
 				anchors.margins: content.margin
 				spacing: Properties.margin
 
-				Component.onCompleted: {
-					console.log("COLUMN WIDTH:", mainColumn.width)
-				}
-
 				SettingsSection {
 					label: "Ustawienia konta"
-
-					Component.onCompleted: {
-						console.log("SECTION HEAD WIDTH:", width)
-					}
 
 					PInfoButton {
 						Layout.fillWidth: true
