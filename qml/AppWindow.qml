@@ -74,10 +74,6 @@ Page {
 					   "icon": "qrc:/icons/ic_calendar.svg",
 					   "url": "qrc:/qml/Calendar/CalendarView.qml"})
 		}
-
-		onModelReady: {
-			mainStack.currentIndex = window.currentPage
-		}
 	}
 
 	footer: ToolBar {
@@ -164,6 +160,8 @@ Page {
 
 		anchors.fill: parent
 
+		property bool isReady: false
+
 		Repeater {
 			model: navigationBarModel
 
@@ -176,13 +174,20 @@ Page {
 
 				onLoaded: {
 					item.width = width
+
+					if (!mainStack.isReady && (index === 0)) {
+						mainStack.isReady = true
+						mainStack.currentIndex = AppWindow.PAGES.HOME
+					}
 				}
 			}
 		}
 
 		onCurrentIndexChanged: {
-			if (window.currentPage != currentIndex)
-				window.currentPage = currentIndex
+			if (!mainStack.isReady)
+				return
+
+			window.currentPage = currentIndex
 		}
 	}
 
