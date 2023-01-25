@@ -4,16 +4,21 @@
 User::User(QObject *parent)
 	: QObject{parent},
 	  m_trainingsManager(new UserTrainingsManager()),
+	  m_id("testoweIdUsera"),
 	  m_name("Piotr"),
 	  m_email("piotr@piotr.pl"),
 	  m_password("haslo")
-{
-	qDebug() << "User created";
-}
+{}
 
 User::~User()
 {
-	delete m_trainingsManager;
+	m_trainingsManager->deleteLater();
+}
+
+QString
+User::id() const
+{
+	return m_id;
 }
 
 QString
@@ -34,11 +39,28 @@ User::password() const
 	return m_password;
 }
 
+QList<Measurement*>
+User::measurements() const
+{
+	return m_measurements;
+}
+
+void
+User::setId(QString id)
+{
+	if (id != m_id)
+		m_id = id;
+
+	emit userDataChanged();
+}
+
 void
 User::setName(QString name)
 {
 	if (name != m_name)
 		m_name = name;
+
+	emit userDataChanged();
 }
 
 void
@@ -46,6 +68,8 @@ User::setEmail(QString email)
 {
 	if (email != m_email)
 		m_email = email;
+
+	emit userDataChanged();
 }
 
 void
@@ -53,6 +77,49 @@ User::setPassword(QString password)
 {
 	if (password != m_password)
 		m_password = password;
+
+	emit userDataChanged();
+}
+
+void
+User::addMeasurement(QObject* parent,
+					 QString id,
+					 QDate date,
+					 double weight,
+					 double chest,
+					 double shoulders,
+					 double arm,
+					 double forearm,
+					 double waist,
+					 double hips,
+					 double peace,
+					 double calf)
+{
+	if (weight <= 0 || chest <= 0 || shoulders <= 0
+			|| arm <= 0|| forearm <= 0 || waist <= 0
+			|| hips <= 0 || peace <= 0 || calf <= 0)
+		return;
+
+
+	auto newMeasurement = new Measurement(parent, weight, chest, shoulders, arm,
+										  forearm, waist, hips, peace, calf);
+
+	newMeasurement->setId(id);
+	newMeasurement->setDate(date);
+
+	m_measurements.push_back(newMeasurement);
+
+}
+
+Measurement*
+User::getMeasurementById(QString id)
+{
+	for (auto measurement : m_measurements) {
+		if (measurement->id() == id)
+			return measurement;
+	}
+
+	return nullptr;
 }
 
 TrainingPlan*

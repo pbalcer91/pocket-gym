@@ -16,8 +16,8 @@ Drawer {
 	closePolicy: Popup.NoAutoClose
 	clip: true
 
-	height: (priv.defaultHeight > Properties.appWindow.height * 0.7 ?
-				 Properties.appWindow.height * 0.7
+	height: (priv.defaultHeight > Properties.appWindow.height * 0.9 ?
+				 Properties.appWindow.height * 0.9
 			   : priv.defaultHeight)
 	width: Properties.appWindow.width
 
@@ -68,7 +68,7 @@ Drawer {
 
 		property int defaultHeight: header.implicitHeight + Properties.smallMargin
 									+ mainContent.implicitHeight
-									+ footer.implicitHeight + Properties.margin +36
+									+ footer.implicitHeight + Properties.margin + 36
 	}
 
 	Item {

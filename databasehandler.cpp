@@ -237,6 +237,54 @@ DatabaseHandler::getExerciseById(QString planId, QString exerciseId)
 }
 
 void
+DatabaseHandler::getMeasurementsByUserId(QString userId)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "measurements.json?orderBy=\"userId\"&equalTo=\"" + userId + "\"")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, userId, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		QList<Measurement*> measurementList;
+
+		for (const auto &key : rootObject.keys()) {
+			auto measurementDocument = rootObject.value(key);
+			auto measurementObject = measurementDocument.toObject();
+
+			QString id = key;
+			double weight = measurementObject.value("weight").toDouble();
+			double chest = measurementObject.value("chest").toDouble();
+			double shoulders = measurementObject.value("shoulders").toDouble();
+			double arm = measurementObject.value("arm").toDouble();
+			double forearm = measurementObject.value("forearm").toDouble();
+			double waist = measurementObject.value("waist").toDouble();
+			double hips = measurementObject.value("hips").toDouble();
+			double peace = measurementObject.value("peace").toDouble();
+			double calf = measurementObject.value("calf").toDouble();
+			long long timestamp = measurementObject.value("timestamp").toInteger();
+
+			Measurement* measurement = new Measurement(this, weight, chest, shoulders, arm,
+													   forearm, waist, hips, peace, calf);
+
+			QDateTime dateTime;
+			dateTime.setSecsSinceEpoch(timestamp);
+
+			measurement->setId(id);
+			measurement->setDate(dateTime.date());
+
+			measurementList.push_back(measurement);
+		}
+
+		emit measurementsReceived(userId, measurementList);
+	});
+}
+
+void
 DatabaseHandler::addUser(QString username, QString email, QString password)
 {
 	QVariantMap newUser;
@@ -317,6 +365,37 @@ DatabaseHandler::addExercise(QString planId, QString trainingId, QString name, i
 					 this, [this, planId, trainingId, reply](){
 		reply->deleteLater();
 		emit exerciseAdded(planId, trainingId);
+	});
+}
+
+void
+DatabaseHandler::addMeasurement(QString userId, double weight, double chest, double shoulders, double arm,
+								double forearm, double waist, double hips, double peace, double calf)
+{
+	QVariantMap databaseMeasurement;
+	databaseMeasurement["userId"] = userId;
+	databaseMeasurement["timestamp"] = QDateTime::currentSecsSinceEpoch();
+	databaseMeasurement["weight"] = weight;
+	databaseMeasurement["chest"] = chest;
+	databaseMeasurement["shoulders"] = shoulders;
+	databaseMeasurement["arm"] = arm;
+	databaseMeasurement["forearm"] = forearm;
+	databaseMeasurement["waist"] = waist;
+	databaseMeasurement["hips"] = hips;
+	databaseMeasurement["peace"] = peace;
+	databaseMeasurement["calf"] = calf;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseMeasurement);
+
+	QNetworkRequest request(QUrl(m_url + "measurements.json"));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, userId, reply](){
+		reply->deleteLater();
+		emit measurementAdded(userId);
 	});
 }
 

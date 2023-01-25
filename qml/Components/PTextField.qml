@@ -29,7 +29,7 @@ TextField {
 	rightInset: 0
 
 	leftPadding: 16
-	rightPadding: 48
+	rightPadding: 16
 	topPadding: (label.text != "" ? 24 : 12)
 	bottomPadding: (label.text != "" ? 4 : 12)
 

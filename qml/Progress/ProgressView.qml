@@ -5,61 +5,133 @@ import QtCharts
 import Components
 import Properties
 
+import pl.com.thesis
+
+
 Item {
-	id: content
+	id: form
+
+	implicitWidth: content.implicitWidth
+	implicitHeight: content.implicitHeight + Properties.margin
+
+	property User currentUser: MainController.getCurrentUser()
+
+	Connections {
+		target: MainController
+
+		function onMeasurementsReady() {
+			lastMeasurement.measurement = MainController.getCurrentUserLastMeasurement()
+
+			lastMeasurement.fill()
+		}
+	}
+
+	Component.onCompleted: {
+		MainController.getDatabaseMeasurementsByUserId(currentUser.id)
+	}
+
+	function isMeasurementAddAvailable() {
+		if (!lastMeasurement.measurement)
+			return false
+
+		var now = new Date()
+
+		if (lastMeasurement.measurement.date.getFullYear() === now.getFullYear()
+				&& lastMeasurement.measurement.date.getMonth() === now.getMonth()
+				&& lastMeasurement.measurement.date.getDate() === now.getDate())
+			return false
+
+		return true
+	}
 
 	ColumnLayout {
-		id: mainColumn
+		id: content
 
 		anchors.fill: parent
-		//anchors.margins: Properties.margin
 
-		ChartView {
-			id: progressChart
+		anchors.bottomMargin: Properties.margin
 
+		spacing: Properties.margin
+
+		Rectangle {
+			id: header
+
+			Layout.alignment: Qt.AlignTop
+
+			height: Properties.toolBarHeight
 			width: parent.width
-			height: 400
 
-			title: "Waga"
-			titleFont: Fonts.list
-			titleColor: Colors.text
+			color: Colors.darkGray
 
-			backgroundColor: "transparent"
+			RowLayout {
+				anchors.fill: parent
 
-			antialiasing: true
+				anchors.leftMargin: Properties.margin
+				anchors.rightMargin: Properties.margin
 
-			legend.visible: false
+				PLabel {
+					id: title
 
-			LineSeries {
-				color: Colors.primary
+					font: Fonts.title
+					lineHeight: Fonts.titleHeight
 
-				pointsVisible: true
-				width: 3
+					color: Colors.text
 
-
-
-				axisX: ValuesAxis {
-					color: Colors.black_70
-					labelsColor: Colors.text
-
-					labelFormat: "%d"
+					text: "Pomiary"
 				}
 
-				axisY: ValuesAxis {
-					color: Colors.black_70
-					labelsColor: Colors.text
-
-					labelFormat: "%d"
+				Item {
+					Layout.fillWidth: true
 				}
-
-				XYPoint { x: 0; y: 70 }
-				XYPoint { x: 1; y: 72 }
-				XYPoint { x: 2; y: 74.5 }
-				XYPoint { x: 3; y: 75 }
-				XYPoint { x: 4; y: 77 }
-				XYPoint { x: 5; y: 81 }
-				XYPoint { x: 6; y: 85 }
 			}
+		}
+
+		LastMeasurementItem {
+			id: lastMeasurement
+		}
+
+		Item {
+			Layout.fillHeight: true
+		}
+
+		PButton {
+			id: currentMeasurement
+
+			Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+
+			flat: false
+
+			text: "Historia pomiarów"
+		}
+
+		PButton {
+			id: addMeasurement
+
+			Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+
+			flat: false
+
+			text: "Dodaj pomiar"
+
+			enabled: form.isMeasurementAddAvailable()
+
+			onClicked: {
+				loader.setSource("qrc:/qml/Progress/AddMeasurementModal.qml")
+			}
+		}
+	}
+
+	Loader {
+		id: loader
+
+		onLoaded: {
+			loader.item.closed.connect(function() {
+				if (!loader)
+					return
+				loader.source = ""
+			})
+
+			loader.item.open()
 		}
 	}
 }

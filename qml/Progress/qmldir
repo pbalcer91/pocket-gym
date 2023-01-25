@@ -1,3 +1,5 @@
 module Progress
 
-ProgressView    1.0	    ProgressView.qml
+ProgressView		1.0	ProgressView.qml
+AddMeasurementModal	1.0	AddMeasurementModal.qml
+LastMeasurementItem	1.0	LastMeasurementItem.qml

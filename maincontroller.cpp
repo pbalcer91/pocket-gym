@@ -130,6 +130,36 @@ MainController::MainController(QObject *parent)
 					 this, [this](QString planId, QString trainingId, QString exerciseId) {
 		m_currentUser->removeExerciseById(planId, trainingId, exerciseId);
 	});
+
+	QObject::connect(m_database, &DatabaseHandler::measurementAdded,
+					 this, [this](QString userId) {
+		m_database->getMeasurementsByUserId(userId);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::measurementsReceived,
+					 this, [this](QString userId, QList<Measurement*> measurementList) {
+		for (auto measurement : measurementList) {
+			if (m_currentUser->getMeasurementById(measurement->id()))
+				continue;
+
+			m_currentUser->addMeasurement(m_currentUser,
+										  measurement->id(),
+										  measurement->date(),
+										  measurement->weight(),
+										  measurement->chest(),
+										  measurement->shoulders(),
+										  measurement->arm(),
+										  measurement->forearm(),
+										  measurement->waist(),
+										  measurement->hips(),
+										  measurement->peace(),
+										  measurement->calf());
+
+			measurement->deleteLater();
+		}
+
+		emit measurementsReady();
+	});
 }
 
 MainController::~MainController()
@@ -238,6 +268,22 @@ MainController::getExercisegById(QString planId, QString trainingId, QString exe
 	return m_currentUser->getExercisegById(planId, trainingId, exerciseId);
 }
 
+Measurement*
+MainController::getCurrentUserLastMeasurement()
+{
+	Measurement* tempMeasurement = nullptr;
+
+	for (auto measurement : m_currentUser->measurements()) {
+		if (tempMeasurement == nullptr)
+			tempMeasurement = measurement;
+
+		if (measurement->date() > tempMeasurement->date())
+			tempMeasurement = measurement;
+	}
+
+	return tempMeasurement;
+}
+
 void
 MainController::getDatabaseUserTrainingPlans()
 {
@@ -254,6 +300,12 @@ void
 MainController::getDatabaseExercisesByTrainingId(QString planId, QString trainingId)
 {
 	m_database->getExercisesByTrainingId(planId, trainingId);
+}
+
+void
+MainController::getDatabaseMeasurementsByUserId(QString userId)
+{
+	m_database->getMeasurementsByUserId(userId);
 }
 
 void
@@ -281,6 +333,13 @@ void
 MainController::addDatabaseExercise(QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets)
 {
 	m_database->addExercise(planId, trainingId, name, breakTime, sets);
+}
+
+void
+MainController::addDatabaseMeasurement(double weight, double chest, double shoulders, double arm, double forearm,
+									   double waist, double hips, double peace, double calf)
+{
+	m_database->addMeasurement(m_currentUser->id(), weight, chest, shoulders, arm, forearm, waist, hips, peace, calf);
 }
 
 void
