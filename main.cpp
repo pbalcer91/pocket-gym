@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 	qmlRegisterType<Exercise>("pl.com.thesis", 1, 0, "Exercise");
 	qmlRegisterType<Training>("pl.com.thesis", 1, 0, "Training");
 	qmlRegisterType<TrainingPlan>("pl.com.thesis", 1, 0, "TrainingPlan");
+	qmlRegisterType<Measurement>("pl.com.thesis", 1, 0, "Measurement");
 	qmlRegisterType<User>("pl.com.thesis", 1, 0, "User");
 	qmlRegisterType<UserTrainingsManager>("pl.com.thesis", 1, 0, "UserTrainingsManager");
 

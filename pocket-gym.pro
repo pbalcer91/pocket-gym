@@ -5,6 +5,7 @@ SOURCES += \
 	exercise.cpp \
 	main.cpp \
 	maincontroller.cpp \
+	measurement.cpp \
 	training.cpp \
 	trainingplan.cpp \
 	user.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
 	databasehandler.h \
 	exercise.h \
 	maincontroller.h \
+	measurement.h \
 	training.h \
 	trainingplan.h \
 	user.h \

@@ -10,32 +10,46 @@ import pl.com.thesis
 Item {
 	id: form
 
-	implicitWidth: content.implicitWidth + Properties.margin * 2
-	implicitHeight: content.implicitHeight + Properties.smallMargin * 2
+	implicitWidth: content.implicitWidth
+	implicitHeight: content.implicitHeight
 
 	ColumnLayout {
 		id: content
 
 		anchors.fill: parent
-		anchors.topMargin: Properties.smallMargin
-		anchors.bottomMargin: Properties.smallMargin
-		anchors.leftMargin: Properties.margin
-		anchors.rightMargin: Properties.margin
-
 
 		spacing: Properties.margin
 
-		RowLayout {
-			Layout.fillWidth: true
+		Rectangle {
+			id: header
 
-			PLabel {
-				id: title
+			Layout.alignment: Qt.AlignTop
 
-				text: "Katalog ćwiczeń"
-				font: Fonts.title
-				lineHeight: Fonts.titleHeight
+			height: Properties.toolBarHeight
+			width: parent.width
 
-				Layout.alignment: Qt.AlignTop
+			color: Colors.darkGray
+
+			RowLayout {
+				anchors.fill: parent
+
+				anchors.leftMargin: Properties.margin
+				anchors.rightMargin: Properties.margin
+
+				PLabel {
+					id: title
+
+					font: Fonts.title
+					lineHeight: Fonts.titleHeight
+
+					color: Colors.text
+
+					text: "Katalog ćwiczeń"
+				}
+
+				Item {
+					Layout.fillWidth: true
+				}
 			}
 		}
 
@@ -44,6 +58,11 @@ Item {
 
 			Layout.fillHeight: true
 			Layout.fillWidth: true
+
+			Layout.topMargin: Properties.smallMargin
+			Layout.bottomMargin: Properties.smallMargin
+			Layout.leftMargin: Properties.margin
+			Layout.rightMargin: Properties.margin
 
 			columnSpacing: Properties.smallMargin
 			rowSpacing: Properties.smallMargin

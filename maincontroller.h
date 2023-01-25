@@ -37,15 +37,19 @@ public:
 
 	Q_INVOKABLE Exercise* getExercisegById(QString planId, QString trainingId, QString exerciseId);
 
+	Q_INVOKABLE Measurement* getCurrentUserLastMeasurement();
 
 	//DATABASE INTERFACE
 	Q_INVOKABLE void getDatabaseUserTrainingPlans();
 	Q_INVOKABLE void getDatabaseTrainingsByPlanId(QString planId);
 	Q_INVOKABLE void getDatabaseExercisesByTrainingId(QString planId, QString trainingId);
+	Q_INVOKABLE void getDatabaseMeasurementsByUserId(QString userId);
 
 	Q_INVOKABLE void addDatabaseTrainingPlan(QString ownerName, QString name, QString description, bool isDefault);
 	Q_INVOKABLE void addDatabaseTraining(QString ownerName, QString name, QString planId);
 	Q_INVOKABLE void addDatabaseExercise(QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets);
+	Q_INVOKABLE void addDatabaseMeasurement(double weight, double chest, double shoulders, double arm, double forearm,
+											double waist, double hips, double peace, double calf);
 
 	Q_INVOKABLE void editDatabaseTrainingPlan(QString planId, QString ownerName, QString name, QString description, bool isDefault);
 	Q_INVOKABLE void editDatabaseTraining(QString trainingId, QString ownerName, QString name, QString planId);
@@ -60,6 +64,7 @@ signals:
 	void currentUserPlansReady();
 	void trainingsReady();
 	void exercisesReady();
+	void measurementsReady();
 
 private:
 	User* m_currentUser;

@@ -8,6 +8,7 @@
 #include <QBitArray>
 
 #include "exercise.h"
+#include "measurement.h"
 #include "training.h"
 #include "trainingplan.h"
 
@@ -29,6 +30,7 @@ public:
 	void getTrainingById(QString trainingId);
 	void getExercisesByTrainingId(QString planId, QString trainingId);
 	void getExerciseById(QString planId, QString exerciseId);
+	void getMeasurementsByUserId(QString userId);
 
 	//getUserTrainings
 
@@ -38,6 +40,8 @@ public:
 	void addTrainingPlan(QString ownerName, QString name, QString description, bool isDefault);
 	void addTraining(QString ownerName, QString name, QString planId);
 	void addExercise(QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets);
+	void addMeasurement(QString userId, double weight, double chest, double shoulders, double arm,
+						double forearm, double waist, double hips, double peace, double calf);
 
 	//addUserTraining
 
@@ -58,10 +62,12 @@ signals:
 	void trainingReceived(QString trainingId, QString ownerName, QString name, QString planId);
 	void exercisesReceived(QString planId, QString trainingId, QList<Exercise*> exercises);
 	void exerciseReceived(QString planId, QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList);
+	void measurementsReceived(QString userId, QList<Measurement*> measurements);
 
 	void trainingPlanAdded(QString ownerName);
 	void trainingAdded(QString planId);
 	void exerciseAdded(QString planId, QString trainingId);
+	void measurementAdded(QString userId);
 
 	void trainingPlanChanged(QString planId);
 	void trainingChanged(QString trainingId);
