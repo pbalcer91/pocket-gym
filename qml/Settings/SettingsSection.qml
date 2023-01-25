@@ -11,16 +11,6 @@ ColumnLayout {
 
 	default property alias content: mainContent.data
 
-	Component.onCompleted: {
-		console.log("SECTION WIDTH:", form.width)
-	}
-
-	Rectangle {
-		anchors.fill: parent
-		color: "yellowgreen"
-		opacity: 0.5
-	}
-
 	PLabel {
 		id: label
 
@@ -43,19 +33,9 @@ ColumnLayout {
 
 		Layout.fillWidth: true
 
-		Component.onCompleted: {
-			console.log("RED BOX WIDTH:", mainContent.width)
-		}
-
 		Layout.topMargin: Properties.padding
 		Layout.bottomMargin: Properties.smallMargin
 		Layout.leftMargin: Properties.smallMargin
 		Layout.rightMargin: Properties.smallMargin
-
-		Rectangle {
-			anchors.fill: parent
-			color: "red"
-			opacity: 0.5
-		}
 	}
 }

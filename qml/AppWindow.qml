@@ -38,11 +38,12 @@ Page {
 		console.log("Proba zamkniecia aplikacji")
 		showMessage({ "message": "Are you sure to close the app?",
 						"acceptButtonText": "Yes",
-						"rejectButtonText": "No" })	// do tłumaczenia
+						"rejectButtonText": "No" })
 	}
 
 	//TODO: obsluga klawisza back na telefonie
 	Keys.onBackPressed: {
+		return
 		//showAppCloseMessage()
 	}
 
@@ -72,11 +73,6 @@ Page {
 			append({"index": AppWindow.PAGES.CALENDAR,
 					   "icon": "qrc:/icons/ic_calendar.svg",
 					   "url": "qrc:/qml/Calendar/CalendarView.qml"})
-		}
-
-		onModelReady: {
-			mainStack.currentIndex = window.currentPage
-			mainStack.positionViewAtIndex(window.currentPage, ListView.SnapPosition)
 		}
 	}
 
@@ -159,37 +155,39 @@ Page {
 		}
 	}
 
-	ListView {
+	SwipeView {
 		id: mainStack
 
 		anchors.fill: parent
 
-		snapMode: ListView.SnapOneItem
-		orientation: ListView.Horizontal
+		property bool isReady: false
 
-		model: navigationBarModel
+		Repeater {
+			model: navigationBarModel
 
-		highlightRangeMode: ListView.StrictlyEnforceRange
-		highlightMoveDuration: 100
+			//TODO: czy zmienic na generyczny widok
+			delegate: Loader {
+				width: mainStack.width
+				height: mainStack.height
 
-		boundsBehavior: Flickable.StopAtBounds
+				source: model.url
 
-		interactive: false
+				onLoaded: {
+					item.width = width
 
-		delegate: Loader {
-			width: ListView.view.width
-			height: ListView.view.height
-
-			source: model.url
-
-			onLoaded: {
-				item.width = width
+					if (!mainStack.isReady && (index === 0)) {
+						mainStack.isReady = true
+						mainStack.currentIndex = AppWindow.PAGES.HOME
+					}
+				}
 			}
 		}
 
 		onCurrentIndexChanged: {
-			if (window.currentPage != currentIndex)
-				window.currentPage = currentIndex
+			if (!mainStack.isReady)
+				return
+
+			window.currentPage = currentIndex
 		}
 	}
 
