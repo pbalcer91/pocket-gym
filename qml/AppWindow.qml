@@ -38,11 +38,12 @@ Page {
 		console.log("Proba zamkniecia aplikacji")
 		showMessage({ "message": "Are you sure to close the app?",
 						"acceptButtonText": "Yes",
-						"rejectButtonText": "No" })	// do tłumaczenia
+						"rejectButtonText": "No" })
 	}
 
 	//TODO: obsluga klawisza back na telefonie
 	Keys.onBackPressed: {
+		return
 		//showAppCloseMessage()
 	}
 
@@ -76,7 +77,6 @@ Page {
 
 		onModelReady: {
 			mainStack.currentIndex = window.currentPage
-			mainStack.positionViewAtIndex(window.currentPage, ListView.SnapPosition)
 		}
 	}
 
@@ -159,31 +159,24 @@ Page {
 		}
 	}
 
-	ListView {
+	SwipeView {
 		id: mainStack
 
 		anchors.fill: parent
 
-		snapMode: ListView.SnapOneItem
-		orientation: ListView.Horizontal
+		Repeater {
+			model: navigationBarModel
 
-		model: navigationBarModel
+			//TODO: czy zmienic na generyczny widok
+			delegate: Loader {
+				width: mainStack.width
+				height: mainStack.height
 
-		highlightRangeMode: ListView.StrictlyEnforceRange
-		highlightMoveDuration: 100
+				source: model.url
 
-		boundsBehavior: Flickable.StopAtBounds
-
-		interactive: false
-
-		delegate: Loader {
-			width: ListView.view.width
-			height: ListView.view.height
-
-			source: model.url
-
-			onLoaded: {
-				item.width = width
+				onLoaded: {
+					item.width = width
+				}
 			}
 		}
 
