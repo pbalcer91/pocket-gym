@@ -19,6 +19,8 @@ Button {
 	property bool isBorder: false
 	property bool isFloating: false
 
+	property alias wrap: label.wrapMode
+
 	font: (form.isFloating ? Fonts.floatingButton : Fonts.button)
 	property int lineHeight: (form.isFloating ? Fonts.floatingButtonHeight : Fonts.buttonHeight)
 
@@ -82,6 +84,8 @@ Button {
 		}
 
 		PLabel {
+			id: label
+
 			text: form.text
 			color: form.color
 

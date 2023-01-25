@@ -49,5 +49,6 @@
         <file>qml/Home/EditTrainingPlanModal.qml</file>
         <file>qml/Home/EditTrainingModal.qml</file>
         <file>qml/Home/ExerciseDetails.qml</file>
+        <file>qml/Exercises/Models/ExerciseCategoriesModel.qml</file>
     </qresource>
 </RCC>
