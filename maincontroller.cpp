@@ -313,12 +313,24 @@ MainController::editDatabaseExercise(QString planId, QString exerciseId, QString
 void
 MainController::deleteDatabaseTrainingPlan(QString planId)
 {
+	auto plan = getTrainingPlanById(planId);
+
+	for (auto training : plan->getTrainings()) {
+		deleteDatabaseTraining(planId, training->id());
+	}
+
 	m_database->deleteTrainingPlan(planId);
 }
 
 void
 MainController::deleteDatabaseTraining(QString planId, QString trainingId)
 {
+	auto training = getTrainingById(planId, trainingId);
+
+	for (auto exercise : training->getAllExercises()) {
+		deleteDatabaseExercise(planId, trainingId, exercise->id());
+	}
+
 	m_database->deleteTraining(planId, trainingId);
 }
 
