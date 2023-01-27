@@ -10,11 +10,11 @@ import pl.com.thesis
 Item {
 	id: form
 
-	implicitWidth: content.implicitWidth + Properties.smallMargin * 2
-	implicitHeight: content.implicitHeight + Properties.smallMargin * 2
+	implicitWidth: content.implicitWidth
+	implicitHeight: content.implicitHeight
 
 	Connections {
-		target: MainController.getCurrentUser()
+		target: MainController.currentUser
 
 		function onUserTrainingPlansChanged() {
 			trainingPlanModel.fillModel()
@@ -27,10 +27,22 @@ Item {
 		function onCurrentUserPlansReady() {
 			trainingPlanModel.fillModel()
 		}
+
+		function onUserTrainerReady() {
+			if (MainController.currentUser.isTrainerConfirmed) {
+				userTrainerPanel.trainerId = MainController.currentUser.trainerId
+				userTrainerPanel.trainerUsername = MainController.currentUser.trainerUsername
+				return;
+			}
+
+			userTrainerPanel.trainerId = ""
+			userTrainerPanel.trainerUsername = ""
+		}
 	}
 
 	Component.onCompleted: {
 		MainController.getDatabaseUserTrainingPlans()
+		MainController.getDatabaseUserTrainerId(MainController.currentUser.id)
 	}
 
 	ScrollView {
@@ -47,9 +59,6 @@ Item {
 			id: flickable
 
 			anchors.fill: scrollView
-			anchors.topMargin: Properties.smallMargin
-			anchors.leftMargin: Properties.margin
-			anchors.rightMargin: Properties.margin
 
 			clip: true
 			boundsBehavior: Flickable.StopAtBounds
@@ -63,17 +72,36 @@ Item {
 
 				spacing: Properties.margin
 
-				RowLayout {
+				Rectangle {
+					id: header
+
+					Layout.alignment: Qt.AlignTop
+
+					height: Properties.toolBarHeight
 					Layout.fillWidth: true
 
-					PLabel {
-						id: title
+					color: Colors.darkGray
 
-						text: "Tu pewnie coś będzie"
-						font: Fonts.title
-						lineHeight: Fonts.titleHeight
+					RowLayout {
+						anchors.fill: parent
 
-						Layout.alignment: Qt.AlignTop
+						anchors.leftMargin: Properties.margin
+						anchors.rightMargin: Properties.margin
+
+						PLabel {
+							id: title
+
+							font: Fonts.title
+							lineHeight: Fonts.titleHeight
+
+							color: Colors.text
+
+							text: "Pocket Gym"
+						}
+
+						Item {
+							Layout.fillWidth: true
+						}
 					}
 				}
 
@@ -107,7 +135,7 @@ Item {
 						detailsButton.onClicked: {
 							loader.setSource("qrc:/qml/Home/TrainingPlanDetails.qml",
 											 {
-												"planId": model.id
+												 "planId": model.id
 											 })
 						}
 					}
@@ -140,20 +168,40 @@ Item {
 
 					label: "Trenerzy"
 
+					listView.visible: false
+
 					sectionButton.icon.source: "qrc:/icons/ic_list.svg"
 
-					listView.emptyInfo: "Nie jesteś pod opieką żadnego trenera"
-
-					listView.model: TrainersModel {
-						id: trainersModel
+					sectionButton.onClicked: {
+						loader.setSource("qrc:/qml/Home/TrainersListView.qml")
 					}
 
-					listView.delegate: TrainingPlanItem {
-						label: model.name
+					UserTrainerPanel {
+						id: userTrainerPanel
 
-						isSelected: model.isDefault
+						Layout.fillWidth: true
 
-						implicitWidth: trainersSection.listView.width
+						visible: trainerUsername != ""
+					}
+
+					PLabel {
+						id: emptyInfoLabel
+
+						Layout.fillHeight: true
+						Layout.fillWidth: true
+
+						Layout.topMargin: Properties.smallMargin
+						Layout.bottomMargin: Properties.smallMargin
+
+						Layout.alignment: Qt.AlignCenter
+						horizontalAlignment: Text.AlignHCenter
+
+						text: "Nie jesteś pod opieką trenera"
+
+						font: Fonts.caption
+						lineHeight: Fonts.captionHeight
+
+						visible: !userTrainerPanel.visible
 					}
 
 					PButton {
@@ -161,14 +209,14 @@ Item {
 
 						Layout.alignment: Qt.AlignHCenter
 
-						visible: trainersModel.count == 0
+						visible: !userTrainerPanel.visible
 
 						text: "Ukryj sekcję"
 
 						onClicked: {
 							showMessage({"message": "Czy na pewno chcesz ukryć sekcję? Będziesz mógł ją przywrócić z ustawieniach.",
-											"acceptButtonText": "Tak",
-											"rejectButtonText": "Nie"
+											"acceptButton.text": "Tak",
+											"rejectButton.text": "Nie"
 										})
 						}
 					}

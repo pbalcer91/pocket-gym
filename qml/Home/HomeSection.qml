@@ -10,6 +10,9 @@ Item {
 
 	Layout.fillWidth: true
 
+	Layout.leftMargin: Properties.smallMargin
+	Layout.rightMargin: Properties.smallMargin
+
 	implicitWidth: mainColumn.implicitWidth + Properties.smallMargin * 2
 	implicitHeight: mainColumn.implicitHeight + Properties.smallMargin * 2
 

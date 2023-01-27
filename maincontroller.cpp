@@ -5,6 +5,60 @@ MainController::MainController(QObject *parent)
 	: QObject{parent},
 	  m_database(new DatabaseHandler(this))
 {
+	QObject::connect(m_database, &DatabaseHandler::userLoggedIn,
+					 this, [this](QString id, QString username, QString email, QString password, bool isTrainer) {
+		m_currentUser = new User(this, id, username, email, password, isTrainer);
+
+		emit currentUserReady();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainersReceived,
+					 this, [this](QVariantMap trainersList) {
+		m_trainersList.clear();
+
+		auto trainesKeys = trainersList.keys();
+
+		for(const auto &key : trainesKeys) {
+			if (key == m_currentUser->id())
+				continue;
+
+			m_trainersList.insert(key, trainersList.value(key));
+		}
+
+		emit trainersListReady();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainerRequestAdded,
+					 this, [this](QString trainerId) {
+		m_database->getTrainerById(trainerId);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainerRequestRemoved,
+					 this, [this]() {
+		m_currentUser->setTrainerId("");
+		m_currentUser->setTrainerUsername("");
+		m_currentUser->setIsTrainerConfirmed(false);
+
+		emit userTrainerReady();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainerReceived,
+					 this, [this](QString id, QString username) {
+		m_currentUser->setTrainerId(id);
+		m_currentUser->setTrainerUsername(username);
+
+		emit userTrainerReady();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userTrainerIdReceived,
+					 this, [this](QString id, QString username, bool isConfirmed) {
+		m_currentUser->setTrainerId(id);
+		m_currentUser->setTrainerUsername(username);
+		m_currentUser->setIsTrainerConfirmed(isConfirmed);
+
+		emit userTrainerReady();
+	});
+
 	QObject::connect(m_database, &DatabaseHandler::trainingPlanAdded,
 					 this, [this](QString ownerName) {
 		m_database->getUserTrainingPlans(ownerName);
@@ -184,6 +238,18 @@ MainController::database() const
 	return m_database;
 }
 
+User*
+MainController::currentUser() const
+{
+	return m_currentUser;
+}
+
+QVariantMap
+MainController::trainersList() const
+{
+	return m_trainersList;
+}
+
 void
 MainController::createUser()
 {
@@ -282,6 +348,18 @@ MainController::getCurrentUserLastMeasurement()
 	}
 
 	return tempMeasurement;
+}
+
+void
+MainController::getDatabaseUserByLogIn(QString email, QString password)
+{
+	m_database->getUserByLogIn(email, password);
+}
+
+void
+MainController::getDatabaseTrainers()
+{
+	m_database->getTrainers();
 }
 
 void
@@ -397,4 +475,22 @@ void
 MainController::deleteDatabaseExercise(QString planId, QString trainingId, QString exerciseId)
 {
 	m_database->deleteExercise(planId, trainingId, exerciseId);
+}
+
+void
+MainController::addRequestForTrainer(QString trainerId)
+{
+	m_database->addRequestForTrainer(m_currentUser->id(), trainerId);
+}
+
+void
+MainController::deleteTrainerFromUser(QString trainerId)
+{
+	m_database->deleteRequestForTrainer(m_currentUser->id(), trainerId);
+}
+
+void
+MainController::getDatabaseUserTrainerId(QString userId)
+{
+	m_database->getUserTrainerId(userId);
 }

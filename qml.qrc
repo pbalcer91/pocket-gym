@@ -52,5 +52,8 @@
         <file>qml/Exercises/Models/ExerciseCategoriesModel.qml</file>
         <file>qml/Progress/AddMeasurementModal.qml</file>
         <file>qml/Progress/LastMeasurementItem.qml</file>
+        <file>qml/Home/TrainersListView.qml</file>
+        <file>qml/Home/TrainerItem.qml</file>
+        <file>qml/Home/UserTrainerPanel.qml</file>
     </qresource>
 </RCC>

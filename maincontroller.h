@@ -12,6 +12,8 @@ class MainController : public QObject
 	Q_DISABLE_COPY(MainController)
 
 	Q_PROPERTY(DatabaseHandler* database READ database CONSTANT)
+	Q_PROPERTY(User* currentUser READ currentUser NOTIFY currentUserChanged)
+	Q_PROPERTY(QVariantMap trainersList READ trainersList NOTIFY trainersListChanged)
 
 public:
 	explicit MainController(QObject *parent = nullptr);
@@ -21,6 +23,10 @@ public:
 
 	DatabaseHandler* database() const;
 
+	User* currentUser() const;
+	QVariantMap trainersList() const;
+
+	//TODO: metody z useren do poprawienia
 	Q_INVOKABLE void createUser();
 	Q_INVOKABLE User* getCurrentUser();
 	Q_INVOKABLE QString getCurrentUserName();
@@ -40,6 +46,8 @@ public:
 	Q_INVOKABLE Measurement* getCurrentUserLastMeasurement();
 
 	//DATABASE INTERFACE
+	Q_INVOKABLE void getDatabaseUserByLogIn(QString email, QString password);
+	Q_INVOKABLE void getDatabaseTrainers();
 	Q_INVOKABLE void getDatabaseUserTrainingPlans();
 	Q_INVOKABLE void getDatabaseTrainingsByPlanId(QString planId);
 	Q_INVOKABLE void getDatabaseExercisesByTrainingId(QString planId, QString trainingId);
@@ -59,16 +67,29 @@ public:
 	Q_INVOKABLE void deleteDatabaseTraining(QString planId, QString trainingId);
 	Q_INVOKABLE void deleteDatabaseExercise(QString planId, QString trainingId, QString exerciseId);
 
+	Q_INVOKABLE void addRequestForTrainer(QString trainerId);
+	Q_INVOKABLE void deleteTrainerFromUser(QString trainerId);
+
+	Q_INVOKABLE void getDatabaseUserTrainerId(QString userId);
 
 signals:
+	void currentUserChanged();
+	void trainersListChanged();
+
+	void currentUserReady();
+	void trainersListReady();
+	void userTrainerReady();
 	void currentUserPlansReady();
 	void trainingsReady();
 	void exercisesReady();
 	void measurementsReady();
 
 private:
-	User* m_currentUser;
 	DatabaseHandler* m_database;
+
+	User* m_currentUser;
+	QVariantMap m_trainersList;
+
 };
 
 #endif // MAINCONTROLLER_H

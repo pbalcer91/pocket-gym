@@ -20,5 +20,5 @@ QtObject {
 	readonly property color text: "#c7c7c7"
 	readonly property color input: "#d3d3d3"
 	readonly property color disabledButton: "#c7c7c7"
-	readonly property color error: "#b02e2e"
+	readonly property color error: "#d67267"
 }

@@ -14,6 +14,8 @@ TrainingItem		    1.0	    TrainingItem.qml
 ExerciseItem		    1.0	    ExerciseItem.qml
 ExerciseSetItem		    1.0	    ExerciseSetItem.qml
 
+UserTrainerPanel	    1.0	    UserTrainerPanel.qml
+
 TrainingPlansModel	    1.0	    Models/TrainingPlansModel.qml
 TrainingsModel		    1.0	    Models/TrainingsModel.qml
 ExercisesModel		    1.0	    Models/ExercisesModel.qml

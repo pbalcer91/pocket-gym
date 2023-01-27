@@ -4,10 +4,25 @@
 User::User(QObject *parent)
 	: QObject{parent},
 	  m_trainingsManager(new UserTrainingsManager()),
-	  m_id("testoweIdUsera"),
-	  m_name("Piotr"),
-	  m_email("piotr@piotr.pl"),
-	  m_password("haslo")
+	  m_id(""),
+	  m_name(""),
+	  m_email(""),
+	  m_password(""),
+	  m_isTrainer(false),
+	  m_trainerId(""),
+	  m_trainerUsername("")
+{}
+
+User::User(QObject *parent, QString id, QString username, QString email, QString password, bool isTrainer)
+	: QObject{parent},
+	  m_trainingsManager(new UserTrainingsManager()),
+	  m_id(id),
+	  m_name(username),
+	  m_email(email),
+	  m_password(password),
+	  m_isTrainer(isTrainer),
+	  m_trainerId(""),
+	  m_trainerUsername("")
 {}
 
 User::~User()
@@ -45,6 +60,36 @@ User::measurements() const
 	return m_measurements;
 }
 
+bool
+User::isTrainer() const
+{
+	return m_isTrainer;
+}
+
+QList<QString>
+User::pupilsIds() const
+{
+	return m_pupilsIds;
+}
+
+QString
+User::trainerId() const
+{
+	return m_trainerId;
+}
+
+QString
+User::trainerUsername() const
+{
+	return m_trainerUsername;
+}
+
+bool
+User::isTrainerConfirmed() const
+{
+	return m_isTrainerConfirmed;
+}
+
 void
 User::setId(QString id)
 {
@@ -79,6 +124,64 @@ User::setPassword(QString password)
 		m_password = password;
 
 	emit userDataChanged();
+}
+
+void
+User::setIsTrainer(bool isTrainer)
+{
+	if (isTrainer != m_isTrainer)
+		m_isTrainer = isTrainer;
+
+	emit userDataChanged();
+}
+
+void
+User::setTrainerId(QString trainerId)
+{
+	if (trainerId != m_trainerId)
+		m_trainerId = trainerId;
+
+	emit userDataChanged();
+}
+
+void
+User::setTrainerUsername(QString username)
+{
+	if (username != m_trainerUsername)
+		m_trainerUsername = username;
+
+	emit userDataChanged();
+}
+
+void
+User::setIsTrainerConfirmed(bool isConfirmed)
+{
+	if (isConfirmed != m_isTrainerConfirmed)
+		m_isTrainerConfirmed = isConfirmed;
+
+	emit userDataChanged();
+}
+
+void
+User::addPupilId(QString id)
+{
+	if (isPupilById(id))
+		return;
+
+	m_pupilsIds.push_back(id);
+
+	emit userDataChanged();
+}
+
+bool
+User::isPupilById(QString userId)
+{
+	for(const auto &pupilId : m_pupilsIds) {
+		if (pupilId == userId)
+			return (true);
+	}
+
+	return (false);
 }
 
 void
