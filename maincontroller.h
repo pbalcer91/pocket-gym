@@ -71,6 +71,8 @@ public:
 	Q_INVOKABLE void deleteTrainerFromUser(QString trainerId);
 
 	Q_INVOKABLE void getDatabaseUserTrainerId(QString userId);
+	Q_INVOKABLE void getDatabaseTrainerPupilsIds(QString trainerId);
+	Q_INVOKABLE void getDatabasePupilById(QString trainerId, QString pupilId);
 
 signals:
 	void currentUserChanged();
@@ -78,6 +80,8 @@ signals:
 
 	void currentUserReady();
 	void trainersListReady();
+	void pupilsListReady();
+	void pupilReady(QString pupilUsername, bool isConfirmed);
 	void userTrainerReady();
 	void currentUserPlansReady();
 	void trainingsReady();

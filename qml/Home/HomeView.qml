@@ -13,8 +13,10 @@ Item {
 	implicitWidth: content.implicitWidth
 	implicitHeight: content.implicitHeight
 
+	property User currentUser: MainController.currentUser
+
 	Connections {
-		target: MainController.currentUser
+		target: currentUser
 
 		function onUserTrainingPlansChanged() {
 			trainingPlanModel.fillModel()
@@ -29,9 +31,9 @@ Item {
 		}
 
 		function onUserTrainerReady() {
-			if (MainController.currentUser.isTrainerConfirmed) {
-				userTrainerPanel.trainerId = MainController.currentUser.trainerId
-				userTrainerPanel.trainerUsername = MainController.currentUser.trainerUsername
+			if (currentUser.isTrainerConfirmed) {
+				userTrainerPanel.trainerId = currentUser.trainerId
+				userTrainerPanel.trainerUsername = currentUser.trainerUsername
 				return;
 			}
 
@@ -42,7 +44,7 @@ Item {
 
 	Component.onCompleted: {
 		MainController.getDatabaseUserTrainingPlans()
-		MainController.getDatabaseUserTrainerId(MainController.currentUser.id)
+		MainController.getDatabaseUserTrainerId(currentUser.id)
 	}
 
 	ScrollView {
@@ -110,6 +112,9 @@ Item {
 
 					label: "Plany treningowe"
 
+					Layout.leftMargin: Properties.smallMargin
+					Layout.rightMargin: Properties.smallMargin
+
 					sectionButton.icon.source: "qrc:/icons/ic_add.svg"
 					sectionButton.iconSize: 32
 
@@ -120,7 +125,7 @@ Item {
 										 })
 					}
 
-					listView.emptyInfo: "Brak dostępnych planów treningowych"
+					listView.emptyInfo: "Brak planów treningowych"
 
 					listView.model: TrainingPlansModel {
 						id: trainingPlanModel
@@ -146,7 +151,12 @@ Item {
 
 					label: "Odbyte treningi"
 
-					listView.emptyInfo: "Nie odbyłeś jeszcze żadnego treningu"
+					Layout.leftMargin: Properties.smallMargin
+					Layout.rightMargin: Properties.smallMargin
+
+					sectionButton.icon.source: "qrc:/icons/ic_list.svg"
+
+					listView.emptyInfo: "Brak odbytych treningów"
 
 					listView.model: 0 /*TrainingsModel {
 						id: trainingsModel
@@ -163,10 +173,35 @@ Item {
 					}
 				}
 
+				PButton {
+					id: pupilsButton
+
+					Layout.fillWidth: true
+
+					Layout.leftMargin: Properties.margin
+					Layout.rightMargin: Properties.margin
+
+					visible: currentUser.isTrainer
+
+					text: "Twoi podopieczni"
+					icon.source: "qrc:/icons/ic_chevronRight.svg"
+
+					isBorder: true
+					isRightIcon: true
+					horizontalAlignment: Text.AlignLeft
+
+					onClicked: {
+						loader.setSource("qrc:/qml/Home/PupilsListView.qml")
+					}
+				}
+
 				HomeSection {
 					id: trainersSection
 
 					label: "Trenerzy"
+
+					Layout.leftMargin: Properties.smallMargin
+					Layout.rightMargin: Properties.smallMargin
 
 					listView.visible: false
 

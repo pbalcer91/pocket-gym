@@ -6,7 +6,6 @@ PCheckBox	    1.0		PCheckBox.qml
 PSwitch		    1.0		PSwitch.qml
 PTumbler	    1.0		PTumbler.qml
 PTextField	    1.0		PTextField.qml
-PInfoButton	    1.0		PInfoButton.qml
 PLabel		    1.0		PLabel.qml
 PListModel	    1.0		PListModel.qml
 PMessageDialog	    1.0		PMessageDialog.qml

@@ -12,6 +12,28 @@ MainController::MainController(QObject *parent)
 		emit currentUserReady();
 	});
 
+	QObject::connect(m_database, &DatabaseHandler::trainerPupilsIdsReceived,
+					 this, [this](QList<QString> pupilsIds) {
+		if (!m_currentUser->isTrainer())
+			return;
+
+		m_currentUser->clearPupilIds();
+
+		for(const auto &pupilId : pupilsIds) {
+			m_currentUser->addPupilId(pupilId);
+		}
+
+		emit pupilsListReady();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::pupilReceived,
+					 this, [this](QString pupilUsername, bool isConfirmed) {
+		if (!m_currentUser->isTrainer())
+			return;
+
+		emit pupilReady(pupilUsername, isConfirmed);
+	});
+
 	QObject::connect(m_database, &DatabaseHandler::trainersReceived,
 					 this, [this](QVariantMap trainersList) {
 		m_trainersList.clear();
@@ -493,4 +515,16 @@ void
 MainController::getDatabaseUserTrainerId(QString userId)
 {
 	m_database->getUserTrainerId(userId);
+}
+
+void
+MainController::getDatabaseTrainerPupilsIds(QString trainerId)
+{
+	m_database->getTrainerPupilsIds(trainerId);
+}
+
+void
+MainController::getDatabasePupilById(QString trainerId, QString pupilId)
+{
+	m_database->getPupilById(trainerId, pupilId);
 }

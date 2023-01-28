@@ -65,6 +65,8 @@ Dialog {
 			PButton {
 				id: editButton
 
+				Layout.rightMargin: Properties.smallMargin
+
 				icon.source: "qrc:/icons/ic_edit.svg"
 
 				visible: dialog.editModeAvailable

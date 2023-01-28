@@ -173,6 +173,12 @@ User::addPupilId(QString id)
 	emit userDataChanged();
 }
 
+void
+User::clearPupilIds()
+{
+	m_pupilsIds.clear();
+}
+
 bool
 User::isPupilById(QString userId)
 {

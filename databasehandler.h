@@ -25,6 +25,8 @@ public:
 	void getTrainerById(QString trainerId);
 	void getTrainers();
 	void getUserTrainerId(QString userId);
+	void getTrainerPupilsIds(QString trainerId);
+	void getPupilById(QString trainerId, QString pupilId);
 	void getUserTrainingPlans(QString username);
 	void getTrainingPlanById(QString id);
 	void getTrainingsByPlanId(QString planId);
@@ -63,6 +65,8 @@ signals:
 	void trainersReceived(QVariantMap trainersList);
 	void trainerReceived(QString id, QString username);
 	void userTrainerIdReceived(QString trainerId, QString trainerUsername, bool isConfirmed);
+	void trainerPupilsIdsReceived(QList<QString> pupilsIds);
+	void pupilReceived(QString pupilUsername, bool isConfirmed);
 	void trainingPlansReceived(QList<TrainingPlan*> plans);
 	void trainingPlanReceived(QString planId, QString name, QString description, bool isDefault);
 	void trainingsReceived(QString planId, QList<Training*> trainings);

@@ -47,6 +47,7 @@ public:
 	void setIsTrainerConfirmed(bool isConfirmed);
 
 	void addPupilId(QString id);
+	void clearPupilIds();
 
 	bool isPupilById(QString userId);
 

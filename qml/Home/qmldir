@@ -8,15 +8,21 @@ EditTrainingModal	    1.0	    EditTrainingModal.qml
 TrainingPlanDetails	    1.0	    TrainingPlanDetails.qml
 TrainingDetails		    1.0	    TrainingDetails.qml
 ExerciseDetails		    1.0	    ExerciseDetails.qml
+PupilDetails		    1.0	    PupilDetails.qml
 
 TrainingPlanItem	    1.0	    TrainingPlanItem.qml
 TrainingItem		    1.0	    TrainingItem.qml
 ExerciseItem		    1.0	    ExerciseItem.qml
 ExerciseSetItem		    1.0	    ExerciseSetItem.qml
 
+TrainersListView	    1.0	    TrainersListView.qml
+TrainerItem		    1.0	    TrainerItem.qml
+PupilsListView		    1.0	    PupilsListView.qml
+PupilItem		    1.0	    PupilItem.qml
 UserTrainerPanel	    1.0	    UserTrainerPanel.qml
 
 TrainingPlansModel	    1.0	    Models/TrainingPlansModel.qml
 TrainingsModel		    1.0	    Models/TrainingsModel.qml
 ExercisesModel		    1.0	    Models/ExercisesModel.qml
 TrainersModel		    1.0	    Models/TrainersModel.qml
+PupilsModel		    1.0	    Models/PupilsModel.qml
