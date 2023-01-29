@@ -20,10 +20,6 @@ ListView {
 
 	implicitWidth: contentWidth
 
-	Layout.topMargin: (listView.count == 0 ?
-						   0
-						 : Properties.smallMargin)
-
 	PLabel {
 		id: emptyInfoLabel
 

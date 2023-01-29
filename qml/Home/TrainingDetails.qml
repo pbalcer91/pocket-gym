@@ -10,9 +10,13 @@ import pl.com.thesis
 PDialog {
 	id: dialog
 
+	required property User user
+	required property string planId
+	required property string trainingId
+
 	editModeAvailable: true
 
-	property Training training: MainController.getTrainingById(planId, trainingId)
+	property Training training: MainController.getTrainingById(user, planId, trainingId)
 
 	Connections {
 		target: training
@@ -33,6 +37,7 @@ PDialog {
 	editButton.onClicked: {
 		loader.setSource("qrc:/qml/Home/EditTrainingModal.qml",
 						 {
+							 "user": user,
 							 "training": dialog.training,
 							 "editMode": true
 						 })
@@ -40,7 +45,7 @@ PDialog {
 
 	Component.onCompleted: {
 		dialog.fill()
-		MainController.getDatabaseExercisesByTrainingId(training.planId, training.id)
+		MainController.getDatabaseExercisesByTrainingId(user, training.planId, training.id)
 	}
 
 	function fill() {
@@ -85,8 +90,9 @@ PDialog {
 					onClicked: {
 						loader.setSource("qrc:/qml/Home/EditExerciseModal.qml",
 										 {
+											 "user": user,
 											 "planId": training.planId,
-											 "exercise": MainController.newExercise(training.planId, training.id)
+											 "exercise": MainController.newExercise(training.id)
 										 })
 					}
 				}
@@ -151,13 +157,14 @@ PDialog {
 					}
 
 					delegate: ExerciseItem {
-						exercise: MainController.getExercisegById(training.planId, training.id, model.id)
+						exercise: MainController.getExerciseById(user, training.planId, training.id, model.id)
 
 						implicitWidth: listView.width
 
 						onExerciseClicked: function(exercise) {
 							loader.setSource("qrc:/qml/Home/ExerciseDetails.qml",
 											 {
+												 "user": user,
 												 "planId": dialog.training.planId,
 												 "exercise": exercise
 											 })
@@ -180,7 +187,7 @@ PDialog {
 								"acceptButton.text": "Usuń",
 								"rejectButton.text": "Anuluj",
 								"acceptAction": function() {
-									MainController.deleteDatabaseTraining(training.planId, training.id)
+									MainController.deleteDatabaseTraining(user, training.planId, training.id)
 									dialog.close()
 								}
 							})

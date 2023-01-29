@@ -1,26 +1,27 @@
 #include "training.h"
+#include <QDebug>
 
 Training::Training(QObject *parent)
 	: QObject{parent},
 	  m_id(""),
 	  m_name(""),
-	  m_owner(""),
+	  m_ownerId(""),
 	  m_planId("")
 {}
 
-Training::Training(QObject *parent, QString ownerName, QString planId)
+Training::Training(QObject *parent, QString ownerId, QString planId)
 	: QObject{parent},
 	  m_id(""),
 	  m_name(""),
-	  m_owner(ownerName),
+	  m_ownerId(ownerId),
 	  m_planId(planId)
 {}
 
-Training::Training(QObject *parent, QString id, QString ownerName, QString name, QString planId)
+Training::Training(QObject *parent, QString id, QString ownerId, QString name, QString planId)
 	: QObject{parent},
 	  m_id(id),
 	  m_name(name),
-	  m_owner(ownerName),
+	  m_ownerId(ownerId),
 	  m_planId(planId)
 {}
 
@@ -39,9 +40,9 @@ QString Training::name() const
 }
 
 QString
-Training::owner() const
+Training::ownerId() const
 {
-	return m_owner;
+	return m_ownerId;
 }
 
 QString
@@ -70,12 +71,12 @@ void Training::setName(QString name)
 }
 
 void
-Training::setOwner(QString owner)
+Training::setOwnerId(QString ownerId)
 {
-	if (owner == m_owner)
+	if (ownerId == m_ownerId)
 		return;
 
-	m_owner = owner;
+	m_ownerId = ownerId;
 	emit trainingChanged();
 }
 

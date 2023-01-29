@@ -51,7 +51,7 @@ Page {
 		window.currentPage = AppWindow.PAGES.HOME
 		window.forceActiveFocus()
 
-		MainController.createUser()
+		MainController.getDatabaseUserByLogIn("kuba@kuba.pl", "haslo")
 	}
 
 	PListModel {

@@ -34,12 +34,6 @@ Item {
 				SettingsSection {
 					label: "Ustawienia konta"
 
-					PInfoButton {
-						Layout.fillWidth: true
-
-						label: "Nazwa użytkownika"
-					}
-
 					PLabel {
 						text: "Adres email"
 					}

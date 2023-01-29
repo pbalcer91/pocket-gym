@@ -10,61 +10,31 @@ import pl.com.thesis
 Item {
 	id: form
 
-	implicitWidth: content.implicitWidth + Properties.margin * 2
-	implicitHeight: content.implicitHeight + Properties.smallMargin * 2
+	implicitWidth: detailsButton.implicitWidth
+	implicitHeight: 56
 
 	signal exerciseClicked(var exercise)
 
-	property Exercise exercise: MainController.getExercisegById(planId, trainingId, exerciseId)
+	property Exercise exercise
 
-	Component.onCompleted: {
-		label.text = exercise.name
-	}
-
-	Rectangle {
-		id: background
+	PButton {
+		id: detailsButton
 
 		anchors.fill: parent
 
-		color: "transparent"
-		radius: 20
-		border.color: Colors.primary
-		border.width: 1
-	}
+		text: (form.exercise ? form.exercise.name : "")
 
-	RowLayout {
-		id: content
+		font: Fonts.list
+		lineHeight: Fonts.listHeight
 
-		anchors.fill: parent
+		icon.source: "qrc:/icons/ic_chevronRight.svg"
 
-		anchors.topMargin: Properties.smallMargin
-		anchors.bottomMargin: Properties.smallMargin
-		anchors.leftMargin: Properties.margin
-		anchors.rightMargin: Properties.margin
+		isBorder: true
+		isRightIcon: true
+		horizontalAlignment: Text.AlignLeft
 
-		spacing: 0
-
-		PLabel {
-			id: label
-
-			color: Colors.text
-
-			font: Fonts.list
-			lineHeight: Fonts.listHeight
-		}
-
-		Item {
-			Layout.fillWidth: true
-		}
-
-		PButton {
-			id: detailsButton
-
-			icon.source: "qrc:/icons/ic_chevronRight.svg"
-
-			onClicked: {
-				exerciseClicked(exercise)
-			}
+		onClicked: {
+			exerciseClicked(exercise)
 		}
 	}
 }

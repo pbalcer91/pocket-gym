@@ -9,76 +9,43 @@ import pl.com.thesis
 Item {
 	id: form
 
-	implicitWidth: content.implicitWidth + Properties.margin * 2
+	implicitWidth: detailsButton.implicitWidth
 	implicitHeight: 56
 
-	property TrainingPlan trainingPlan
-
-	property alias label: label.text
+	property alias label: detailsButton.text
 	property alias detailsButton: detailsButton
 
 	property bool isSelected: false
 
-	Rectangle {
-		id: background
+	PLabel {
+		id: info
 
-		anchors.fill: parent
+		anchors.top: detailsButton.top
+		anchors.horizontalCenter: detailsButton.horizontalCenter
 
-		color: "transparent"
-		radius: 20
-		border.color: Colors.primary_30
-		border.width: 2
+		anchors.topMargin: 2
+
+		text: "Aktywny plan"
+		color: Colors.text
+
+		visible: form.isSelected
+
+		font: Fonts.info
+		lineHeight: Fonts.infoHeight
 	}
 
-	RowLayout {
-		id: content
+	PButton {
+		id: detailsButton
 
 		anchors.fill: parent
 
-		anchors.topMargin: Properties.smallMargin
-		anchors.bottomMargin: Properties.smallMargin
-		anchors.leftMargin: Properties.margin
+		font: Fonts.list
+		lineHeight: Fonts.listHeight
 
-		ColumnLayout {
-			spacing: 0
+		icon.source: "qrc:/icons/ic_chevronRight.svg"
 
-			PLabel {
-				id: label
-
-				Layout.fillHeight: true
-
-				text: ""
-				color: Colors.text
-
-				font: Fonts.list
-				lineHeight: Fonts.listHeight
-			}
-
-			PLabel {
-				id: info
-
-				Layout.fillHeight: true
-
-				Layout.topMargin: 8
-
-				text: "Aktywny plan"
-				color: Colors.primary
-
-				visible: form.isSelected
-
-				font: Fonts.info
-				lineHeight: Fonts.infoHeight
-			}
-		}
-
-		Item {
-			Layout.fillWidth: true
-		}
-
-		PButton {
-			id: detailsButton
-
-			icon.source: "qrc:/icons/ic_chevronRight.svg"
-		}
+		isBorder: true
+		isRightIcon: true
+		horizontalAlignment: Text.AlignLeft
 	}
 }

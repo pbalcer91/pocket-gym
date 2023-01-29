@@ -10,6 +10,7 @@ import pl.com.thesis
 PMessageDialog {
 	id: modal
 
+	required property User user
 	required property TrainingPlan plan
 
 	property bool editMode: false
@@ -35,7 +36,7 @@ PMessageDialog {
 
 		if (editMode) {
 			MainController.editDatabaseTrainingPlan(plan.id,
-													plan.owner,
+													user,
 													nameField.text,
 													descriptionField.text,
 													isDefaultSwitch.checked)
@@ -43,7 +44,7 @@ PMessageDialog {
 			return
 		}
 
-		MainController.addDatabaseTrainingPlan(plan.owner,
+		MainController.addDatabaseTrainingPlan(user,
 											   nameField.text,
 											   descriptionField.text,
 											   isDefaultSwitch.checked)
@@ -63,7 +64,7 @@ PMessageDialog {
 		if (editMode)
 			return
 
-		plan.removeExercise()
+		plan.removeTrainingPlan()
 	}
 
 
@@ -97,6 +98,6 @@ PMessageDialog {
 
 		Layout.fillWidth: true
 
-		text: "Ustaw jako domyślny"
+		text: "Ustaw jako aktywny"
 	}
 }

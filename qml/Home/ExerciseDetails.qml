@@ -12,8 +12,9 @@ PDialog {
 
 	editModeAvailable: true
 
-	property string planId
-	property Exercise exercise
+	required property User user
+	required property string planId
+	required property Exercise exercise
 
 	property int breakTime
 
@@ -28,6 +29,7 @@ PDialog {
 	editButton.onClicked: {
 		loader.setSource("qrc:/qml/Home/EditExerciseModal.qml",
 						 {
+							 "user":user,
 							 "planId": dialog.planId,
 							 "exercise": dialog.exercise,
 							 "editMode": true
@@ -203,7 +205,8 @@ PDialog {
 								"acceptButton.text": "Usuń",
 								"rejectButton.text": "Anuluj",
 								"acceptAction": function() {
-									MainController.deleteDatabaseExercise(dialog.planId,
+									MainController.deleteDatabaseExercise(user,
+																		  dialog.planId,
 																		  dialog.exercise.trainingId,
 																		  dialog.exercise.id)
 									dialog.close()

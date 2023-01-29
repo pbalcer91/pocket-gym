@@ -11,7 +11,7 @@ Item {
 	Layout.fillWidth: true
 
 	implicitWidth: mainColumn.implicitWidth + Properties.smallMargin * 2
-	implicitHeight: mainColumn.implicitHeight + Properties.smallMargin * 2
+	implicitHeight: mainColumn.implicitHeight + Properties.smallMargin
 
 	property alias label: label.text
 	property alias sectionButton: sectionButton
@@ -32,7 +32,10 @@ Item {
 		id: mainColumn
 
 		anchors.fill: parent
-		anchors.margins: Properties.smallMargin
+		anchors.topMargin: 0
+		anchors.bottomMargin: Properties.smallMargin
+		anchors.leftMargin: Properties.smallMargin
+		anchors.rightMargin: Properties.smallMargin
 
 		RowLayout {
 			id: labelRow

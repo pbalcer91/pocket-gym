@@ -65,16 +65,11 @@ Dialog {
 			PButton {
 				id: editButton
 
-				icon.source: (dialog.editModeAvailable ?
-								  "qrc:/icons/ic_edit.svg"
-								: "qrc:/icons/ic_close.svg")
+				Layout.rightMargin: Properties.smallMargin
 
-				onClicked: {
-					if (dialog.editModeAvailable)
-						return
+				icon.source: "qrc:/icons/ic_edit.svg"
 
-					dialog.reject()
-				}
+				visible: dialog.editModeAvailable
 			}
 		}
 	}

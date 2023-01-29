@@ -19,6 +19,15 @@ Button {
 	property bool isBorder: false
 	property bool isFloating: false
 
+	property bool isLeftIcon: true
+	property bool isRightIcon: false
+	property alias horizontalAlignment: label.horizontalAlignment
+
+	onIsRightIconChanged: {
+		if (isRightIcon)
+			isLeftIcon = false
+	}
+
 	property alias wrap: label.wrapMode
 
 	font: (form.isFloating ? Fonts.floatingButton : Fonts.button)
@@ -34,12 +43,16 @@ Button {
 	topInset: 0
 	bottomInset: 0
 
-	topPadding: 6
-	bottomPadding: 6
+	topPadding: 12
+	bottomPadding: 12
 	leftPadding: 12
 	rightPadding: 12
 
-	opacity: (!enabled ? 0.5 : 1)
+	opacity: (!enabled ?
+				  0.5
+				: isFloating ?
+					  0.9
+					:1)
 
 	property int radius: Properties.buttonRadius
 
@@ -80,7 +93,7 @@ Button {
 			color: form.color
 
 			fillMode: Image.PreserveAspectFit
-			visible: (source.toString() !== "")
+			visible: (source.toString() !== "" && isLeftIcon)
 		}
 
 		PLabel {
@@ -102,6 +115,19 @@ Button {
 			Layout.fillHeight: true
 
 			visible: (text.length > 0)
+		}
+
+		PIconImage {
+			Layout.alignment: Qt.AlignCenter
+
+			implicitHeight: form.iconSize
+			implicitWidth: form.iconSize
+
+			source: form.icon.source
+			color: form.color
+
+			fillMode: Image.PreserveAspectFit
+			visible: (source.toString() !== "" && isRightIcon)
 		}
 	}
 }

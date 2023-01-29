@@ -10,11 +10,20 @@ import pl.com.thesis
 PDialog {
 	id: dialog
 
-	property var planId
+	required property User user
+	required property string planId
 
 	editModeAvailable: true
 
-	property TrainingPlan trainingPlan: MainController.getTrainingPlanById(dialog.planId)
+	property TrainingPlan trainingPlan: MainController.getTrainingPlanById(user, dialog.planId)
+
+	Connections {
+		target: user
+
+		function onUserTrainingPlanRemoved() {
+			dialog.close()
+		}
+	}
 
 	Connections {
 		target: trainingPlan
@@ -35,6 +44,7 @@ PDialog {
 	editButton.onClicked: {
 		loader.setSource("qrc:/qml/Home/EditTrainingPlanModal.qml",
 						 {
+							 "user": user,
 							 "plan": dialog.trainingPlan,
 							 "editMode": true
 						 })
@@ -42,7 +52,7 @@ PDialog {
 
 	Component.onCompleted: {
 		dialog.fill()
-		MainController.getDatabaseTrainingsByPlanId(dialog.planId)
+		MainController.getDatabaseTrainingsByPlanId(user, dialog.planId)
 	}
 
 	function fill() {
@@ -65,7 +75,7 @@ PDialog {
 			font: Fonts.captionBold
 			lineHeight: Fonts.captionBoldHeight
 
-			text: "Domyślny plan"
+			text: "Aktywny plan"
 
 			Layout.fillWidth: true
 
@@ -123,7 +133,8 @@ PDialog {
 					onClicked: {
 						loader.setSource("qrc:/qml/Home/EditTrainingModal.qml",
 										 {
-											 "training": MainController.newTraining(MainController.getCurrentUserName(), dialog.planId)
+											 "user": user,
+											 "training": MainController.newTraining(user.id, dialog.planId)
 										 })
 					}
 				}
@@ -184,7 +195,7 @@ PDialog {
 					model: TrainingsModel {
 						id: trainingsModel
 
-						trainingPlan: MainController.getTrainingPlanById(dialog.planId)
+						trainingPlan: MainController.getTrainingPlanById(user, dialog.planId)
 					}
 
 					delegate: TrainingItem {
@@ -195,7 +206,9 @@ PDialog {
 						detailsButton.onClicked: {
 							loader.setSource("qrc:/qml/Home/TrainingDetails.qml",
 											 {
-												 "training": MainController.getTrainingById(dialog.planId, model.id)
+												 "user": user,
+												 "planId": planId,
+												 "trainingId": model.id
 											 })
 						}
 					}
@@ -216,8 +229,7 @@ PDialog {
 								"acceptButton.text": "Usuń",
 								"rejectButton.text": "Anuluj",
 								"acceptAction": function() {
-									MainController.deleteDatabaseTrainingPlan(dialog.planId)
-									dialog.close()
+									MainController.deleteDatabaseTrainingPlan(user, dialog.planId)
 								}
 							})
 			}
