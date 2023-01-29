@@ -286,7 +286,10 @@ Item {
 		text: "Trening"
 
 		onClicked: {
-
+			trainingSelectorModalLoader.setSource("qrc:/qml/Home/TrainingSelectorModal.qml",
+												  {
+													  "user": currentUser
+												  })
 		}
 	}
 
@@ -301,6 +304,24 @@ Item {
 			})
 
 			loader.item.open()
+		}
+	}
+
+	Loader {
+		id: trainingSelectorModalLoader
+
+		onLoaded: {
+			trainingSelectorModalLoader.item.closed.connect(function() {
+				if (!trainingSelectorModalLoader)
+					return
+				trainingSelectorModalLoader.source = ""
+			})
+
+			trainingSelectorModalLoader.item.trainingStarted.connect(function(id) {
+				console.log("TRAINING STARTED: ", id)
+			})
+
+			trainingSelectorModalLoader.item.open()
 		}
 	}
 }

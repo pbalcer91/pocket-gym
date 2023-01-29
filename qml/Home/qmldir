@@ -4,6 +4,9 @@ HomeView		    1.0	    HomeView.qml
 HomeSection		    1.0	    HomeSection.qml
 EditTrainingPlanModal	    1.0	    EditTrainingPlanModal.qml
 EditTrainingModal	    1.0	    EditTrainingModal.qml
+EditExerciseModal	    1.0	    EditExerciseModal.qml
+
+TrainingSelectorModal	    1.0	    TrainingSelectorModal.qml
 
 TrainingPlanDetails	    1.0	    TrainingPlanDetails.qml
 TrainingDetails		    1.0	    TrainingDetails.qml

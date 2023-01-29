@@ -58,5 +58,6 @@
         <file>qml/Home/Models/PupilsModel.qml</file>
         <file>qml/Home/PupilItem.qml</file>
         <file>qml/Home/PupilDetails.qml</file>
+        <file>qml/Home/TrainingSelectorModal.qml</file>
     </qresource>
 </RCC>

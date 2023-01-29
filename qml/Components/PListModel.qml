@@ -7,8 +7,12 @@ ListModel {
 
 	required property var fillModel
 
+	property bool shouldFillOnCompleted: true
+
 	Component.onCompleted: {
-		fillModel()
+		if (shouldFillOnCompleted)
+			fillModel()
+
 		modelReady()
 	}
 }
