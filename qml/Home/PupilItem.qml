@@ -16,6 +16,8 @@ Item {
 
 	property bool isConfirmed
 
+	property alias rejectButton: rejectButton
+	property alias acceptButton: acceptButton
 	property alias detailsButton: detailsButton
 
 	Rectangle {

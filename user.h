@@ -6,6 +6,8 @@
 #include "measurement.h"
 #include "usertrainingsmanager.h"
 
+class Pupil;
+
 class User : public QObject
 {
 	Q_OBJECT
@@ -23,6 +25,8 @@ class User : public QObject
 
 public:
 	explicit User(QObject *parent = nullptr);
+	explicit User(QObject *parent, QString id);
+	explicit User(QObject *parent, QString id, QString username);
 	User(QObject* parent, QString id, QString username, QString email, QString password, bool isTrainer);
 	~User();
 
@@ -47,7 +51,7 @@ public:
 	void setIsTrainerConfirmed(bool isConfirmed);
 
 	void addPupilId(QString id);
-	void clearPupilIds();
+	void clearPupilsIds();
 
 	bool isPupilById(QString userId);
 
@@ -66,10 +70,6 @@ public:
 
 	Measurement* getMeasurementById(QString id);
 
-	TrainingPlan* createTrainingPlan();
-	Training* createTraining(QString ownerName, QString planId);
-	Exercise* createExercise(QString planId, QString trainingId);
-
 	TrainingPlan* getTrainingPlanById(QString id);
 	QList<TrainingPlan*> getUserTrainingPlans();
 	bool addTraningPlan(TrainingPlan* trainingPlan);
@@ -77,10 +77,10 @@ public:
 	void removeTrainingPlanById(QString planId);
 
 	Training* getTrainingById(QString planId, QString trainingId);
-	void editTrainingById(QString trainingId, QString ownerName, QString name, QString planId);
+	void editTrainingById(QString trainingId, QString ownerId, QString name, QString planId);
 	void removeTrainingById(QString planId, QString trainingId);
 
-	Exercise* getExercisegById(QString planId, QString trainingId, QString exerciseId);
+	Exercise* getExerciseById(QString planId, QString trainingId, QString exerciseId);
 	void editExerciseById(QString planId, QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList);
 	void removeExerciseById(QString planId, QString trainingId, QString exerciseId);
 
@@ -88,7 +88,9 @@ signals:
 	void userDataChanged();
 	void userTrainingPlansChanged();
 
-public:
+	void userTrainingPlanRemoved();
+
+private:
 	UserTrainingsManager* m_trainingsManager;
 
 	QString m_id;
@@ -103,5 +105,4 @@ public:
 
 	QList<Measurement*> m_measurements;
 };
-
 #endif // USER_H

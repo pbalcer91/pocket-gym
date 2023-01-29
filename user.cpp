@@ -13,6 +13,19 @@ User::User(QObject *parent)
 	  m_trainerUsername("")
 {}
 
+User::User(QObject *parent, QString id)
+	: QObject(parent),
+	  m_trainingsManager(new UserTrainingsManager()),
+	  m_id(id)
+{}
+
+User::User(QObject *parent, QString id, QString username)
+	: QObject(parent),
+	  m_trainingsManager(new UserTrainingsManager()),
+	  m_id(id),
+	  m_name(username)
+{}
+
 User::User(QObject *parent, QString id, QString username, QString email, QString password, bool isTrainer)
 	: QObject{parent},
 	  m_trainingsManager(new UserTrainingsManager()),
@@ -174,7 +187,7 @@ User::addPupilId(QString id)
 }
 
 void
-User::clearPupilIds()
+User::clearPupilsIds()
 {
 	m_pupilsIds.clear();
 }
@@ -232,33 +245,6 @@ User::getMeasurementById(QString id)
 }
 
 TrainingPlan*
-User::createTrainingPlan()
-{
-	if (!m_trainingsManager)
-		return nullptr;
-
-	return m_trainingsManager->createTrainingPlan(this->name());
-}
-
-Training*
-User::createTraining(QString ownerName, QString planId)
-{
-	if (!m_trainingsManager)
-		return nullptr;
-
-	return m_trainingsManager->createTraining(ownerName, planId);
-}
-
-Exercise*
-User::createExercise(QString planId, QString trainingId)
-{
-	if (!m_trainingsManager)
-		return nullptr;
-
-	return m_trainingsManager->createExercise(planId, trainingId);
-}
-
-TrainingPlan*
 User::getTrainingPlanById(QString id)
 {
 	return m_trainingsManager->getTrainingPlanById(id);
@@ -298,6 +284,7 @@ User::removeTrainingPlanById(QString planId)
 {
 	m_trainingsManager->removeTrainingPlanById(planId);
 
+	emit userTrainingPlanRemoved();
 	emit userTrainingPlansChanged();
 }
 
@@ -308,9 +295,9 @@ User::getTrainingById(QString planId, QString trainingId)
 }
 
 void
-User::editTrainingById(QString trainingId, QString ownerName, QString name, QString planId)
+User::editTrainingById(QString trainingId, QString ownerId, QString name, QString planId)
 {
-	getTrainingPlanById(planId)->editTrainingById(trainingId, ownerName, name, planId);
+	getTrainingPlanById(planId)->editTrainingById(trainingId, ownerId, name, planId);
 }
 
 void
@@ -320,9 +307,9 @@ User::removeTrainingById(QString planId, QString trainingId)
 }
 
 Exercise*
-User::getExercisegById(QString planId, QString trainingId, QString exerciseId)
+User::getExerciseById(QString planId, QString trainingId, QString exerciseId)
 {
-	return m_trainingsManager->getExercisegById(planId, trainingId, exerciseId);
+	return m_trainingsManager->getExerciseById(planId, trainingId, exerciseId);
 }
 
 void

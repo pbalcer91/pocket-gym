@@ -14,28 +14,6 @@ UserTrainingsManager::~UserTrainingsManager()
 }
 
 TrainingPlan*
-UserTrainingsManager::createTrainingPlan(QString ownerName)
-{
-	return new TrainingPlan(this, ownerName);
-}
-
-Training*
-UserTrainingsManager::createTraining(QString ownerName, QString planId)
-{
-	auto trainingParent = this->getTrainingPlanById(planId);
-
-	return new Training(trainingParent, ownerName, planId);
-}
-
-Exercise*
-UserTrainingsManager::createExercise(QString planId, QString trainingId)
-{
-	auto exerciseParent = this->getTrainingById(planId, trainingId);
-
-	return new Exercise(exerciseParent, trainingId);
-}
-
-TrainingPlan*
 UserTrainingsManager::getTrainingPlanById(QString id)
 {
 	for(int i = 0; i < m_trainingPlans.count(); i++) {
@@ -90,7 +68,7 @@ UserTrainingsManager::removeTrainingById(QString planId, QString trainingId)
 }
 
 Exercise*
-UserTrainingsManager::getExercisegById(QString planId, QString trainingId, QString exerciseId)
+UserTrainingsManager::getExerciseById(QString planId, QString trainingId, QString exerciseId)
 {
 	auto training = getTrainingById(planId, trainingId);
 

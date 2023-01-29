@@ -13,16 +13,42 @@ PDialog {
 	leftPadding: Properties.smallMargin
 	rightPadding: Properties.smallMargin
 
+	required property string pupilId
+	required property string pupilUsername
+
+	property User pupil: MainController.createPupilInstance(dialog, pupilId, pupilUsername)
+
 	editModeAvailable: true
+
+	Connections {
+		target: pupil
+
+		function onUserTrainingPlansChanged() {
+			trainingPlanModel.fillModel()
+		}
+	}
+
+	Connections {
+		target: MainController
+
+		function onUserPlansReady() {
+			trainingPlanModel.fillModel()
+		}
+	}
+
+	Component.onCompleted: {
+		MainController.getDatabaseUserTrainingPlans(pupil)
+	}
 
 	editButton.icon.source: "qrc:/icons/ic_delete.svg"
 	editButton.color: Colors.error
 	editButton.onClicked: {
-		showMessage({"message": "Czy na pewno chcesz zakończyć współpracę z trenerem? Nie będziesz miał możliwości wysłania do niego wiadomości, a historia rozmów zostanie usunięta.",
+		showMessage({"message": "Czy na pewno chcesz zakończyć współpracę z podopiecznym? Nie będziesz miał możliwości wysłania do niego wiadomości, a historia rozmów zostanie usunięta.",
 						"acceptButton.text": "Tak",
 						"rejectButton.text": "Nie",
 						"acceptAction": function() {
-							//usunac wspolprace
+							MainController.deletePupilFromTrainer(MainController.currentUser, pupilId)
+							dialog.close()
 						}
 					})
 	}
@@ -63,17 +89,20 @@ PDialog {
 					sectionButton.iconSize: 32
 
 					sectionButton.onClicked: {
-//						loader.setSource("qrc:/qml/Home/EditTrainingPlanModal.qml",
-//										 {
-//											 "plan": MainController.newTrainingPlan()
-//										 })
+						loader.setSource("qrc:/qml/Home/EditTrainingPlanModal.qml",
+										 {
+											 "user": pupil,
+											 "plan": MainController.newTrainingPlan(pupil.id)
+										 })
 					}
 
 					listView.emptyInfo: "Brak planów treningowych"
 
-					listView.model: 0 /*TrainingPlansModel {
+					listView.model: TrainingPlansModel {
 						id: trainingPlanModel
-					}*/
+
+						user: pupil
+					}
 
 					listView.delegate: TrainingPlanItem {
 						label: model.name
@@ -84,6 +113,7 @@ PDialog {
 						detailsButton.onClicked: {
 							loader.setSource("qrc:/qml/Home/TrainingPlanDetails.qml",
 											 {
+												 "user": pupil,
 												 "planId": model.id
 											 })
 						}
@@ -121,6 +151,14 @@ PDialog {
 
 					text: "Pokaż pomiary"
 				}
+
+				PButton {
+					id: messageButton
+
+					Layout.alignment: Qt.AlignHCenter
+
+					text: "Wyślij wiadomość"
+				}
 			}
 		}
 	}
@@ -151,8 +189,6 @@ PDialog {
 
 		onLoaded: {
 			loader.item.closed.connect(function() {
-				dialog.fill()
-
 				if (!loader)
 					return
 				loader.source = ""

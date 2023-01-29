@@ -115,10 +115,20 @@ PDialog {
 						label: model.username
 						isConfirmed: model.isConfirmed
 
+						rejectButton.onClicked: {
+							MainController.deletePupilFromTrainer(currentUser, model.id)
+						}
+
+						acceptButton.onClicked: {
+							MainController.acceptPupil(model.id)
+						}
+
 						detailsButton.onClicked: {
 							loader.setSource("qrc:/qml/Home/PupilDetails.qml",
 											 {
-												 "title": model.username
+												 "title": model.username,
+												 "pupilId": model.id,
+												 "pupilUsername": model.username
 											 })
 						}
 					}

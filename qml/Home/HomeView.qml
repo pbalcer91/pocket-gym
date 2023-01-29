@@ -26,7 +26,7 @@ Item {
 	Connections {
 		target: MainController
 
-		function onCurrentUserPlansReady() {
+		function onUserPlansReady() {
 			trainingPlanModel.fillModel()
 		}
 
@@ -43,7 +43,7 @@ Item {
 	}
 
 	Component.onCompleted: {
-		MainController.getDatabaseUserTrainingPlans()
+		MainController.getDatabaseUserTrainingPlans(currentUser)
 		MainController.getDatabaseUserTrainerId(currentUser.id)
 	}
 
@@ -121,7 +121,8 @@ Item {
 					sectionButton.onClicked: {
 						loader.setSource("qrc:/qml/Home/EditTrainingPlanModal.qml",
 										 {
-											 "plan": MainController.newTrainingPlan()
+											 "user": currentUser,
+											 "plan": MainController.newTrainingPlan(currentUser.id)
 										 })
 					}
 
@@ -129,6 +130,8 @@ Item {
 
 					listView.model: TrainingPlansModel {
 						id: trainingPlanModel
+
+						user: currentUser
 					}
 
 					listView.delegate: TrainingPlanItem {
@@ -140,6 +143,7 @@ Item {
 						detailsButton.onClicked: {
 							loader.setSource("qrc:/qml/Home/TrainingPlanDetails.qml",
 											 {
+												 "user": currentUser,
 												 "planId": model.id
 											 })
 						}

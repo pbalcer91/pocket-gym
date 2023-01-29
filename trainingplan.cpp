@@ -8,25 +8,25 @@ TrainingPlan::TrainingPlan(QObject *parent)
 	  m_name(""),
 	  m_description(""),
 	  m_isDefault(false),
-	  m_owner("")
+	  m_ownerId("")
 {}
 
-TrainingPlan::TrainingPlan(QObject *parent, QString ownerName)
+TrainingPlan::TrainingPlan(QObject *parent, QString ownerId)
 	: QObject{parent},
 	  m_id(""),
 	  m_name(""),
 	  m_description(""),
 	  m_isDefault(false),
-	  m_owner(ownerName)
+	  m_ownerId(ownerId)
 {}
 
-TrainingPlan::TrainingPlan(QObject *parent, QString ownerName, QString id)
+TrainingPlan::TrainingPlan(QObject *parent, QString ownerId, QString id)
 	: QObject{parent},
 	  m_id(id),
 	  m_name(""),
 	  m_description(""),
 	  m_isDefault(false),
-	  m_owner(ownerName)
+	  m_ownerId(ownerId)
 {}
 
 TrainingPlan::~TrainingPlan()
@@ -57,9 +57,9 @@ TrainingPlan::isDefault() const
 }
 
 QString
-TrainingPlan::owner() const
+TrainingPlan::ownerId() const
 {
-	return m_owner;
+	return m_ownerId;
 }
 
 void
@@ -103,12 +103,12 @@ TrainingPlan::setIsDefault(bool isDefault)
 }
 
 void
-TrainingPlan::setOwner(QString owner)
+TrainingPlan::setOwnerId(QString ownerId)
 {
-	if (owner == m_owner)
+	if (ownerId == m_ownerId)
 		return;
 
-	m_owner = owner;
+	m_ownerId = ownerId;
 	emit trainingPlanChanged();
 }
 
@@ -130,12 +130,12 @@ TrainingPlan::getTrainingById(QString id)
 }
 
 void
-TrainingPlan::editTrainingById(QString trainingId, QString ownerName, QString name, QString planId)
+TrainingPlan::editTrainingById(QString trainingId, QString ownerId, QString name, QString planId)
 {
 	if (!getTrainingById(trainingId))
 		return;
 
-	getTrainingById(trainingId)->setOwner(ownerName);
+	getTrainingById(trainingId)->setOwnerId(ownerId);
 	getTrainingById(trainingId)->setName(name);
 	getTrainingById(trainingId)->setPlanId(planId);
 

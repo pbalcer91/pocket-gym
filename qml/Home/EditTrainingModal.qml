@@ -10,6 +10,7 @@ import pl.com.thesis
 PMessageDialog {
 	id: modal
 
+	required property User user
 	required property Training training
 
 	property bool editMode: false
@@ -33,14 +34,14 @@ PMessageDialog {
 
 		if (editMode) {
 			MainController.editDatabaseTraining(training.id,
-												training.owner,
+												user,
 												nameField.text,
 												training.planId)
 
 			return
 		}
 
-		MainController.addDatabaseTraining(training.owner,
+		MainController.addDatabaseTraining(user,
 										   nameField.text,
 										   training.planId)
 	}
@@ -59,7 +60,7 @@ PMessageDialog {
 		if (editMode)
 			return
 
-		training.removeExercise()
+		training.removeTraining()
 	}
 
 	rejectButton.text: "Anuluj"

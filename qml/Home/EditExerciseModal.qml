@@ -10,6 +10,7 @@ import pl.com.thesis
 PMessageDialog {
 	id: modal
 
+	required property User user
 	required property string planId
 	required property Exercise exercise
 
@@ -62,7 +63,8 @@ PMessageDialog {
 		}
 
 		if (editMode) {
-			MainController.editDatabaseExercise(planId,
+			MainController.editDatabaseExercise(user,
+												planId,
 												exercise.id,
 												exercise.trainingId,
 												nameField.text,
@@ -72,7 +74,8 @@ PMessageDialog {
 			return
 		}
 
-		MainController.addDatabaseExercise(planId,
+		MainController.addDatabaseExercise(user,
+										   planId,
 										   exercise.trainingId,
 										   nameField.text,
 										   getBreakTime(),

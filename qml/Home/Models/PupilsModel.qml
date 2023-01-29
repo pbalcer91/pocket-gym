@@ -15,7 +15,7 @@ PListModel {
 		if (pupilsToFill > 0)
 			return
 
-		sortModelByIsConfirmed()
+		//sortModelByIsConfirmed()
 	}
 
 	function sortModelByIsConfirmed() {
