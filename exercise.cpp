@@ -173,6 +173,24 @@ Exercise::setToString(int repeats, bool isMax)
 	return result;
 }
 
+int
+Exercise::getCompletedSetRepeats(QByteArray set)
+{
+	if (set.isEmpty())
+		return -1;
+
+	return set.at(0);
+}
+
+int
+Exercise::getCompletedSetWeight(QByteArray set)
+{
+	if (set.isEmpty())
+		return -1;
+
+	return set.at(1);
+}
+
 QString
 Exercise::completedSetToString(int repeats, int weight)
 {

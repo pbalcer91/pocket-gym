@@ -41,6 +41,9 @@ public:
 	Q_INVOKABLE bool getSetIsMax(QByteArray set);
 	Q_INVOKABLE QString setToString(int repeats, bool isMax);
 
+	Q_INVOKABLE int getCompletedSetRepeats(QByteArray set);
+	Q_INVOKABLE int getCompletedSetWeight(QByteArray set);
+
 	Q_INVOKABLE QString completedSetToString(int repeats, int weight);
 
 	Q_INVOKABLE void removeExercise();
