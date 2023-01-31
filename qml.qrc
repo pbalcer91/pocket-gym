@@ -62,5 +62,6 @@
         <file>qml/Home/TrainDialog.qml</file>
         <file>qml/Home/TrainSetItem.qml</file>
         <file>qml/Components/PTimerModal.qml</file>
+        <file>qml/Home/TrainingSummaryModal.qml</file>
     </qresource>
 </RCC>
