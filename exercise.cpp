@@ -69,6 +69,23 @@ Exercise::getSet(int index)
 }
 
 void
+Exercise::addSet(int repeats, int weight)
+{
+	auto setToAdd = QByteArray(2, 0);
+
+	setToAdd[0] = static_cast<char>(repeats);
+	setToAdd[1] = static_cast<char>(weight);
+
+	m_sets.push_back(setToAdd);
+}
+
+void
+Exercise::clearSets()
+{
+	m_sets.clear();
+}
+
+void
 Exercise::setId(QString id)
 {
 	if (id != m_id)
@@ -156,25 +173,25 @@ Exercise::setToString(int repeats, bool isMax)
 	return result;
 }
 
+QString
+Exercise::completedSetToString(int repeats, int weight)
+{
+	QString result;
+
+	std::string stringWeight = std::bitset<8>(weight).to_string();
+	result += QString::fromUtf8(stringWeight.c_str());
+
+
+	std::string stringRepeats = std::bitset<8>(repeats).to_string();
+	result += QString::fromUtf8(stringRepeats.c_str());
+
+	return result;
+}
+
 void
 Exercise::removeExercise()
 {
 	this->deleteLater();
-}
-
-QString
-Exercise::byteArrayToString(QByteArray bits)
-{
-	if (bits.isEmpty())
-		return "00000";
-
-	QString convertedSet;
-
-	for (int i = bits.size() - 1; i >= 0; i--) {
-		convertedSet.push_back(bits.at(i) ? '1' : '0');
-	}
-
-	return convertedSet;
 }
 
 QByteArray

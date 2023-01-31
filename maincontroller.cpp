@@ -17,6 +17,21 @@ MainController::MainController(QObject *parent)
 		getDatabaseTrainerPupilsIds(trainerId);
 	});
 
+	QObject::connect(m_database, &DatabaseHandler::completedTrainingAdded,
+					 this, [this](User* user) {
+		m_database->getUserUncompletedTrainings(user);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::uncompletedTrainingIdReceived,
+					 this, [this](QString id) {
+		emit uncompletedTrainingIdReady(id);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::trainingCompleted,
+					 this, [this]() {
+		emit trainingCompleted();
+	});
+
 	QObject::connect(m_database, &DatabaseHandler::trainerPupilsIdsReceived,
 					 this, [this](QList<QString> pupilsIds) {
 		if (!m_currentUser->isTrainer())
@@ -308,6 +323,18 @@ MainController::newExercise(QString trainingId)
 	return new Exercise(this, trainingId);
 }
 
+Training*
+MainController::newTrainingForSave(QObject *parent, QString ownerId, QString name)
+{
+	return new Training(parent, ownerId, name);
+}
+
+Exercise*
+MainController::newExerciseForSave(QObject *parent)
+{
+	return new Exercise(parent);
+}
+
 TrainingPlan*
 MainController::getTrainingPlanById(User* user, QString id)
 {
@@ -416,6 +443,30 @@ MainController::addDatabaseMeasurement(double weight, double chest, double shoul
 									   double waist, double hips, double peace, double calf)
 {
 	m_database->addMeasurement(m_currentUser->id(), weight, chest, shoulders, arm, forearm, waist, hips, peace, calf);
+}
+
+void
+MainController::addDatabaseCompletedTraining(User* user, QString trainingName)
+{
+	m_database->addCompletedTraining(user, trainingName);
+}
+
+void
+MainController::deleteDatabaseCompletedTraining(User *user)
+{
+	m_database->deleteCompletedTraining(user);
+}
+
+void
+MainController::addDatabaseCompletedExercise(QString trainingId, QString name, QList<QString> sets)
+{
+	m_database->addCompletedExercise(trainingId, name, sets);
+}
+
+void
+MainController::completeTraining(QString trainingId)
+{
+	m_database->completeTraining(trainingId);
 }
 
 void

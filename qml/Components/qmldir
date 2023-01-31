@@ -13,6 +13,7 @@ PDialog		    1.0		PDialog.qml
 PCalendar	    1.0		PCalendar.qml
 PCalendarForm	    1.0		PCalendarForm.ui.qml
 PListView	    1.0		PListView.qml
+PTimerModal	    1.0		PTimerModal.qml
 PTimeSelector	    1.0		PTimeSelector.qml
 
 PMainLayout	    1.0		PMainLayout.qml

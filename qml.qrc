@@ -59,5 +59,8 @@
         <file>qml/Home/PupilItem.qml</file>
         <file>qml/Home/PupilDetails.qml</file>
         <file>qml/Home/TrainingSelectorModal.qml</file>
+        <file>qml/Home/TrainDialog.qml</file>
+        <file>qml/Home/TrainSetItem.qml</file>
+        <file>qml/Components/PTimerModal.qml</file>
     </qresource>
 </RCC>

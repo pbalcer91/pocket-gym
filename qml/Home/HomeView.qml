@@ -40,6 +40,11 @@ Item {
 			userTrainerPanel.trainerId = ""
 			userTrainerPanel.trainerUsername = ""
 		}
+
+		function onTrainingCompleted() {
+			//TODO:
+			//pobrac treningi i wyswietlic je
+		}
 	}
 
 	Component.onCompleted: {
@@ -317,8 +322,13 @@ Item {
 				trainingSelectorModalLoader.source = ""
 			})
 
-			trainingSelectorModalLoader.item.trainingStarted.connect(function(id) {
-				console.log("TRAINING STARTED: ", id)
+			trainingSelectorModalLoader.item.trainingStarted.connect(function(planId, trainingId) {
+				loader.setSource("qrc:/qml/Home/TrainDialog.qml",
+								 {
+									"user": currentUser,
+									"planId": planId,
+									"trainingId": trainingId
+								 })
 			})
 
 			trainingSelectorModalLoader.item.open()

@@ -12,8 +12,6 @@ ColumnLayout {
 
 	default property alias content: mainContent.data
 
-	//TODO: przerwy miedzy itemami kolumny jak w foxie - blad do poprawy
-
 	spacing: 0
 
 	Rectangle {

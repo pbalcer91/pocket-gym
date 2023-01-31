@@ -11,6 +11,8 @@ Dialog {
 	property alias editButton: editButton
 	property alias backButton: backButton
 
+	property bool autoCloseMode: true
+
 	property bool editModeAvailable: false
 
 	parent: Overlay.overlay
@@ -45,6 +47,9 @@ Dialog {
 				icon.source: "qrc:/icons/ic_chevronLeft.svg"
 
 				onClicked: {
+					if (!autoCloseMode)
+						return
+
 					dialog.reject()
 				}
 			}

@@ -33,6 +33,9 @@ public:
 	Q_INVOKABLE Training* newTraining(QString ownerId, QString planId);
 	Q_INVOKABLE Exercise* newExercise(QString trainingId);
 
+	Q_INVOKABLE Training* newTrainingForSave(QObject* parent, QString ownerId, QString name);
+	Q_INVOKABLE Exercise* newExerciseForSave(QObject* parent);
+
 	Q_INVOKABLE TrainingPlan* getTrainingPlanById(User* user, QString id);
 	Q_INVOKABLE QList<TrainingPlan*> getUserTrainingPlans(User* user);
 
@@ -54,6 +57,11 @@ public:
 	Q_INVOKABLE void addDatabaseExercise(User* user, QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets);
 	Q_INVOKABLE void addDatabaseMeasurement(double weight, double chest, double shoulders, double arm, double forearm,
 											double waist, double hips, double peace, double calf);
+
+	Q_INVOKABLE void addDatabaseCompletedTraining(User* user, QString trainingName);
+	Q_INVOKABLE void deleteDatabaseCompletedTraining(User* user);
+	Q_INVOKABLE void addDatabaseCompletedExercise(QString trainingId, QString name, QList<QString> sets);
+	Q_INVOKABLE void completeTraining(QString trainingId);
 
 	Q_INVOKABLE void editDatabaseTrainingPlan(QString planId, User* user, QString name, QString description, bool isDefault);
 	Q_INVOKABLE void editDatabaseTraining(QString trainingId, User* user, QString name, QString planId);
@@ -78,6 +86,9 @@ public:
 signals:
 	void currentUserChanged();
 	void trainersListChanged();
+
+	void uncompletedTrainingIdReady(QString id);
+	void trainingCompleted();
 
 	void currentUserReady();
 	void trainersListReady();

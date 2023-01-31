@@ -43,7 +43,7 @@ PMessageDialog {
 	required property User user
 	property TrainingPlan trainingPlan
 
-	signal trainingStarted(var trainingId)
+	signal trainingStarted(var trainingPlanId, var trainingId)
 
 	Connections {
 		target: MainController
@@ -90,7 +90,7 @@ PMessageDialog {
 		isBorder: true
 
 		onClicked: {
-			trainingStarted("")
+			trainingStarted("", "")
 			modal.close()
 		}
 	}
@@ -241,7 +241,7 @@ PMessageDialog {
 				implicitWidth: trainingPlanListView.width
 
 				detailsButton.onClicked: {
-					trainingStarted(model.id)
+					trainingStarted(modal.trainingPlan.id, model.id)
 					modal.close()
 				}
 			}

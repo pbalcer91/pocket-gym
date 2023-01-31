@@ -26,6 +26,8 @@ public:
 
 	QList<QByteArray> sets();
 	QByteArray getSet(int index);
+	Q_INVOKABLE void addSet(int repeats, int weight);
+	Q_INVOKABLE void clearSets();
 
 	void setId(QString id);
 	void setName(QString name);
@@ -39,6 +41,8 @@ public:
 	Q_INVOKABLE bool getSetIsMax(QByteArray set);
 	Q_INVOKABLE QString setToString(int repeats, bool isMax);
 
+	Q_INVOKABLE QString completedSetToString(int repeats, int weight);
+
 	Q_INVOKABLE void removeExercise();
 
 signals:
@@ -51,7 +55,6 @@ private:
 	QString m_trainingId;
 	QList<QByteArray> m_sets;
 
-	QString byteArrayToString(QByteArray bits);
 	QByteArray stringToByteArray(QString bitString);
 };
 

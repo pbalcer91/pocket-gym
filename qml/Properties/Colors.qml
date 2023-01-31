@@ -18,6 +18,7 @@ QtObject {
 	readonly property color background: "#4d4d4d"
 	readonly property color sectionBackground: "#802c2c2c"
 	readonly property color text: "#c7c7c7"
+	readonly property color text_50: "#70c7c7c7"
 	readonly property color input: "#d3d3d3"
 	readonly property color disabledButton: "#c7c7c7"
 	readonly property color error: "#d67267"
