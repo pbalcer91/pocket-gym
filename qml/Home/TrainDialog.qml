@@ -28,6 +28,15 @@ PDialog {
 
 	autoCloseMode: false
 
+	editModeAvailable: true
+	editButton.icon.source: "qrc:/icons/ic_list.svg"
+	editButton.onClicked: {
+		summaryLoader.setSource("qrc:/qml/Home/TrainingSummaryModal.qml",
+								{
+									"training": dialog.trainingForSave
+								})
+	}
+
 	Connections {
 		target: MainController
 
@@ -171,14 +180,11 @@ PDialog {
 						Layout.bottomMargin: 10
 
 						deleteButton.onClicked: {
-							showMessage({"message": "Czy na pewno chcesz usunąć serię tego ćwiczenia?.",
+							showMessage({"message": "Czy na pewno chcesz usunąć serię tego ćwiczenia?",
 											"acceptButton.text": "Tak",
 											"rejectButton.text": "Nie",
 											"acceptAction": function() {
 												setsModel.remove(index)
-
-												if (currentSetIndex >= setsModel.count)
-													nextButton.clicked()
 											}
 										})
 						}
@@ -193,7 +199,7 @@ PDialog {
 
 					text: "Dodaj serię"
 
-					enabled: (currentSetIndex == setsModel.count - 1)
+					enabled: (currentSetIndex >= setsModel.count - 1)
 
 					onClicked: {
 						setsModel.append({"repeats": setsModel.get(setsModel.count - 1).repeats,
@@ -227,7 +233,6 @@ PDialog {
 							}
 
 							trainingForSave.addExercise(exerciseForSave)
-							exerciseForSave.clearSets()
 
 							MainController.addDatabaseCompletedExercise(currentTrainingId,
 																		exerciseForSave.name,
@@ -236,10 +241,16 @@ PDialog {
 
 						if (currentSetIndex == setsModel.count - 1
 								&& currentExerciseIndex == exercises.length - 1) {
-							//TODO podsumowanie ?
-							MainController.completeTraining(currentTrainingId)
+							summaryLoader.setSource("qrc:/qml/Home/TrainingSummaryModal.qml",
+													{
+														"training": dialog.trainingForSave,
+														"closeAction": function() {
+															MainController.completeTraining(currentTrainingId)
 
-							dialog.close()
+															dialog.close()
+														}
+													})
+
 							return
 						}
 
@@ -270,6 +281,7 @@ PDialog {
 				}
 
 				if (currentExerciseIndex < exercises.length - 1) {
+					dialog.exerciseForSave = MainController.newExerciseForSave(dialog)
 					currentExerciseIndex++
 					dialog.currentExercise = dialog.exercises[currentExerciseIndex]
 					dialog.exerciseForSave.name = dialog.exercises[currentExerciseIndex].name
