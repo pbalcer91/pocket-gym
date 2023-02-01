@@ -92,14 +92,29 @@ Item {
 
 				Layout.alignment: Qt.AlignHCenter
 				maximumLength: 2
-				inputMethodHints: Qt.ImhDigitsOnly
+				inputMethodHints: Qt.ImhTime
 				horizontalAlignment: Text.AlignHCenter
+
+
+				validator: IntValidator {
+					bottom: 0
+					top: 15
+				}
 
 				implicitWidth: 55
 				enabled: isActive
 				placeholderText: "0"
 
-				onEditingFinished: {
+				onFocusChanged: {
+					if (focus)
+						return
+
+					if (!acceptableInput) {
+						text = 0
+						focus = true
+						return
+					}
+
 					repeatsValueChanged(Number(repeatsField.text))
 				}
 			}
@@ -139,17 +154,27 @@ Item {
 
 					Layout.alignment: Qt.AlignHCenter
 					maximumLength: 3
-					inputMethodHints: Qt.ImhDigitsOnly
+					inputMethodHints: Qt.ImhTime
 					horizontalAlignment: Text.AlignHCenter
+
+					validator: IntValidator {
+						bottom: 0
+						top: 255
+					}
 
 					implicitWidth: 70
 					enabled: isActive
 					text: "0"
 
+					onFocusChanged: {
+						if (focus)
+							return
 
-					onEditingFinished: {
-						if (Number(weightField.text) > 255)
-							weightField.text = "255"
+						if (!acceptableInput) {
+							text = 0
+							focus = true
+							return
+						}
 
 						weightValueChanged(Number(weightField.text))
 					}

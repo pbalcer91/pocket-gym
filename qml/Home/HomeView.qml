@@ -322,12 +322,14 @@ Item {
 				trainingSelectorModalLoader.source = ""
 			})
 
-			trainingSelectorModalLoader.item.trainingStarted.connect(function(planId, trainingId) {
+			trainingSelectorModalLoader.item.trainingStarted.connect(function(planId, trainingId, isCustom, name) {
 				loader.setSource("qrc:/qml/Home/TrainDialog.qml",
 								 {
-									"user": currentUser,
-									"planId": planId,
-									"trainingId": trainingId
+									 "user": currentUser,
+									 "planId": planId,
+									 "trainingId": trainingId,
+									 "isCustom": isCustom,
+									 "customName": name
 								 })
 			})
 

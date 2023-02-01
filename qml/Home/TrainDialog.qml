@@ -15,7 +15,7 @@ PDialog {
 	required property string trainingId
 
 	property Training training
-	property var exercises
+	property var exercises: []
 	property Exercise currentExercise
 
 	property int currentSetIndex: 0
@@ -25,6 +25,9 @@ PDialog {
 	property Exercise exerciseForSave
 
 	property string currentTrainingId
+
+	property bool isCustom: false
+	property string customName
 
 	autoCloseMode: false
 
@@ -58,8 +61,18 @@ PDialog {
 	}
 
 	Component.onCompleted: {
-		if (planId == "" || trainingId == "") {
-			title = "Nowy trening"
+		if (isCustom) {
+			dialog.trainingForSave = MainController.newTrainingForSave(dialog,
+																	   dialog.user.id,
+																	   customName)
+
+			dialog.exerciseForSave = MainController.newExerciseForSave(dialog)
+
+			MainController.addDatabaseCompletedTraining(user, customName)
+
+			title = customName
+			dialog.fill()
+
 			return
 		}
 
@@ -78,6 +91,7 @@ PDialog {
 		target: MainController
 
 		function onExercisesReady() {
+			MainController.addDatabaseCompletedTraining(user, training.name)
 			dialog.exercises = dialog.training.getAllExercises()
 
 			if (dialog.exercises.length === 0)
@@ -85,15 +99,14 @@ PDialog {
 
 			dialog.currentExercise = dialog.exercises[currentExerciseIndex]
 			dialog.fill()
-
 			exerciseForSave.name = dialog.exercises[currentExerciseIndex].name
-
-			MainController.addDatabaseCompletedTraining(user, training.name)
 		}
 	}
 
 	function fill() {
-		exerciseName.text = dialog.currentExercise.name
+		if (!isCustom)
+			exerciseName.text = dialog.currentExercise.name
+
 		setsModel.fillModel()
 	}
 
@@ -127,11 +140,28 @@ PDialog {
 				PLabel {
 					id: exerciseName
 
+					visible: !isCustom
+
 					Layout.fillWidth: true
 					horizontalAlignment: Text.AlignHCenter
 
 					font: Fonts.subTitle
 					lineHeight: Fonts.subTitleHeight
+				}
+
+				PTextField {
+					id: exerciseCustomName
+
+					visible: isCustom
+
+					Layout.fillWidth: true
+					horizontalAlignment: Text.AlignHCenter
+
+					placeholderText: "Exercise name"
+
+					onEditingFinished: {
+						exerciseForSave.name = text
+					}
 				}
 
 				PListView {
@@ -150,6 +180,13 @@ PDialog {
 
 						fillModel: function() {
 							clear()
+
+							if (isCustom) {
+								append({"repeats": 0,
+										   "weight": 0,
+										   "isMax": false})
+								return
+							}
 
 							var sets = dialog.currentExercise.sets
 
@@ -202,8 +239,44 @@ PDialog {
 					enabled: (currentSetIndex >= setsModel.count - 1)
 
 					onClicked: {
-						setsModel.append({"repeats": setsModel.get(setsModel.count - 1).repeats,
+						setsModel.append({"repeats": 0,
 											 "isMax": false})
+					}
+				}
+
+				PButton {
+					id: addExerciseButton
+
+					Layout.alignment: Qt.AlignHCenter
+					Layout.bottomMargin: Properties.margin
+
+					text: "Nowe ćwiczenie"
+
+					visible: isCustom
+
+					enabled: (currentSetIndex >= setsModel.count - 1 && exerciseCustomName.text != "")
+
+					onClicked: {
+						var completedSets = []
+
+						for (var i = 0; i < setsModel.count; i++) {
+							exerciseForSave.addSet(setsModel.get(i).repeats,
+												   setsModel.get(i).weight)
+
+							completedSets.push(exerciseForSave.completedSetToString(setsModel.get(i).repeats,
+																					setsModel.get(i).weight))
+						}
+
+						trainingForSave.addExercise(exerciseForSave)
+
+						MainController.addDatabaseCompletedExercise(currentTrainingId,
+																	exerciseForSave.name,
+																	completedSets)
+
+						loader.setSource("qrc:/qml/Components/PTimerModal.qml",
+										 {
+											"breakTime": (isCustom ? 180 : currentExercise.breakTime)
+										 })
 					}
 				}
 
@@ -214,9 +287,12 @@ PDialog {
 
 					text: (currentSetIndex != setsModel.count - 1 ?
 							   "Koniec serii"
-							 : currentExerciseIndex == exercises.length - 1 ?
+							 : currentExerciseIndex == exercises.length - 1 || isCustom ?
 								   "Koniec treningu"
 								 : "Koniec ćwiczenia")
+
+					enabled: (!isCustom && setsModel.count != 0
+							  || isCustom && exerciseCustomName.text != "")
 
 					flat: false
 
@@ -228,7 +304,7 @@ PDialog {
 								exerciseForSave.addSet(setsModel.get(i).repeats,
 													   setsModel.get(i).weight)
 
-								completedSets.push(currentExercise.completedSetToString(setsModel.get(i).repeats,
+								completedSets.push(exerciseForSave.completedSetToString(setsModel.get(i).repeats,
 																						setsModel.get(i).weight))
 							}
 
@@ -240,7 +316,8 @@ PDialog {
 						}
 
 						if (currentSetIndex == setsModel.count - 1
-								&& currentExerciseIndex == exercises.length - 1) {
+								&& currentExerciseIndex == exercises.length - 1
+								|| currentSetIndex == setsModel.count - 1 && isCustom) {
 							summaryLoader.setSource("qrc:/qml/Home/TrainingSummaryModal.qml",
 													{
 														"training": dialog.trainingForSave,
@@ -256,7 +333,7 @@ PDialog {
 
 						loader.setSource("qrc:/qml/Components/PTimerModal.qml",
 										 {
-											"breakTime": currentExercise.breakTime
+											"breakTime": (isCustom ? 180 : currentExercise.breakTime)
 										 })
 					}
 				}
@@ -280,7 +357,15 @@ PDialog {
 					return
 				}
 
-				if (currentExerciseIndex < exercises.length - 1) {
+				if (isCustom) {
+					dialog.exerciseForSave = MainController.newExerciseForSave(dialog)
+					currentSetIndex = 0
+					exerciseCustomName.text = ""
+					setsModel.fillModel()
+					return
+				}
+
+				if (currentExerciseIndex < exercises.length - 1 && !isCustom) {
 					dialog.exerciseForSave = MainController.newExerciseForSave(dialog)
 					currentExerciseIndex++
 					dialog.currentExercise = dialog.exercises[currentExerciseIndex]

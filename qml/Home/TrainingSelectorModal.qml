@@ -35,7 +35,8 @@ PMessageDialog {
 	enum STEPS {
 		TYPE,
 		PLAN,
-		TRAINING
+		TRAINING,
+		NAME
 	}
 
 	property int currentStep: 0
@@ -43,7 +44,7 @@ PMessageDialog {
 	required property User user
 	property TrainingPlan trainingPlan
 
-	signal trainingStarted(var trainingPlanId, var trainingId)
+	signal trainingStarted(var trainingPlanId, var trainingId, var isCustom, var name)
 
 	Connections {
 		target: MainController
@@ -90,7 +91,31 @@ PMessageDialog {
 		isBorder: true
 
 		onClicked: {
-			trainingStarted("", "")
+			currentStep = TrainingSelectorModal.STEPS.NAME
+		}
+	}
+
+	PTextField {
+		id: customTrainingName
+
+		Layout.fillWidth: true
+
+		visible: (currentStep === TrainingSelectorModal.STEPS.NAME)
+
+		placeholderText: "Nazwa treningu"
+	}
+
+	PButton {
+		id: customTrainingConfirm
+
+		text: "Rozpocznij"
+		flat: false
+		Layout.alignment: Qt.AlignHCenter
+
+		visible: (currentStep === TrainingSelectorModal.STEPS.NAME)
+
+		onClicked: {
+			trainingStarted("", "", true, customTrainingName.text)
 			modal.close()
 		}
 	}
@@ -241,7 +266,7 @@ PMessageDialog {
 				implicitWidth: trainingPlanListView.width
 
 				detailsButton.onClicked: {
-					trainingStarted(modal.trainingPlan.id, model.id)
+					trainingStarted(modal.trainingPlan.id, model.id, false, "")
 					modal.close()
 				}
 			}
