@@ -16,7 +16,8 @@ resources.prefix = /$${TARGET}
 
 RESOURCES += qml.qrc \
 	fonts.qrc \
-	icons.qrc
+	icons.qrc \
+	images.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = $$PWD/qml
