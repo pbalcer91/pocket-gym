@@ -14,10 +14,18 @@ Item {
 	implicitWidth: mainColumn.implicitWidth + Properties.margin * 2
 	implicitHeight: mainColumn.implicitHeight
 
+	property bool isLastOne: false
+	property string label: (isLastOne ?
+								"Ostatni pomiar - "
+							  : "Pomiar - ")
+
 	property Measurement measurement
 
 	function fill() {
-		dateLabel.text = "Ostatni pomiar - " + Qt.formatDate(measurement.date, "dd.MM.yyyy")
+		if (!measurement)
+			return
+
+		dateLabel.text = label + Qt.formatDate(measurement.date, "dd.MM.yyyy")
 		weight.text = measurement.weight + " kg"
 		chest.text = measurement.chest + " cm"
 		shoulders.text = measurement.shoulders + " cm"
@@ -74,8 +82,8 @@ Item {
 			Layout.rightMargin: Properties.margin * 2
 
 			PLabel {
-				font: Fonts.caption
-				lineHeight: Fonts.captionHeight
+				font: Fonts.list
+				lineHeight: Fonts.listHeight
 
 				Layout.alignment: Qt.AlignLeft
 				horizontalAlignment: Text.AlignLeft
@@ -91,8 +99,8 @@ Item {
 
 			PLabel {
 				id: weight
-				font: Fonts.captionBold
-				lineHeight: Fonts.captionBoldHeight
+				font: Fonts.subTitle
+				lineHeight: Fonts.subTitleHeight
 
 				Layout.alignment: Qt.AlignRight
 				horizontalAlignment: Text.AlignRight
@@ -108,8 +116,8 @@ Item {
 			Layout.rightMargin: Properties.margin * 2
 
 			PLabel {
-				font: Fonts.caption
-				lineHeight: Fonts.captionHeight
+				font: Fonts.list
+				lineHeight: Fonts.listHeight
 
 				Layout.alignment: Qt.AlignLeft
 				horizontalAlignment: Text.AlignLeft
@@ -126,8 +134,8 @@ Item {
 
 			PLabel {
 				id: chest
-				font: Fonts.captionBold
-				lineHeight: Fonts.captionBoldHeight
+				font: Fonts.subTitle
+				lineHeight: Fonts.subTitleHeight
 
 				Layout.alignment: Qt.AlignRight
 				horizontalAlignment: Text.AlignRight
@@ -143,8 +151,8 @@ Item {
 			Layout.rightMargin: Properties.margin * 2
 
 			PLabel {
-				font: Fonts.caption
-				lineHeight: Fonts.captionHeight
+				font: Fonts.list
+				lineHeight: Fonts.listHeight
 
 				Layout.alignment: Qt.AlignLeft
 				horizontalAlignment: Text.AlignLeft
@@ -161,8 +169,8 @@ Item {
 
 			PLabel {
 				id: shoulders
-				font: Fonts.captionBold
-				lineHeight: Fonts.captionBoldHeight
+				font: Fonts.subTitle
+				lineHeight: Fonts.subTitleHeight
 
 				Layout.alignment: Qt.AlignRight
 				horizontalAlignment: Text.AlignRight
@@ -178,8 +186,8 @@ Item {
 			Layout.rightMargin: Properties.margin * 2
 
 			PLabel {
-				font: Fonts.caption
-				lineHeight: Fonts.captionHeight
+				font: Fonts.list
+				lineHeight: Fonts.listHeight
 
 				Layout.alignment: Qt.AlignLeft
 				horizontalAlignment: Text.AlignLeft
@@ -196,8 +204,8 @@ Item {
 
 			PLabel {
 				id: arm
-				font: Fonts.captionBold
-				lineHeight: Fonts.captionBoldHeight
+				font: Fonts.subTitle
+				lineHeight: Fonts.subTitleHeight
 
 				Layout.alignment: Qt.AlignRight
 				horizontalAlignment: Text.AlignRight
@@ -213,8 +221,8 @@ Item {
 			Layout.rightMargin: Properties.margin * 2
 
 			PLabel {
-				font: Fonts.caption
-				lineHeight: Fonts.captionHeight
+				font: Fonts.list
+				lineHeight: Fonts.listHeight
 
 				Layout.alignment: Qt.AlignLeft
 				horizontalAlignment: Text.AlignLeft
@@ -231,8 +239,8 @@ Item {
 
 			PLabel {
 				id: forearm
-				font: Fonts.captionBold
-				lineHeight: Fonts.captionBoldHeight
+				font: Fonts.subTitle
+				lineHeight: Fonts.subTitleHeight
 
 				Layout.alignment: Qt.AlignRight
 				horizontalAlignment: Text.AlignRight
@@ -248,8 +256,8 @@ Item {
 			Layout.rightMargin: Properties.margin * 2
 
 			PLabel {
-				font: Fonts.caption
-				lineHeight: Fonts.captionHeight
+				font: Fonts.list
+				lineHeight: Fonts.listHeight
 
 				Layout.alignment: Qt.AlignLeft
 				horizontalAlignment: Text.AlignLeft
@@ -266,8 +274,8 @@ Item {
 
 			PLabel {
 				id: waist
-				font: Fonts.captionBold
-				lineHeight: Fonts.captionBoldHeight
+				font: Fonts.subTitle
+				lineHeight: Fonts.subTitleHeight
 
 				Layout.alignment: Qt.AlignRight
 				horizontalAlignment: Text.AlignRight
@@ -283,8 +291,8 @@ Item {
 			Layout.rightMargin: Properties.margin * 2
 
 			PLabel {
-				font: Fonts.caption
-				lineHeight: Fonts.captionHeight
+				font: Fonts.list
+				lineHeight: Fonts.listHeight
 
 				Layout.alignment: Qt.AlignLeft
 				horizontalAlignment: Text.AlignLeft
@@ -301,8 +309,8 @@ Item {
 
 			PLabel {
 				id: hips
-				font: Fonts.captionBold
-				lineHeight: Fonts.captionBoldHeight
+				font: Fonts.subTitle
+				lineHeight: Fonts.subTitleHeight
 
 				Layout.alignment: Qt.AlignRight
 				horizontalAlignment: Text.AlignRight
@@ -318,8 +326,8 @@ Item {
 			Layout.rightMargin: Properties.margin * 2
 
 			PLabel {
-				font: Fonts.caption
-				lineHeight: Fonts.captionHeight
+				font: Fonts.list
+				lineHeight: Fonts.listHeight
 
 				Layout.alignment: Qt.AlignLeft
 				horizontalAlignment: Text.AlignLeft
@@ -336,8 +344,8 @@ Item {
 
 			PLabel {
 				id: peace
-				font: Fonts.captionBold
-				lineHeight: Fonts.captionBoldHeight
+				font: Fonts.subTitle
+				lineHeight: Fonts.subTitleHeight
 
 				Layout.alignment: Qt.AlignRight
 				horizontalAlignment: Text.AlignRight
@@ -353,8 +361,8 @@ Item {
 			Layout.rightMargin: Properties.margin * 2
 
 			PLabel {
-				font: Fonts.caption
-				lineHeight: Fonts.captionHeight
+				font: Fonts.list
+				lineHeight: Fonts.listHeight
 
 				Layout.alignment: Qt.AlignLeft
 				horizontalAlignment: Text.AlignLeft
@@ -371,8 +379,8 @@ Item {
 
 			PLabel {
 				id: calf
-				font: Fonts.captionBold
-				lineHeight: Fonts.captionBoldHeight
+				font: Fonts.subTitle
+				lineHeight: Fonts.subTitleHeight
 
 				Layout.alignment: Qt.AlignRight
 				horizontalAlignment: Text.AlignRight

@@ -2,4 +2,5 @@ module Progress
 
 ProgressView			ProgressView.qml
 AddMeasurementModal		AddMeasurementModal.qml
-LastMeasurementItem		LastMeasurementItem.qml
+MeasurementItem			MeasurementItem.qml
+MeasurementsHistoryDialog	MeasurementsHistoryDialog.qml

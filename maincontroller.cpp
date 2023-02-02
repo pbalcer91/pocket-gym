@@ -242,17 +242,17 @@ MainController::MainController(QObject *parent)
 	});
 
 	QObject::connect(m_database, &DatabaseHandler::measurementAdded,
-					 this, [this](QString userId) {
-		m_database->getMeasurementsByUserId(userId);
+					 this, [this](User* user) {
+		m_database->getMeasurementsByUser(user);
 	});
 
 	QObject::connect(m_database, &DatabaseHandler::measurementsReceived,
-					 this, [this](QString userId, QList<Measurement*> measurementList) {
+					 this, [this](User* user, QList<Measurement*> measurementList) {
 		for (auto measurement : measurementList) {
-			if (m_currentUser->getMeasurementById(measurement->id()))
+			if (user->getMeasurementById(measurement->id()))
 				continue;
 
-			m_currentUser->addMeasurement(m_currentUser,
+			user->addMeasurement(user,
 										  measurement->id(),
 										  measurement->date(),
 										  measurement->weight(),
@@ -422,9 +422,9 @@ MainController::getDatabaseExercisesByTrainingId(User* user, QString planId, QSt
 }
 
 void
-MainController::getDatabaseMeasurementsByUserId(QString userId)
+MainController::getDatabaseMeasurementsByUser(User* user)
 {
-	m_database->getMeasurementsByUserId(userId);
+	m_database->getMeasurementsByUser(user);
 }
 
 void
@@ -455,10 +455,10 @@ MainController::addDatabaseExercise(User* user, QString planId, QString training
 }
 
 void
-MainController::addDatabaseMeasurement(double weight, double chest, double shoulders, double arm, double forearm,
+MainController::addDatabaseMeasurement(User* user, double weight, double chest, double shoulders, double arm, double forearm,
 									   double waist, double hips, double peace, double calf)
 {
-	m_database->addMeasurement(m_currentUser->id(), weight, chest, shoulders, arm, forearm, waist, hips, peace, calf);
+	m_database->addMeasurement(user, weight, chest, shoulders, arm, forearm, waist, hips, peace, calf);
 }
 
 void

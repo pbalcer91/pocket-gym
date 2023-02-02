@@ -12,7 +12,7 @@ PMessageDialog {
 
 	title: "Nowy pomiar ciała"
 
-	//TODO: Zrobic z tego repeatera z modelem
+	//TODO: make it as repeater with model
 
 	function validate() {
 		return true
@@ -22,7 +22,8 @@ PMessageDialog {
 		if (!modal.validate())
 			return
 
-		MainController.addDatabaseMeasurement(Number(weightField.text),
+		MainController.addDatabaseMeasurement(MainController.currentUser,
+											  Number(weightField.text),
 											  Number(chestField.text),
 											  Number(shouldersField.text),
 											  Number(armField.text),

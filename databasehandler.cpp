@@ -392,14 +392,14 @@ DatabaseHandler::getExerciseById(User* user, QString planId, QString exerciseId)
 }
 
 void
-DatabaseHandler::getMeasurementsByUserId(QString userId)
+DatabaseHandler::getMeasurementsByUser(User* user)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "measurements.json?orderBy=\"userId\"&equalTo=\"" + userId + "\"")));
+					QUrl(m_url + "measurements.json?orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
-					 this, [this, userId, reply](){
+					 this, [this, user, reply](){
 		reply->deleteLater();
 
 		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
@@ -430,12 +430,12 @@ DatabaseHandler::getMeasurementsByUserId(QString userId)
 			dateTime.setSecsSinceEpoch(timestamp);
 
 			measurement->setId(id);
-			measurement->setDate(dateTime.date());
+			measurement->setDate(dateTime);
 
 			measurementList.push_back(measurement);
 		}
 
-		emit measurementsReceived(userId, measurementList);
+		emit measurementsReceived(user, measurementList);
 	});
 }
 
@@ -532,11 +532,11 @@ DatabaseHandler::addExercise(User* user, QString planId, QString trainingId, QSt
 }
 
 void
-DatabaseHandler::addMeasurement(QString userId, double weight, double chest, double shoulders, double arm,
+DatabaseHandler::addMeasurement(User* user, double weight, double chest, double shoulders, double arm,
 								double forearm, double waist, double hips, double peace, double calf)
 {
 	QVariantMap databaseMeasurement;
-	databaseMeasurement["userId"] = userId;
+	databaseMeasurement["userId"] = user->id();
 	databaseMeasurement["timestamp"] = QDateTime::currentSecsSinceEpoch();
 	databaseMeasurement["weight"] = weight;
 	databaseMeasurement["chest"] = chest;
@@ -556,9 +556,9 @@ DatabaseHandler::addMeasurement(QString userId, double weight, double chest, dou
 	auto reply = m_networkManager->post(request, jsonDoc.toJson());
 
 	QObject::connect(reply, &QNetworkReply::finished,
-					 this, [this, userId, reply](){
+					 this, [this, user, reply](){
 		reply->deleteLater();
-		emit measurementAdded(userId);
+		emit measurementAdded(user);
 	});
 }
 

@@ -34,14 +34,14 @@ public:
 	void getTrainingById(User* user, QString trainingId);
 	void getExercisesByTrainingId(User* user, QString planId, QString trainingId);
 	void getExerciseById(User* user, QString planId, QString exerciseId);
-	void getMeasurementsByUserId(QString userId);
+	void getMeasurementsByUser(User* user);
 
 	//add methods
 	void addUser(QString username, QString email, QString password, bool isTrainer);
 	void addTrainingPlan(User* user, QString name, QString description, bool isDefault);
 	void addTraining(User* user, QString name, QString planId);
 	void addExercise(User* user, QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets);
-	void addMeasurement(QString userId, double weight, double chest, double shoulders, double arm,
+	void addMeasurement(User* user, double weight, double chest, double shoulders, double arm,
 						double forearm, double waist, double hips, double peace, double calf);
 
 	void addCompletedTraining(User* user, QString trainingName);
@@ -86,7 +86,7 @@ signals:
 	void trainingReceived(QString trainingId, User* user, QString name, QString planId);
 	void exercisesReceived(User* user, QString planId, QString trainingId, QList<Exercise*> exercises);
 	void exerciseReceived(User* user, QString planId, QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList);
-	void measurementsReceived(QString userId, QList<Measurement*> measurements);
+	void measurementsReceived(User*, QList<Measurement*> measurements);
 
 	void completedTrainingAdded(User* user);
 	void uncompletedTrainingIdReceived(QString id);
@@ -97,7 +97,7 @@ signals:
 	void trainingPlanAdded(User* user);
 	void trainingAdded(User* user, QString planId);
 	void exerciseAdded(User* user, QString planId, QString trainingId);
-	void measurementAdded(QString userId);
+	void measurementAdded(User* user);
 	void userAdded();
 
 	void trainingPlanChanged(User* user, QString planId);

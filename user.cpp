@@ -206,7 +206,7 @@ User::isPupilById(QString userId)
 void
 User::addMeasurement(QObject* parent,
 					 QString id,
-					 QDate date,
+					 QDateTime date,
 					 double weight,
 					 double chest,
 					 double shoulders,

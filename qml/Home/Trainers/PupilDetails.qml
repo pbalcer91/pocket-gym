@@ -62,6 +62,13 @@ PDialog {
 														   + " - " + trainingsSection.completedTrainingToShow.name
 											  })
 		}
+
+		function onMeasurementsReady() {
+			if (!MainController.getCurrentUserLastMeasurement())
+				return
+
+			progressButton.enabled = true
+		}
 	}
 
 	function getDateString(date) {
@@ -87,6 +94,7 @@ PDialog {
 	Component.onCompleted: {
 		MainController.getDatabaseUserTrainingPlans(pupil)
 		MainController.getDabaseCompletedTrainings(pupil)
+		MainController.getDatabaseMeasurementsByUser(pupil)
 	}
 
 	editButton.icon.source: "qrc:/icons/ic_delete.svg"
@@ -215,6 +223,15 @@ PDialog {
 					Layout.alignment: Qt.AlignHCenter
 
 					text: "Pokaż pomiary"
+
+					enabled: false
+
+					onClicked: {
+						loader.setSource("qrc:/qml/Progress/MeasurementsHistoryDialog.qml",
+										 {
+											 "user": pupil
+										 })
+					}
 				}
 
 				PButton {

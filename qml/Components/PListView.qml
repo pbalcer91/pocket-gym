@@ -24,7 +24,6 @@ ListView {
 		id: emptyInfoLabel
 
 		anchors.centerIn: parent
-
 		horizontalAlignment: Text.AlignHCenter
 
 		text: listView.emptyInfo

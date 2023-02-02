@@ -22,17 +22,20 @@ Item {
 		function onMeasurementsReady() {
 			lastMeasurement.measurement = MainController.getCurrentUserLastMeasurement()
 
+			if (!lastMeasurement.measurement)
+				return
+
 			lastMeasurement.fill()
 		}
 	}
 
 	Component.onCompleted: {
-		MainController.getDatabaseMeasurementsByUserId(currentUser.id)
+		MainController.getDatabaseMeasurementsByUser(currentUser)
 	}
 
 	function isMeasurementAddAvailable() {
 		if (!lastMeasurement.measurement)
-			return false
+			return true
 
 		var now = new Date()
 
@@ -86,8 +89,41 @@ Item {
 			}
 		}
 
-		LastMeasurementItem {
+		MeasurementItem {
 			id: lastMeasurement
+
+			isLastOne: true
+
+			visible: (measurement)
+		}
+
+		Rectangle {
+			id: emptyLabelBorder
+
+			border.width: 1
+			border.color: Colors.text
+			color: "transparent"
+			radius: 20
+
+			Layout.topMargin: 100
+			Layout.alignment: Qt.AlignHCenter
+
+			width: 200
+			height: 100
+
+			visible: (!lastMeasurement.visible)
+
+			PLabel {
+				id: emptyLabel
+
+				anchors.centerIn: parent
+				horizontalAlignment: Text.AlignHCenter
+
+				font: Fonts.caption
+				lineHeight: Fonts.captionHeight
+
+				text: "Brak pomiarów"
+			}
 		}
 
 		Item {
@@ -101,7 +137,16 @@ Item {
 
 			flat: false
 
+			enabled: (!emptyLabelBorder.visible)
+
 			text: "Historia pomiarów"
+
+			onClicked: {
+				loader.setSource("qrc:/qml/Progress/MeasurementsHistoryDialog.qml",
+								 {
+									"user": currentUser
+								 })
+			}
 		}
 
 		PButton {
