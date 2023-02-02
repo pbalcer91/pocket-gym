@@ -468,9 +468,9 @@ MainController::getDabaseCompletedTrainings(User *user)
 }
 
 void
-MainController::getDabaseCompletedExercises(User *user, QString traininId)
+MainController::getDabaseCompletedExercises(QString traininId)
 {
-	m_database->getUserCompletedExercises(user, traininId);
+	m_database->getUserCompletedExercises(traininId);
 }
 
 void

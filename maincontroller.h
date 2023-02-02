@@ -60,7 +60,7 @@ public:
 											double waist, double hips, double peace, double calf);
 
 	Q_INVOKABLE void getDabaseCompletedTrainings(User* user);
-	Q_INVOKABLE void getDabaseCompletedExercises(User* user, QString traininId);
+	Q_INVOKABLE void getDabaseCompletedExercises(QString traininId);
 	Q_INVOKABLE void addDatabaseCompletedTraining(User* user, QString trainingName);
 	Q_INVOKABLE void deleteDatabaseCompletedTraining(User* user);
 	Q_INVOKABLE void addDatabaseCompletedExercise(QString trainingId, QString name, QList<QString> sets);

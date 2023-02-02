@@ -627,7 +627,7 @@ DatabaseHandler::getUserCompletedTrainings(User *user)
 }
 
 void
-DatabaseHandler::getUserCompletedExercises(User *user, QString trainingId)
+DatabaseHandler::getUserCompletedExercises(QString trainingId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(

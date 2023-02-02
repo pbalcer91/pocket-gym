@@ -2,6 +2,7 @@ module Home
 
 HomeView		    	    HomeView.qml
 HomeSection		    	    HomeSection.qml
+CompletedTrainingsListView	    CompletedTrainingsListView.qml
 
 TrainingSelectorModal	    	    TrainingSelectorModal.qml
 TrainDialog		    	    TrainDialog.qml

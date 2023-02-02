@@ -65,5 +65,6 @@
         <file>qml/Home/Trainings/TrainingDetails.qml</file>
         <file>qml/Home/Trainings/TrainingItem.qml</file>
         <file>qml/Home/Trainings/qmldir</file>
+        <file>qml/Home/CompletedTrainingsListView.qml</file>
     </qresource>
 </RCC>

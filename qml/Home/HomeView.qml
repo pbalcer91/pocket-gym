@@ -26,6 +26,8 @@ Item {
 	Connections {
 		target: MainController
 
+		enabled: loader.source != "qrc:/qml/Home/Trainers/PupilsListView.qml"
+
 		function onUserPlansReady() {
 			trainingPlanModel.fillModel()
 		}
@@ -55,10 +57,12 @@ Item {
 
 				trainingsList[i].removeTraining()
 			}
-
 		}
 
 		function onCompletedExercisesReady(exercisesList) {
+			if (!trainingsSection.completedTrainingToShow)
+				return
+
 			for (var i = 0; i < exercisesList.length; i++) {
 				trainingsSection.completedTrainingToShow.addExercise(exercisesList[i])
 			}
@@ -212,13 +216,17 @@ Item {
 					Layout.rightMargin: Properties.smallMargin
 
 					sectionButton.icon.source: "qrc:/icons/ic_list.svg"
+					sectionButton.onClicked: {
+						loader.setSource("qrc:/qml/Home/CompletedTrainingsListView.qml",
+										 {
+											"user": currentUser
+										 })
+					}
 
 					listView.emptyInfo: "Brak ukończonych treningów"
 
 					listView.model: PListModel {
 						id: completedTrainingsModel
-
-
 
 						fillModel: function() {
 							return
@@ -235,7 +243,7 @@ Item {
 							trainingsSection.completedTrainingToShow.name = model.name
 							trainingsSection.completedTrainingToShow.setDate(model.date)
 
-							MainController.getDabaseCompletedExercises(currentUser, model.id)
+							MainController.getDabaseCompletedExercises(model.id)
 						}
 					}
 				}

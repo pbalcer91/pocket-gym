@@ -46,7 +46,7 @@ public:
 
 	void addCompletedTraining(User* user, QString trainingName);
 	void getUserCompletedTrainings(User* user);
-	void getUserCompletedExercises(User* user, QString trainingId);
+	void getUserCompletedExercises(QString trainingId);
 	void getUserUncompletedTrainings(User* user);
 	void deleteCompletedTraining(User* user);
 	void addCompletedExercise(QString trainingId, QString name, QList<QString> sets);

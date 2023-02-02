@@ -34,10 +34,59 @@ PDialog {
 		function onUserPlansReady() {
 			trainingPlanModel.fillModel()
 		}
+
+		function onCompletedTrainingsReady(trainingsList) {
+			pupilCompletedTrainingsModel.clear()
+			for (var i = trainingsList.length - 1; i >= 0; i--) {
+				if (pupilCompletedTrainingsModel.count < 3)
+					pupilCompletedTrainingsModel.append({"id": trainingsList[i].id,
+													   "date": trainingsList[i].getDate(),
+													   "name": trainingsList[i].name})
+
+				trainingsList[i].removeTraining()
+			}
+		}
+
+		function onCompletedExercisesReady(exercisesList) {
+			if (!trainingsSection.completedTrainingToShow)
+				return
+
+			for (var i = 0; i < exercisesList.length; i++) {
+				trainingsSection.completedTrainingToShow.addExercise(exercisesList[i])
+			}
+
+			completedTrainingLoader.setSource("qrc:/qml/Home/TrainingSummaryModal.qml",
+											  {
+												  "training": trainingsSection.completedTrainingToShow,
+												  "title": getDateString(trainingsSection.completedTrainingToShow.getDate())
+														   + " - " + trainingsSection.completedTrainingToShow.name
+											  })
+		}
+	}
+
+	function getDateString(date) {
+		var day = ""
+
+		if (date.getDate() < 10)
+			day += "0"
+		day += date.getDate()
+
+		var month = ""
+
+		if (date.getDate() < 10)
+			month += "0"
+		month += date.getMonth() + 1
+
+		var year = ""
+
+		year += date.getFullYear()
+
+		return (day + "/" + month + "/" + year)
 	}
 
 	Component.onCompleted: {
 		MainController.getDatabaseUserTrainingPlans(pupil)
+		MainController.getDabaseCompletedTrainings(pupil)
 	}
 
 	editButton.icon.source: "qrc:/icons/ic_delete.svg"
@@ -123,24 +172,40 @@ PDialog {
 				HomeSection {
 					id: trainingsSection
 
-					label: "Odbyte treningi"
+					label: "Ukończone treningi"
+
+					property Training completedTrainingToShow
 
 					sectionButton.icon.source: "qrc:/icons/ic_list.svg"
+					sectionButton.onClicked: {
+						loader.setSource("qrc:/qml/Home/CompletedTrainingsListView.qml",
+										 {
+											"user": pupil
+										 })
+					}
 
-					listView.emptyInfo: "Brak odbytych treningów"
+					listView.emptyInfo: "Brak ukończonych treningów"
 
-					listView.model: 0 /*TrainingsModel {
-						id: trainingsModel
+					listView.model: PListModel {
+						id: pupilCompletedTrainingsModel
 
-						isInTrainingPlan: false
-					}*/
+						fillModel: function() {
+							return
+						}
+					}
 
-					listView.delegate: TrainingPlanItem {
-						label: model.name
-
-						isSelected: model.isDefault
+					listView.delegate: TrainingItem {
+						label: getDateString(model.date) + " - " + model.name
 
 						implicitWidth: trainingsSection.listView.width
+
+						detailsButton.onClicked: {
+							trainingsSection.completedTrainingToShow = MainController.newCompletedTraining()
+							trainingsSection.completedTrainingToShow.name = model.name
+							trainingsSection.completedTrainingToShow.setDate(model.date)
+
+							MainController.getDabaseCompletedExercises(model.id)
+						}
 					}
 				}
 
@@ -177,10 +242,29 @@ PDialog {
 		anchors.bottomMargin: 10
 		anchors.rightMargin: 30
 
-		text: "Trening"
+		text: "Trenuj"
 
 		onClicked: {
+			trainingSelectorModalLoader.setSource("qrc:/qml/Home/TrainingSelectorModal.qml",
+												  {
+													  "user": pupil
+												  })
+		}
+	}
 
+	Loader {
+		id: completedTrainingLoader
+
+		onLoaded: {
+			completedTrainingLoader.item.closed.connect(function() {
+				if (!completedTrainingLoader)
+					return
+				completedTrainingLoader.source = ""
+
+				trainingsSection.completedTrainingToShow.removeTraining()
+			})
+
+			completedTrainingLoader.item.open()
 		}
 	}
 
@@ -195,6 +279,31 @@ PDialog {
 			})
 
 			loader.item.open()
+		}
+	}
+
+	Loader {
+		id: trainingSelectorModalLoader
+
+		onLoaded: {
+			trainingSelectorModalLoader.item.closed.connect(function() {
+				if (!trainingSelectorModalLoader)
+					return
+				trainingSelectorModalLoader.source = ""
+			})
+
+			trainingSelectorModalLoader.item.trainingStarted.connect(function(planId, trainingId, isCustom, name) {
+				loader.setSource("qrc:/qml/Home/TrainDialog.qml",
+								 {
+									 "user": pupil,
+									 "planId": planId,
+									 "trainingId": trainingId,
+									 "isCustom": isCustom,
+									 "customName": name
+								 })
+			})
+
+			trainingSelectorModalLoader.item.open()
 		}
 	}
 }
