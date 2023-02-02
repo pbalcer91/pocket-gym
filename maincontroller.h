@@ -51,12 +51,12 @@ public:
 	Q_INVOKABLE void getDatabaseUserTrainingPlans(User* user);
 	Q_INVOKABLE void getDatabaseTrainingsByPlanId(User* user, QString planId);
 	Q_INVOKABLE void getDatabaseExercisesByTrainingId(User* user, QString planId, QString trainingId);
-	Q_INVOKABLE void getDatabaseMeasurementsByUserId(QString userId);
+	Q_INVOKABLE void getDatabaseMeasurementsByUser(User* user);
 
 	Q_INVOKABLE void addDatabaseTrainingPlan(User* user, QString name, QString description, bool isDefault);
 	Q_INVOKABLE void addDatabaseTraining(User* user, QString name, QString planId);
 	Q_INVOKABLE void addDatabaseExercise(User* user, QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets);
-	Q_INVOKABLE void addDatabaseMeasurement(double weight, double chest, double shoulders, double arm, double forearm,
+	Q_INVOKABLE void addDatabaseMeasurement(User* user, double weight, double chest, double shoulders, double arm, double forearm,
 											double waist, double hips, double peace, double calf);
 
 	Q_INVOKABLE void getDabaseCompletedTrainings(User* user);

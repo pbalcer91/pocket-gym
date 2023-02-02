@@ -40,7 +40,7 @@
         <file>qml/Home/Models/ExercisesModel.qml</file>
         <file>qml/Exercises/Models/ExerciseCategoriesModel.qml</file>
         <file>qml/Progress/AddMeasurementModal.qml</file>
-        <file>qml/Progress/LastMeasurementItem.qml</file>
+        <file>qml/Progress/MeasurementItem.qml</file>
         <file>qml/Home/Models/PupilsModel.qml</file>
         <file>qml/Home/TrainingSelectorModal.qml</file>
         <file>qml/Home/TrainDialog.qml</file>
@@ -66,5 +66,6 @@
         <file>qml/Home/Trainings/TrainingItem.qml</file>
         <file>qml/Home/Trainings/qmldir</file>
         <file>qml/Home/CompletedTrainingsListView.qml</file>
+        <file>qml/Progress/MeasurementsHistoryDialog.qml</file>
     </qresource>
 </RCC>

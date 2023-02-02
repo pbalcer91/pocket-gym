@@ -57,7 +57,7 @@ Measurement::id() const
 	return m_id;
 }
 
-QDate
+QDateTime
 Measurement::date() const
 {
 	return m_date;
@@ -126,7 +126,7 @@ Measurement::setId(QString id)
 }
 
 void
-Measurement::setDate(QDate date)
+Measurement::setDate(QDateTime date)
 {
 	m_date = date;
 

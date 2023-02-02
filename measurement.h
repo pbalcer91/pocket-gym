@@ -2,13 +2,13 @@
 #define MEASUREMENT_H
 
 #include <QObject>
-#include <QDate>
+#include <QDateTime>
 
 class Measurement : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(QString id READ id WRITE setId NOTIFY measurementChanged)
-	Q_PROPERTY(QDate date READ date WRITE setDate NOTIFY measurementChanged)
+	Q_PROPERTY(QDateTime date READ date WRITE setDate NOTIFY measurementChanged)
 	Q_PROPERTY(double weight READ weight WRITE setWeight NOTIFY measurementChanged)
 	Q_PROPERTY(double chest READ chest WRITE setChest NOTIFY measurementChanged)
 	Q_PROPERTY(double shoulders READ shoulders WRITE setShoulders NOTIFY measurementChanged)
@@ -36,7 +36,7 @@ public:
 	~Measurement();
 
 	QString id() const;
-	QDate date() const;
+	QDateTime date() const;
 	double weight() const;
 	double chest() const;
 	double shoulders() const;
@@ -48,7 +48,7 @@ public:
 	double calf() const;
 
 	void setId(QString id);
-	void setDate(QDate date);
+	void setDate(QDateTime date);
 	void setWeight(double weight);
 	void setChest(double circuit);
 	void setShoulders(double circuit);
@@ -64,7 +64,7 @@ signals:
 
 private:
 	QString m_id;
-	QDate m_date;
+	QDateTime m_date;
 	double m_weight;
 	double m_chest;
 	double m_shoulders;

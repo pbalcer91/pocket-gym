@@ -57,7 +57,7 @@ public:
 
 	Q_INVOKABLE void addMeasurement(QObject* parent,
 									QString id,
-									QDate date,
+									QDateTime date,
 									double weight,
 									double chest,
 									double shoulders,

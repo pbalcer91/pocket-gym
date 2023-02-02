@@ -42,10 +42,10 @@ Page {
 	}
 
 	//TODO: obsluga klawisza back na telefonie
-	Keys.onBackPressed: {
-		return
-		//showAppCloseMessage()
-	}
+//	Keys.onBackPressed: {
+//		return
+//		//showAppCloseMessage()
+//	}
 
 	Component.onCompleted: {
 		window.currentPage = AppWindow.PAGES.HOME
@@ -165,7 +165,6 @@ Page {
 		Repeater {
 			model: navigationBarModel
 
-			//TODO: czy zmienic na generyczny widok
 			delegate: Loader {
 				width: mainStack.width
 				height: mainStack.height
