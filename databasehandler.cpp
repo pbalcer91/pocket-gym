@@ -563,6 +563,201 @@ DatabaseHandler::addMeasurement(QString userId, double weight, double chest, dou
 }
 
 void
+DatabaseHandler::addCompletedTraining(User *user, QString trainingName)
+{
+	QVariantMap databaseTraining;
+	databaseTraining["userId"] = user->id();
+	databaseTraining["timestamp"] = QDateTime::currentSecsSinceEpoch();
+	databaseTraining["name"] = trainingName;
+	databaseTraining["completed"] = false;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseTraining);
+
+	QNetworkRequest request(QUrl(m_url + "completedTrainings.json"));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, user, reply](){
+		reply->deleteLater();
+		emit completedTrainingAdded(user);
+	});
+}
+
+void
+DatabaseHandler::getUserCompletedTrainings(User *user)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "completedTrainings.json?orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		QList<Training*> trainingsList;
+
+		for (const auto &key : rootObject.keys()) {
+			auto trainingDocument = rootObject.value(key);
+			auto trainingObject = trainingDocument.toObject();
+
+			if (!trainingObject.value("completed").toBool())
+				continue;
+
+			long long timestamp = trainingObject.value("timestamp").toInteger();
+			QDateTime dateTime;
+			dateTime.setSecsSinceEpoch(timestamp);
+			QString name = trainingObject.value("name").toString();
+
+			Training* trainingToAdd = new Training();
+			trainingToAdd->setId(key);
+			trainingToAdd->setName(name);
+			trainingToAdd->setDate(dateTime);
+
+
+			trainingsList.push_back(trainingToAdd);
+		}
+
+		emit completedTrainingsReceived(trainingsList);
+	});
+}
+
+void
+DatabaseHandler::getUserCompletedExercises(QString trainingId)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "completedTrainings/" + trainingId + ".json")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		QList<Exercise*> exercisesList;
+
+		for (const auto &key : rootObject.keys()) {
+			if (key == "userId" || key == "name" || key == "timestamp" || key == "completed")
+				continue;
+
+			auto exercisetDocument = rootObject.value(key);
+			auto exerciseObject = exercisetDocument.toObject();
+
+			QString name = exerciseObject.value("name").toString();
+			QList<QString> setsList;
+
+			for (const auto &exerciseKey : exerciseObject.keys()) {
+				if (exerciseKey.toUInt()) {
+					auto set = exerciseObject.value(exerciseKey).toString();
+					setsList.push_back(set);
+				}
+			}
+
+			Exercise* exerciseToAdd = new Exercise();
+			exerciseToAdd->setName(name);
+			exerciseToAdd->replaceCompletedSetsList(setsList);
+
+			exercisesList.push_back(exerciseToAdd);
+		}
+
+		emit completedExercisesReceived(exercisesList);
+	});
+}
+
+void
+DatabaseHandler::getUserUncompletedTrainings(User* user)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "completedTrainings.json?orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		for (const auto &key : rootObject.keys()) {
+			auto trainingDocument = rootObject.value(key);
+			auto trainingObject = trainingDocument.toObject();
+
+			if (trainingObject.value("completed").toBool())
+				continue;
+
+			emit uncompletedTrainingIdReceived(key);
+		}
+	});
+}
+
+void
+DatabaseHandler::deleteCompletedTraining(User *user)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "completedTrainings.json?orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		for (const auto &key : rootObject.keys()) {
+			if (rootObject.value("completed").toBool())
+				continue;
+
+			QNetworkRequest request(QUrl(m_url + "completedTrainings/" + key + ".json"));
+			request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+			m_networkManager->deleteResource(request);
+		}
+	});
+}
+
+void
+DatabaseHandler::addCompletedExercise(QString trainingId, QString name, QList<QString> sets)
+{
+	QVariantMap databaseExercise;
+	databaseExercise["name"] = name;
+	for (int i = 0; i < sets.size(); i++) {
+		databaseExercise[QString::number(i + 1)] = sets[i];
+	}
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseExercise);
+
+	QNetworkRequest request(QUrl(m_url + "completedTrainings/" + trainingId + ".json"));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	m_networkManager->post(request, jsonDoc.toJson());
+}
+
+void
+DatabaseHandler::completeTraining(QString trainingId)
+{
+	QByteArray someData = "true";
+
+	QNetworkRequest request(QUrl(m_url + "completedTrainings/" + trainingId + "/completed.json"));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->put(request, someData);
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		emit trainingCompleted();
+	});
+}
+
+void
 DatabaseHandler::editTrainingPlan(QString planId, User* user, QString name, QString description, bool isDefault)
 {
 	QVariantMap databasePlan;

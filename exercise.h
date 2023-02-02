@@ -26,6 +26,8 @@ public:
 
 	QList<QByteArray> sets();
 	QByteArray getSet(int index);
+	Q_INVOKABLE void addSet(int repeats, int weight);
+	Q_INVOKABLE void clearSets();
 
 	void setId(QString id);
 	void setName(QString name);
@@ -34,10 +36,16 @@ public:
 	void setSets(QList<QByteArray> sets);
 
 	void replaceSetsList(QList<QString> setList);
+	void replaceCompletedSetsList(QList<QString> setList);
 
 	Q_INVOKABLE int getSetRepeats(QByteArray set);
 	Q_INVOKABLE bool getSetIsMax(QByteArray set);
 	Q_INVOKABLE QString setToString(int repeats, bool isMax);
+
+	Q_INVOKABLE int getCompletedSetRepeats(QByteArray set);
+	Q_INVOKABLE int getCompletedSetWeight(QByteArray set);
+
+	Q_INVOKABLE QString completedSetToString(int repeats, int weight);
 
 	Q_INVOKABLE void removeExercise();
 
@@ -51,8 +59,8 @@ private:
 	QString m_trainingId;
 	QList<QByteArray> m_sets;
 
-	QString byteArrayToString(QByteArray bits);
-	QByteArray stringToByteArray(QString bitString);
+	QByteArray stringToByteArray(QString bitsString);
+	QByteArray stringToByteArrayForCompleted(QString bitsString);
 };
 
 #endif // EXERCISE_H

@@ -124,7 +124,7 @@ PDialog {
 						}
 
 						detailsButton.onClicked: {
-							loader.setSource("qrc:/qml/Home/PupilDetails.qml",
+							loader.setSource("qrc:/qml/Home/Trainers/PupilDetails.qml",
 											 {
 												 "title": model.username,
 												 "pupilId": model.id,

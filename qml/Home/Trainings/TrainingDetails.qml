@@ -12,23 +12,16 @@ PDialog {
 
 	required property User user
 	required property string planId
+	required property string trainingId
 
 	editModeAvailable: true
 
-	property TrainingPlan trainingPlan: MainController.getTrainingPlanById(user, dialog.planId)
+	property Training training: MainController.getTrainingById(user, planId, trainingId)
 
 	Connections {
-		target: user
+		target: training
 
-		function onUserTrainingPlanRemoved() {
-			dialog.close()
-		}
-	}
-
-	Connections {
-		target: trainingPlan
-
-		function onTrainingPlanChanged() {
+		function onTrainingChanged() {
 			dialog.fill();
 		}
 	}
@@ -36,30 +29,28 @@ PDialog {
 	Connections {
 		target: MainController
 
-		function onTrainingsReady() {
-			trainingsModel.fillModel()
+		function onExercisesReady() {
+			exercisesModel.fillModel()
 		}
 	}
 
 	editButton.onClicked: {
-		loader.setSource("qrc:/qml/Home/EditTrainingPlanModal.qml",
+		loader.setSource("qrc:/qml/Home/Trainings/EditTrainingModal.qml",
 						 {
 							 "user": user,
-							 "plan": dialog.trainingPlan,
+							 "training": dialog.training,
 							 "editMode": true
 						 })
 	}
 
 	Component.onCompleted: {
 		dialog.fill()
-		MainController.getDatabaseTrainingsByPlanId(user, dialog.planId)
+		MainController.getDatabaseExercisesByTrainingId(user, training.planId, training.id)
 	}
 
 	function fill() {
-		dialog.title = dialog.trainingPlan.name
-		isDefaultLabel.visible = dialog.trainingPlan.isDefault
-		descriptionLabel.text = dialog.trainingPlan.description
-		trainingsModel.fillModel()
+		dialog.title = dialog.training.name
+		exercisesModel.fillModel()
 	}
 
 	ColumnLayout {
@@ -67,42 +58,8 @@ PDialog {
 
 		anchors.fill: parent
 
-		spacing: 16
-
-		PLabel {
-			id: isDefaultLabel
-
-			font: Fonts.captionBold
-			lineHeight: Fonts.captionBoldHeight
-
-			text: "Aktywny plan"
-
-			Layout.fillWidth: true
-
-			horizontalAlignment: Text.AlignHCenter
-		}
-
-		PLabel {
-			id: descriptionLabel
-
-			Layout.fillWidth: true
-
-			font: Fonts.caption
-			lineHeight: Fonts.captionHeight
-
-			visible: text != ""
-		}
-
-		Rectangle {
-			Layout.fillWidth: true
-			color: Colors.black_70
-			height: 1
-
-			visible: (descriptionLabel.visible || isDefaultLabel.visible)
-		}
-
 		Column {
-			id: trainingsColumn
+			id: exercisesColumn
 
 			Layout.fillHeight: true
 			Layout.fillWidth: true
@@ -111,12 +68,12 @@ PDialog {
 				implicitWidth: parent.implicitWidth
 
 				PLabel {
-					id: trainingListLabel
+					id: exercisesListLabel
 
 					font: Fonts.subTitle
 					lineHeight: Fonts.subTitleHeight
 
-					text: "Treningi"
+					text: "Ćwiczenia"
 				}
 
 				Item {
@@ -124,17 +81,18 @@ PDialog {
 				}
 
 				PButton {
-					id: addTrainingButton
+					id: addExerciseButton
 
 					icon.source: "qrc:/icons/ic_add.svg"
 
 					Layout.alignment: Qt.AlignHCenter
 
 					onClicked: {
-						loader.setSource("qrc:/qml/Home/EditTrainingModal.qml",
+						loader.setSource("qrc:/qml/Home/Trainings/EditExerciseModal.qml",
 										 {
 											 "user": user,
-											 "training": MainController.newTraining(user.id, dialog.planId)
+											 "planId": training.planId,
+											 "exercise": MainController.newExercise(training.id)
 										 })
 					}
 				}
@@ -177,8 +135,8 @@ PDialog {
 				leftPadding: Properties.smallMargin
 				rightPadding: Properties.smallMargin
 
-				contentHeight: trainingsColumn.height - removeButton.height - Properties.smallMargin
-				contentWidth: trainingsColumn.width
+				contentHeight: exercisesColumn.height - removeButton.height - Properties.smallMargin
+				contentWidth: exercisesColumn.width
 
 				clip: true
 
@@ -190,25 +148,25 @@ PDialog {
 
 					boundsBehavior: Flickable.StopAtBounds
 
-					emptyInfo: "Nie dodałeś jeszcze żadnego treningu"
+					emptyInfo: "Nie dodałeś jeszcze żadnego ćwiczenia"
 
-					model: TrainingsModel {
-						id: trainingsModel
+					model: ExercisesModel {
+						id: exercisesModel
 
-						trainingPlan: MainController.getTrainingPlanById(user, dialog.planId)
+						training: dialog.training
 					}
 
-					delegate: TrainingItem {
-						label: model.name
+					delegate: ExerciseItem {
+						exercise: MainController.getExerciseById(user, training.planId, training.id, model.id)
 
 						implicitWidth: listView.width
 
-						detailsButton.onClicked: {
-							loader.setSource("qrc:/qml/Home/TrainingDetails.qml",
+						onExerciseClicked: function(exercise) {
+							loader.setSource("qrc:/qml/Home/Trainings/ExerciseDetails.qml",
 											 {
 												 "user": user,
-												 "planId": planId,
-												 "trainingId": model.id
+												 "planId": dialog.training.planId,
+												 "exercise": exercise
 											 })
 						}
 					}
@@ -225,11 +183,12 @@ PDialog {
 			Layout.alignment: Qt.AlignHCenter
 
 			onClicked: {
-				showMessage({ "message": "Czy na pewno chcesz bezpowrotnie usunąć plan treningowy?",
+				showMessage({ "message": "Czy na pewno chcesz bezpowrotnie usunąć trening?",
 								"acceptButton.text": "Usuń",
 								"rejectButton.text": "Anuluj",
 								"acceptAction": function() {
-									MainController.deleteDatabaseTrainingPlan(user, dialog.planId)
+									MainController.deleteDatabaseTraining(user, training.planId, training.id)
+									dialog.close()
 								}
 							})
 			}

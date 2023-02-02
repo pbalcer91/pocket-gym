@@ -149,6 +149,8 @@ Drawer {
 
 					text: "Anuluj"	// do tłumaczenia
 
+					visible: text != ""
+
 					Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
 					onClicked: {
@@ -166,6 +168,8 @@ Drawer {
 					id: acceptButton
 
 					text: "Zatwierdź"	// do tłumaczenia
+
+					visible: text != ""
 
 					Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 

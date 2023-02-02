@@ -6,7 +6,8 @@ Training::Training(QObject *parent)
 	  m_id(""),
 	  m_name(""),
 	  m_ownerId(""),
-	  m_planId("")
+	  m_planId(""),
+	  m_date(QDateTime())
 {}
 
 Training::Training(QObject *parent, QString ownerId, QString planId)
@@ -14,7 +15,17 @@ Training::Training(QObject *parent, QString ownerId, QString planId)
 	  m_id(""),
 	  m_name(""),
 	  m_ownerId(ownerId),
-	  m_planId(planId)
+	  m_planId(planId),
+	  m_date(QDateTime())
+{}
+
+Training::Training(QObject *parent, QString ownerId)
+	:QObject{parent},
+	  m_id(""),
+	  m_name(""),
+	  m_ownerId(ownerId),
+	  m_planId(""),
+	  m_date(QDateTime::currentDateTime())
 {}
 
 Training::Training(QObject *parent, QString id, QString ownerId, QString name, QString planId)
@@ -22,7 +33,8 @@ Training::Training(QObject *parent, QString id, QString ownerId, QString name, Q
 	  m_id(id),
 	  m_name(name),
 	  m_ownerId(ownerId),
-	  m_planId(planId)
+	  m_planId(planId),
+	  m_date(QDateTime())
 {}
 
 Training::~Training()
@@ -49,6 +61,12 @@ QString
 Training::planId() const
 {
 	return m_planId;
+}
+
+QDateTime
+Training::getDate() const
+{
+	return m_date;
 }
 
 void
@@ -88,6 +106,12 @@ Training::setPlanId(QString planId)
 
 	m_planId = planId;
 	emit trainingChanged();
+}
+
+void
+Training::setDate(QDateTime date)
+{
+	m_date = date;
 }
 
 void

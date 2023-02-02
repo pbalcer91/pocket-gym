@@ -27,7 +27,7 @@ PDialog {
 	}
 
 	editButton.onClicked: {
-		loader.setSource("qrc:/qml/Home/EditExerciseModal.qml",
+		loader.setSource("qrc:/qml/Home/Trainings/EditExerciseModal.qml",
 						 {
 							 "user":user,
 							 "planId": dialog.planId,

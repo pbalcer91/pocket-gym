@@ -1,4 +1,4 @@
 module Settings
 
-SettingsView    1.0	    SettingsView.qml
-SettingsSection    1.0	    SettingsSection.qml
+SettingsView    	    SettingsView.qml
+SettingsSection    	    SettingsSection.qml

@@ -44,6 +44,14 @@ public:
 	void addMeasurement(QString userId, double weight, double chest, double shoulders, double arm,
 						double forearm, double waist, double hips, double peace, double calf);
 
+	void addCompletedTraining(User* user, QString trainingName);
+	void getUserCompletedTrainings(User* user);
+	void getUserCompletedExercises(QString trainingId);
+	void getUserUncompletedTrainings(User* user);
+	void deleteCompletedTraining(User* user);
+	void addCompletedExercise(QString trainingId, QString name, QList<QString> sets);
+	void completeTraining(QString trainingId);
+
 	//edit methods
 	void editTrainingPlan(QString planId, User* user, QString name, QString description, bool isDefault);
 	void editTraining(QString trainingId, User* user, QString name, QString planId);
@@ -79,6 +87,12 @@ signals:
 	void exercisesReceived(User* user, QString planId, QString trainingId, QList<Exercise*> exercises);
 	void exerciseReceived(User* user, QString planId, QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList);
 	void measurementsReceived(QString userId, QList<Measurement*> measurements);
+
+	void completedTrainingAdded(User* user);
+	void uncompletedTrainingIdReceived(QString id);
+	void trainingCompleted();
+	void completedTrainingsReceived(QList<Training*> trainingsList);
+	void completedExercisesReceived(QList<Exercise*> exercisesList);
 
 	void trainingPlanAdded(User* user);
 	void trainingAdded(User* user, QString planId);

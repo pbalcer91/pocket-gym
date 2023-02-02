@@ -1,0 +1,18 @@
+module Trainings
+
+TrainingPlanItem	    	    TrainingPlanItem.qml
+TrainingItem		    	    TrainingItem.qml
+ExerciseItem		    	    ExerciseItem.qml
+ExerciseSetItem		    	    ExerciseSetItem.qml
+
+EditTrainingPlanModal	    	    EditTrainingPlanModal.qml
+EditTrainingModal	    	    EditTrainingModal.qml
+EditExerciseModal	    	    EditExerciseModal.qml
+
+TrainingPlanDetails	    	    TrainingPlanDetails.qml
+TrainingDetails		    	    TrainingDetails.qml
+ExerciseDetails		    	    ExerciseDetails.qml
+
+TrainingsModel		    	    ../Models/TrainingsModel.qml
+ExercisesModel		    	    ../Models/ExercisesModel.qml
+
