@@ -45,6 +45,8 @@ public:
 						double forearm, double waist, double hips, double peace, double calf);
 
 	void addCompletedTraining(User* user, QString trainingName);
+	void getUserCompletedTrainings(User* user);
+	void getUserCompletedExercises(User* user, QString trainingId);
 	void getUserUncompletedTrainings(User* user);
 	void deleteCompletedTraining(User* user);
 	void addCompletedExercise(QString trainingId, QString name, QList<QString> sets);
@@ -89,6 +91,8 @@ signals:
 	void completedTrainingAdded(User* user);
 	void uncompletedTrainingIdReceived(QString id);
 	void trainingCompleted();
+	void completedTrainingsReceived(QList<Training*> trainingsList);
+	void completedExercisesReceived(QList<Exercise*> exercisesList);
 
 	void trainingPlanAdded(User* user);
 	void trainingAdded(User* user, QString planId);

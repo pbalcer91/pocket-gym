@@ -42,14 +42,60 @@ Item {
 		}
 
 		function onTrainingCompleted() {
-			//TODO:
-			//pobrac treningi i wyswietlic je
+			MainController.getDabaseCompletedTrainings(currentUser)
 		}
+
+		function onCompletedTrainingsReady(trainingsList) {
+			completedTrainingsModel.clear()
+			for (var i = trainingsList.length - 1; i >= 0; i--) {
+				if (completedTrainingsModel.count < 3)
+					completedTrainingsModel.append({"id": trainingsList[i].id,
+													   "date": trainingsList[i].getDate(),
+													   "name": trainingsList[i].name})
+
+				trainingsList[i].removeTraining()
+			}
+
+		}
+
+		function onCompletedExercisesReady(exercisesList) {
+			for (var i = 0; i < exercisesList.length; i++) {
+				trainingsSection.completedTrainingToShow.addExercise(exercisesList[i])
+			}
+
+			completedTrainingLoader.setSource("qrc:/qml/Home/TrainingSummaryModal.qml",
+											  {
+												  "training": trainingsSection.completedTrainingToShow,
+												  "title": getDateString(trainingsSection.completedTrainingToShow.getDate())
+														   + " - " + trainingsSection.completedTrainingToShow.name
+											  })
+		}
+	}
+
+	function getDateString(date) {
+		var day = ""
+
+		if (date.getDate() < 10)
+			day += "0"
+		day += date.getDate()
+
+		var month = ""
+
+		if (date.getDate() < 10)
+			month += "0"
+		month += date.getMonth() + 1
+
+		var year = ""
+
+		year += date.getFullYear()
+
+		return (day + "/" + month + "/" + year)
 	}
 
 	Component.onCompleted: {
 		MainController.getDatabaseUserTrainingPlans(currentUser)
 		MainController.getDatabaseUserTrainerId(currentUser.id)
+		MainController.getDabaseCompletedTrainings(currentUser)
 	}
 
 	ScrollView {
@@ -124,7 +170,7 @@ Item {
 					sectionButton.iconSize: 32
 
 					sectionButton.onClicked: {
-						loader.setSource("qrc:/qml/Home/EditTrainingPlanModal.qml",
+						loader.setSource("qrc:/qml/Home/Trainings/EditTrainingPlanModal.qml",
 										 {
 											 "user": currentUser,
 											 "plan": MainController.newTrainingPlan(currentUser.id)
@@ -146,7 +192,7 @@ Item {
 						implicitWidth: trainingPlansSection.listView.width
 
 						detailsButton.onClicked: {
-							loader.setSource("qrc:/qml/Home/TrainingPlanDetails.qml",
+							loader.setSource("qrc:/qml/Home/Trainings/TrainingPlanDetails.qml",
 											 {
 												 "user": currentUser,
 												 "planId": model.id
@@ -158,27 +204,39 @@ Item {
 				HomeSection {
 					id: trainingsSection
 
-					label: "Odbyte treningi"
+					label: "Ukończone treningi"
+
+					property Training completedTrainingToShow
 
 					Layout.leftMargin: Properties.smallMargin
 					Layout.rightMargin: Properties.smallMargin
 
 					sectionButton.icon.source: "qrc:/icons/ic_list.svg"
 
-					listView.emptyInfo: "Brak odbytych treningów"
+					listView.emptyInfo: "Brak ukończonych treningów"
 
-					listView.model: 0 /*TrainingsModel {
-						id: trainingsModel
+					listView.model: PListModel {
+						id: completedTrainingsModel
 
-						isInTrainingPlan: false
-					}*/
 
-					listView.delegate: TrainingPlanItem {
-						label: model.name
 
-						isSelected: model.isDefault
+						fillModel: function() {
+							return
+						}
+					}
+
+					listView.delegate: TrainingItem {
+						label: getDateString(model.date) + " - " + model.name
 
 						implicitWidth: trainingsSection.listView.width
+
+						detailsButton.onClicked: {
+							trainingsSection.completedTrainingToShow = MainController.newCompletedTraining()
+							trainingsSection.completedTrainingToShow.name = model.name
+							trainingsSection.completedTrainingToShow.setDate(model.date)
+
+							MainController.getDabaseCompletedExercises(currentUser, model.id)
+						}
 					}
 				}
 
@@ -200,7 +258,7 @@ Item {
 					horizontalAlignment: Text.AlignLeft
 
 					onClicked: {
-						loader.setSource("qrc:/qml/Home/PupilsListView.qml")
+						loader.setSource("qrc:/qml/Home/Trainers/PupilsListView.qml")
 					}
 				}
 
@@ -217,7 +275,7 @@ Item {
 					sectionButton.icon.source: "qrc:/icons/ic_list.svg"
 
 					sectionButton.onClicked: {
-						loader.setSource("qrc:/qml/Home/TrainersListView.qml")
+						loader.setSource("qrc:/qml/Home/Trainers/TrainersListView.qml")
 					}
 
 					UserTrainerPanel {
@@ -288,7 +346,7 @@ Item {
 		anchors.bottomMargin: 30
 		anchors.rightMargin: 30
 
-		text: "Trening"
+		text: "Trenuj"
 
 		onClicked: {
 			trainingSelectorModalLoader.setSource("qrc:/qml/Home/TrainingSelectorModal.qml",
@@ -309,6 +367,22 @@ Item {
 			})
 
 			loader.item.open()
+		}
+	}
+
+	Loader {
+		id: completedTrainingLoader
+
+		onLoaded: {
+			completedTrainingLoader.item.closed.connect(function() {
+				if (!completedTrainingLoader)
+					return
+				completedTrainingLoader.source = ""
+
+				trainingsSection.completedTrainingToShow.removeTraining()
+			})
+
+			completedTrainingLoader.item.open()
 		}
 	}
 

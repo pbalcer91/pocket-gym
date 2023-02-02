@@ -586,6 +586,91 @@ DatabaseHandler::addCompletedTraining(User *user, QString trainingName)
 }
 
 void
+DatabaseHandler::getUserCompletedTrainings(User *user)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "completedTrainings.json?orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		QList<Training*> trainingsList;
+
+		for (const auto &key : rootObject.keys()) {
+			auto trainingDocument = rootObject.value(key);
+			auto trainingObject = trainingDocument.toObject();
+
+			if (!trainingObject.value("completed").toBool())
+				continue;
+
+			long long timestamp = trainingObject.value("timestamp").toInteger();
+			QDateTime dateTime;
+			dateTime.setSecsSinceEpoch(timestamp);
+			QString name = trainingObject.value("name").toString();
+
+			Training* trainingToAdd = new Training();
+			trainingToAdd->setId(key);
+			trainingToAdd->setName(name);
+			trainingToAdd->setDate(dateTime);
+
+
+			trainingsList.push_back(trainingToAdd);
+		}
+
+		emit completedTrainingsReceived(trainingsList);
+	});
+}
+
+void
+DatabaseHandler::getUserCompletedExercises(User *user, QString trainingId)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "completedTrainings/" + trainingId + ".json")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		QList<Exercise*> exercisesList;
+
+		for (const auto &key : rootObject.keys()) {
+			if (key == "userId" || key == "name" || key == "timestamp" || key == "completed")
+				continue;
+
+			auto exercisetDocument = rootObject.value(key);
+			auto exerciseObject = exercisetDocument.toObject();
+
+			QString name = exerciseObject.value("name").toString();
+			QList<QString> setsList;
+
+			for (const auto &exerciseKey : exerciseObject.keys()) {
+				if (exerciseKey.toUInt()) {
+					auto set = exerciseObject.value(exerciseKey).toString();
+					setsList.push_back(set);
+				}
+			}
+
+			Exercise* exerciseToAdd = new Exercise();
+			exerciseToAdd->setName(name);
+			exerciseToAdd->replaceCompletedSetsList(setsList);
+
+			exercisesList.push_back(exerciseToAdd);
+		}
+
+		emit completedExercisesReceived(exercisesList);
+	});
+}
+
+void
 DatabaseHandler::getUserUncompletedTrainings(User* user)
 {
 	auto reply = m_networkManager->get(
@@ -600,7 +685,10 @@ DatabaseHandler::getUserUncompletedTrainings(User* user)
 		auto rootObject = rootDocument.object();
 
 		for (const auto &key : rootObject.keys()) {
-			if (rootObject.value("completed").toBool())
+			auto trainingDocument = rootObject.value(key);
+			auto trainingObject = trainingDocument.toObject();
+
+			if (trainingObject.value("completed").toBool())
 				continue;
 
 			emit uncompletedTrainingIdReceived(key);

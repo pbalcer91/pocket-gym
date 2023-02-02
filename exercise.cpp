@@ -142,6 +142,17 @@ Exercise::replaceSetsList(QList<QString> setList)
 	emit exerciseChanged();
 }
 
+void
+Exercise::replaceCompletedSetsList(QList<QString> setList)
+{
+	m_sets.clear();
+
+	for (const auto &set : setList) {
+		auto convertedSet = stringToByteArrayForCompleted(set);
+		m_sets.push_back(convertedSet);
+	}
+}
+
 int
 Exercise::getSetRepeats(QByteArray set)
 {
@@ -230,6 +241,36 @@ Exercise::stringToByteArray(QString bitsString)
 	}
 
 	result[result.size() - 1] = repeats;
+
+	return result;
+}
+
+QByteArray
+Exercise::stringToByteArrayForCompleted(QString bitString)
+{
+	auto result = QByteArray(2, 0);
+
+	char repeats = 0;
+
+	for (int i = 1; i < bitString.size(); i++) {
+		if (bitString[i] == '0')
+			continue;
+
+		repeats += static_cast<int>(pow(2, bitString.size() - i - 1));
+	}
+
+	result[0] = repeats;
+
+	char weight = 0;
+
+	for (int i = 1; i < bitString.size(); i++) {
+		if (bitString[i] == '0')
+			continue;
+
+		weight += static_cast<int>(pow(2, bitString.size() - i - 1));
+	}
+
+	result[1] = weight;
 
 	return result;
 }

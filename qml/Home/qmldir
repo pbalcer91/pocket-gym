@@ -1,34 +1,21 @@
 module Home
 
-HomeView		    1.0	    HomeView.qml
-HomeSection		    1.0	    HomeSection.qml
-EditTrainingPlanModal	    1.0	    EditTrainingPlanModal.qml
-EditTrainingModal	    1.0	    EditTrainingModal.qml
-EditExerciseModal	    1.0	    EditExerciseModal.qml
+HomeView		    	    HomeView.qml
+HomeSection		    	    HomeSection.qml
 
-TrainingSelectorModal	    1.0	    TrainingSelectorModal.qml
-TrainDialog		    1.0	    TrainDialog.qml
-TrainSetItem		    1.0	    TrainSetItem.qml
-TrainingSummaryModal	    1.0	    TrainingSummaryModal.qml
+TrainingSelectorModal	    	    TrainingSelectorModal.qml
+TrainDialog		    	    TrainDialog.qml
+TrainSetItem		    	    TrainSetItem.qml
+TrainingSummaryModal	    	    TrainingSummaryModal.qml
 
-TrainingPlanDetails	    1.0	    TrainingPlanDetails.qml
-TrainingDetails		    1.0	    TrainingDetails.qml
-ExerciseDetails		    1.0	    ExerciseDetails.qml
-PupilDetails		    1.0	    PupilDetails.qml
+EditTrainingPlanModal	    	    Trainings/EditTrainingPlanModal.qml
+TrainingPlanItem	    	    Trainings/TrainingPlanItem.qml
+TrainingItem			    Trainings/TrainingItem.qml
 
-TrainingPlanItem	    1.0	    TrainingPlanItem.qml
-TrainingItem		    1.0	    TrainingItem.qml
-ExerciseItem		    1.0	    ExerciseItem.qml
-ExerciseSetItem		    1.0	    ExerciseSetItem.qml
+TrainingPlansModel	    	    Models/TrainingPlansModel.qml
+TrainingsModel			    Models/TrainingsModel.qml
 
-TrainersListView	    1.0	    TrainersListView.qml
-TrainerItem		    1.0	    TrainerItem.qml
-PupilsListView		    1.0	    PupilsListView.qml
-PupilItem		    1.0	    PupilItem.qml
-UserTrainerPanel	    1.0	    UserTrainerPanel.qml
+UserTrainerPanel	    	    Trainers/UserTrainerPanel.qml
 
-TrainingPlansModel	    1.0	    Models/TrainingPlansModel.qml
-TrainingsModel		    1.0	    Models/TrainingsModel.qml
-ExercisesModel		    1.0	    Models/ExercisesModel.qml
-TrainersModel		    1.0	    Models/TrainersModel.qml
-PupilsModel		    1.0	    Models/PupilsModel.qml
+
+

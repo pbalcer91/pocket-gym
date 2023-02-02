@@ -1,0 +1,25 @@
+module Trainers
+
+HomeSection		    	    ../HomeSection.qml
+
+TrainingPlanItem	    	    ../Trainings/TrainingPlanItem.qml
+TrainingItem		    	    ../Trainings/TrainingItem.qml
+ExerciseItem		    	    ../Trainings/ExerciseItem.qml
+ExerciseSetItem		    	    ../Trainings/ExerciseSetItem.qml
+PupilItem		    	    PupilItem.qml
+TrainerItem		    	    TrainerItem.qml
+
+EditTrainingPlanModal	    	    ../Trainings/EditTrainingPlanModal.qml
+EditTrainingModal	    	    ../Trainings/EditTrainingModal.qml
+EditExerciseModal	    	    ../Trainings/EditExerciseModal.qml
+
+TrainingPlanDetails	    	    ../Trainings/TrainingPlanDetails.qml
+TrainingDetails		    	    ../Trainings/TrainingDetails.qml
+ExerciseDetails		    	    ../Trainings/ExerciseDetails.qml
+PupilDetails			    PupilDetails.qml
+
+TrainingPlansModel	    	    ../Models/TrainingPlansModel.qml
+TrainingsModel		    	    ../Models/TrainingsModel.qml
+ExercisesModel		    	    ../Models/ExercisesModel.qml
+PupilsModel		    	    ../Models/PupilsModel.qml
+TrainersModel		    	    ../Models/TrainersModel.qml

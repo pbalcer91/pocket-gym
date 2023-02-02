@@ -89,7 +89,7 @@ PDialog {
 					sectionButton.iconSize: 32
 
 					sectionButton.onClicked: {
-						loader.setSource("qrc:/qml/Home/EditTrainingPlanModal.qml",
+						loader.setSource("qrc:/qml/Home/Trainings/EditTrainingPlanModal.qml",
 										 {
 											 "user": pupil,
 											 "plan": MainController.newTrainingPlan(pupil.id)
@@ -111,7 +111,7 @@ PDialog {
 						implicitWidth: trainingPlansSection.listView.width
 
 						detailsButton.onClicked: {
-							loader.setSource("qrc:/qml/Home/TrainingPlanDetails.qml",
+							loader.setSource("qrc:/qml/Home/Trainings/TrainingPlanDetails.qml",
 											 {
 												 "user": pupil,
 												 "planId": model.id

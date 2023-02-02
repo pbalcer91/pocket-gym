@@ -25,13 +25,13 @@ public:
 	QString name() const;
 	QString ownerId() const;
 	QString planId() const;
-	QDateTime getDate() const;
+	Q_INVOKABLE QDateTime getDate() const;
 
 	void setId(QString id);
 	void setName(QString name);
 	void setOwnerId(QString oownerIdwner);
 	void setPlanId(QString planId);
-	void setDate(QDateTime date);
+	Q_INVOKABLE void setDate(QDateTime date);
 
 	Q_INVOKABLE void addExercise(Exercise* exercise);
 	Q_INVOKABLE QList<Exercise*> getAllExercises();
