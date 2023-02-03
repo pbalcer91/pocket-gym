@@ -15,5 +15,6 @@ PCalendarForm	    		PCalendarForm.ui.qml
 PListView	    		PListView.qml
 PTimerModal	    		PTimerModal.qml
 PTimeSelector	    		PTimeSelector.qml
+PBusyIndicator			PBusyIndicator.qml
 
 PMainLayout	    		PMainLayout.qml
