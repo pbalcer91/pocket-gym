@@ -3,7 +3,8 @@
 
 MainController::MainController(QObject *parent)
 	: QObject{parent},
-	  m_database(new DatabaseHandler(this))
+	  m_database(new DatabaseHandler(this)),
+	  m_settings(new QSettings(this))
 {
 	QObject::connect(m_database, &DatabaseHandler::signUpFailed,
 					 this, [this](DatabaseHandler::SING_UP_ERROR errorMessage) {
@@ -59,8 +60,11 @@ MainController::MainController(QObject *parent)
 	});
 
 	QObject::connect(m_database, &DatabaseHandler::signInSucceed,
-					 this, [this](QString email) {
-		emit signInSucceed(email);
+					 this, [this](QString email, QString password) {
+		m_settings->setValue(EMAIL, email.toLower());
+		m_settings->setValue(PASSWORD, password);
+
+		emit signInSucceed(email.toLower());
 	});
 
 	QObject::connect(m_database, &DatabaseHandler::userLoggedIn,
@@ -373,6 +377,18 @@ MainController::getCurrentUser()
 	return m_currentUser;
 }
 
+void
+MainController::autoLogIn()
+{
+	QString email =  m_settings->value(EMAIL, "").toString().toLower();
+	QString password = m_settings->value(PASSWORD, "").toString();
+
+	if (email == "" || password == "")
+		return;
+
+	signInUser(email, password);
+}
+
 TrainingPlan*
 MainController::newTrainingPlan(QString ownerId)
 {
@@ -452,27 +468,25 @@ MainController::getCurrentUserLastMeasurement()
 void
 MainController::signUpUser(QString email, QString password)
 {
-	m_database->signUserUp("piotrbalcer@gmail.com", "Haslo12!");
-	//m_database->signUserUp(email, password);
+	m_database->signUserUp(email, password);
 }
 
 void
 MainController::signInUser(QString email, QString password)
 {
-	m_database->signUserIn("piotrbalcer@gmail.com", "Haslo12!");
-	//m_database->signUserIn(email, password);
+	m_database->signUserIn(email, password);
 }
 
 void
 MainController::getDatabaseUserByEmail(QString email)
 {
-	m_database->getUserByEmail(email);
+	m_database->getUserByEmail(email.toLower());
 }
 
 void
 MainController::addDatabaseUser(QString email, bool isTrainer)
 {
-	m_database->addUser(email, isTrainer);
+	m_database->addUser(email.toLower(), isTrainer);
 }
 
 void

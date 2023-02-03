@@ -97,7 +97,7 @@ signals:
 	void signUpSucceed();
 
 	void signInFailed(DatabaseHandler::SING_IN_ERROR errorCode);
-	void signInSucceed(QString email);
+	void signInSucceed(QString email, QString password);
 
 	void usernameVerificationReceived(bool isAvailable);
 	void usernameChanged();
