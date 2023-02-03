@@ -83,6 +83,7 @@ TextField {
 		radius: 20
 
 		Rectangle {
+			id: innerBackground
 			anchors.fill: parent
 			radius: parent.radius
 
@@ -110,4 +111,27 @@ TextField {
 		anchors.leftMargin: 16
 		anchors.rightMargin: 48
 	}
+
+	states: [
+		State {
+			name: "error"
+			PropertyChanges {
+				target: (textField.background as Rectangle)
+				border.color: Colors.errorBorder
+				border.width: 1
+			}
+			PropertyChanges {
+				target: innerBackground
+				color: Colors.error
+				visible: true
+				opacity: 0.5
+			}
+			PropertyChanges {
+				target: label
+				color: ((textField.activeFocus && !textField.readOnly) ?
+							Colors.black
+						  : Colors.error)
+			}
+		}
+	]
 }

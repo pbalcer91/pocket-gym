@@ -21,8 +21,27 @@ public:
 	explicit DatabaseHandler(QObject *parent = nullptr);
 	~DatabaseHandler();
 
+	enum SING_UP_ERROR {
+		SU_UNKNOWN_ERROR					= 0,
+		SU_EMAIL_EXISTS						= 1,
+		SU_TOO_MANY_ATTEMPTS_TRY_LATER		= 2
+	};
+
+	enum SING_IN_ERROR {
+		SI_UNKNOWN_ERROR					= 0,
+		SI_EMAIL_NOT_FOUND					= 1,
+		SI_INVALID_PASSWORD					= 2,
+		SI_USER_DISABLED					= 3
+	};
+
+	void signUserUp(const QString &email, const QString &password);
+	void signUserIn(const QString &email, const QString &password);
+
+	void checkIsUsernameAvailable(QString username);
+	void changeUsername(QString userId, QString email, QString username, bool isTrainer);
+
 	//get methods
-	void getUserByLogIn(QString email, QString password);
+	void getUserByEmail(QString email);
 	void getTrainerById(QString trainerId);
 	void getTrainers();
 	void getUserTrainerId(QString userId);
@@ -37,7 +56,7 @@ public:
 	void getMeasurementsByUser(User* user);
 
 	//add methods
-	void addUser(QString username, QString email, QString password, bool isTrainer);
+	void addUser(QString email, bool isTrainer);
 	void addTrainingPlan(User* user, QString name, QString description, bool isDefault);
 	void addTraining(User* user, QString name, QString planId);
 	void addExercise(User* user, QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets);
@@ -74,7 +93,16 @@ public:
 	void deleteTrainerFromPupil(QString trainerId, QString pupilId);
 
 signals:
-	void userLoggedIn(QString id, QString username, QString email, QString password, bool isTrainer);
+	void signUpFailed(DatabaseHandler::SING_UP_ERROR errorCode);
+	void signUpSucceed();
+
+	void signInFailed(DatabaseHandler::SING_IN_ERROR errorCode);
+	void signInSucceed(QString email);
+
+	void usernameVerificationReceived(bool isAvailable);
+	void usernameChanged();
+
+	void userLoggedIn(QString id, QString username, QString email, bool isTrainer);
 	void trainersReceived(QVariantMap trainersList);
 	void trainerReceived(QString id, QString username);
 	void userTrainerIdReceived(QString trainerId, QString trainerUsername, bool isConfirmed);
@@ -98,7 +126,7 @@ signals:
 	void trainingAdded(User* user, QString planId);
 	void exerciseAdded(User* user, QString planId, QString trainingId);
 	void measurementAdded(User* user);
-	void userAdded();
+	void userAdded(QString email);
 
 	void trainingPlanChanged(User* user, QString planId);
 	void trainingChanged(User* user, QString trainingId);
@@ -115,8 +143,9 @@ signals:
 
 private:
 	QNetworkAccessManager* m_networkManager;
-	std::shared_ptr<QMetaObject::Connection> m_connection;
 	QString m_url;
+	QString m_apiKey;
+	QString m_idToken;
 };
 
 #endif // DATABASEHANDLER_H

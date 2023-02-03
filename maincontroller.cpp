@@ -5,9 +5,67 @@ MainController::MainController(QObject *parent)
 	: QObject{parent},
 	  m_database(new DatabaseHandler(this))
 {
+	QObject::connect(m_database, &DatabaseHandler::signUpFailed,
+					 this, [this](DatabaseHandler::SING_UP_ERROR errorMessage) {
+		switch (errorMessage) {
+			case DatabaseHandler::SU_EMAIL_EXISTS:
+				emit signUpFailed(MainController::SU_EMAIL_EXISTS);
+				return;
+			case DatabaseHandler::SU_TOO_MANY_ATTEMPTS_TRY_LATER:
+				emit signUpFailed(MainController::SU_TOO_MANY_ATTEMPTS_TRY_LATER);
+				break;
+			case DatabaseHandler::SU_UNKNOWN_ERROR:
+				emit signUpFailed(MainController::SU_UNKNOWN_ERROR);
+				break;
+		}
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::signUpSucceed,
+					 this, [this]() {
+		emit signUpSucceed();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::signInFailed,
+					 this, [this](DatabaseHandler::SING_IN_ERROR errorMessage) {
+		switch (errorMessage) {
+			case DatabaseHandler::SI_UNKNOWN_ERROR:
+				emit signInFailed(MainController::SI_UNKNOWN_ERROR);
+				return;
+			case DatabaseHandler::SI_EMAIL_NOT_FOUND:
+				emit signInFailed(MainController::SI_EMAIL_NOT_FOUND);
+				break;
+			case DatabaseHandler::SI_INVALID_PASSWORD:
+				emit signInFailed(MainController::SI_INVALID_PASSWORD);
+				break;
+			case DatabaseHandler::SI_USER_DISABLED:
+				emit signInFailed(MainController::SI_USER_DISABLED);
+				break;
+		}
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userAdded,
+					 this, [this](QString email) {
+		emit userAdded(email);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::usernameVerificationReceived,
+					 this, [this](bool isAvailable) {
+		emit usernameVerificationReceived(isAvailable);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::usernameChanged,
+					 this, [this]() {
+		emit usernameChanged();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::signInSucceed,
+					 this, [this](QString email) {
+		emit signInSucceed(email);
+	});
+
 	QObject::connect(m_database, &DatabaseHandler::userLoggedIn,
-					 this, [this](QString id, QString username, QString email, QString password, bool isTrainer) {
-		m_currentUser = new User(this, id, username, email, password, isTrainer);
+					 this, [this](QString id, QString username, QString email, bool isTrainer) {
+		m_currentUser = new User(this, id, username, email, isTrainer);
 
 		emit currentUserReady();
 	});
@@ -392,9 +450,41 @@ MainController::getCurrentUserLastMeasurement()
 }
 
 void
-MainController::getDatabaseUserByLogIn(QString email, QString password)
+MainController::signUpUser(QString email, QString password)
 {
-	m_database->getUserByLogIn(email, password);
+	m_database->signUserUp("piotrbalcer@gmail.com", "Haslo12!");
+	//m_database->signUserUp(email, password);
+}
+
+void
+MainController::signInUser(QString email, QString password)
+{
+	m_database->signUserIn("piotrbalcer@gmail.com", "Haslo12!");
+	//m_database->signUserIn(email, password);
+}
+
+void
+MainController::getDatabaseUserByEmail(QString email)
+{
+	m_database->getUserByEmail(email);
+}
+
+void
+MainController::addDatabaseUser(QString email, bool isTrainer)
+{
+	m_database->addUser(email, isTrainer);
+}
+
+void
+MainController::checkIsUsernameAvailable(QString username)
+{
+	m_database->checkIsUsernameAvailable(username);
+}
+
+void
+MainController::changeDatabaseUsername(QString userId, QString email, QString username, bool isTrainer)
+{
+	m_database->changeUsername(userId, email, username, isTrainer);
 }
 
 void

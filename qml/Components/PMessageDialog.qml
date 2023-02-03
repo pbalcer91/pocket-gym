@@ -9,6 +9,8 @@ Drawer {
 
 	parent: Overlay.overlay
 
+	property int animationDuration: 100
+
 	interactive: false
 
 	modal: true
@@ -23,7 +25,7 @@ Drawer {
 
 	Behavior on height {
 		NumberAnimation {
-			duration: 100
+			duration: animationDuration
 		}
 	}
 

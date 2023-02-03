@@ -67,5 +67,9 @@
         <file>qml/Home/Trainings/qmldir</file>
         <file>qml/Home/CompletedTrainingsListView.qml</file>
         <file>qml/Progress/MeasurementsHistoryDialog.qml</file>
+        <file>qml/LogInView.qml</file>
+        <file>qml/RegisterDialog.qml</file>
+        <file>qml/Notification.qml</file>
+        <file>qml/FirstLogInModal.qml</file>
     </qresource>
 </RCC>

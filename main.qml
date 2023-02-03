@@ -19,7 +19,7 @@ ApplicationWindow {
 	  CC Licence
 	*/
 
-	onClosing: (close) => {
+	onClosing: function(close) {
 		console.warn("Closing app is blocked by developer")
 		close.accepted = false
 	}
@@ -29,7 +29,21 @@ ApplicationWindow {
 		anchors.fill: parent
 		visible: true
 		asynchronous: true
+	}
 
-		source: "qrc:/qml/AppWindow.qml"
+	Loader {
+		id: logInLoader
+		anchors.fill: parent
+		visible: true
+		asynchronous: true
+
+		source: "qrc:/qml/LogInView.qml"
+
+		onLoaded: {
+			logInLoader.item.loggedIn.connect(function() {
+				appLoader.source = "qrc:/qml/AppWindow.qml"
+				source = ""
+			})
+		}
 	}
 }
