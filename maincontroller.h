@@ -2,9 +2,13 @@
 #define MAINCONTROLLER_H
 
 #include <QObject>
+#include <QSettings>
 
 #include "user.h"
 #include "databasehandler.h"
+
+#define EMAIL				QStringLiteral("main/email")
+#define PASSWORD			QStringLiteral("main/password")
 
 class MainController : public QObject
 {
@@ -42,6 +46,8 @@ public:
 	QVariantMap trainersList() const;
 
 	Q_INVOKABLE User* getCurrentUser();
+
+	Q_INVOKABLE void autoLogIn();
 
 	Q_INVOKABLE TrainingPlan* newTrainingPlan(QString ownerId);
 	Q_INVOKABLE Training* newTraining(QString ownerId, QString planId);
@@ -143,6 +149,7 @@ private:
 	User* m_currentUser;
 	QVariantMap m_trainersList;
 
+	QSettings* m_settings;
 };
 
 #endif // MAINCONTROLLER_H

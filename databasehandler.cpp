@@ -89,7 +89,7 @@ DatabaseHandler::signUserIn(const QString &email, const QString &password)
 	auto reply = m_networkManager->post(request, jsonDoc.toJson());
 
 	QObject::connect(reply, &QNetworkReply::finished,
-					 this, [this, email, reply](){
+					 this, [this, email, password, reply](){
 		reply->deleteLater();
 
 		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
@@ -124,7 +124,7 @@ DatabaseHandler::signUserIn(const QString &email, const QString &password)
 
 		m_idToken = rootObject.value("idToken").toString();
 
-		emit signInSucceed(email);
+		emit signInSucceed(email.toLower(), password);
 	});
 }
 
@@ -160,7 +160,7 @@ void
 DatabaseHandler::changeUsername(QString userId, QString email, QString username, bool isTrainer)
 {
 	QVariantMap userDatabase;
-	userDatabase["email"] = email;
+	userDatabase["email"] = email.toLower();
 	userDatabase["username"] = username;
 	userDatabase["isTrainer"] = isTrainer;
 
@@ -184,7 +184,7 @@ DatabaseHandler::getUserByEmail(QString email)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "users.json?auth=" + m_idToken + "&orderBy=\"email\"&equalTo=\"" + email + "\"")));
+					QUrl(m_url + "users.json?auth=" + m_idToken + "&orderBy=\"email\"&equalTo=\"" + email.toLower() + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, reply](){
@@ -202,7 +202,7 @@ DatabaseHandler::getUserByEmail(QString email)
 			QString email = userObject.value("email").toString();
 			bool isTrainer = userObject.value("isTrainer").toBool();
 
-			emit userLoggedIn(id, username, email, isTrainer);
+			emit userLoggedIn(id, username, email.toLower(), isTrainer);
 
 			return;
 		}
@@ -599,7 +599,7 @@ void
 DatabaseHandler::addUser(QString email, bool isTrainer)
 {
 	QVariantMap databaseUser;
-	databaseUser["email"] = email;
+	databaseUser["email"] = email.toLower();
 	databaseUser["isTrainer"] = isTrainer;
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseUser);
@@ -611,7 +611,7 @@ DatabaseHandler::addUser(QString email, bool isTrainer)
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, email, reply](){
 		reply->deleteLater();
-		emit userAdded(email);
+		emit userAdded(email.toLower());
 	});
 }
 

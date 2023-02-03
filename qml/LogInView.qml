@@ -59,6 +59,10 @@ Page {
 		}
 	}
 
+	Component.onCompleted: {
+		MainController.autoLogIn()
+	}
+
 	ColumnLayout {
 		id: mainColumn
 
