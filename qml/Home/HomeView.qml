@@ -142,22 +142,20 @@ Item {
 					RowLayout {
 						anchors.fill: parent
 
+						anchors.topMargin: 16
+						anchors.bottomMargin: 16
 						anchors.leftMargin: Properties.margin
 						anchors.rightMargin: Properties.margin
 
-						PLabel {
-							id: title
-
-							font: Fonts.title
-							lineHeight: Fonts.titleHeight
-
-							color: Colors.text
-
-							text: "Pocket Gym"
-						}
-
-						Item {
+						Image {
+							Layout.fillHeight: true
 							Layout.fillWidth: true
+
+							Layout.alignment: Qt.AlignCenter
+
+							source: "qrc:/images/appName.png"
+							fillMode: Image.PreserveAspectFit
+							smooth: true
 						}
 					}
 				}

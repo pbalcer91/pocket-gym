@@ -71,5 +71,6 @@
         <file>qml/RegisterDialog.qml</file>
         <file>qml/Notification.qml</file>
         <file>qml/FirstLogInModal.qml</file>
+        <file>qml/Components/PBusyIndicator.qml</file>
     </qresource>
 </RCC>

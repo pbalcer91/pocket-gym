@@ -16,7 +16,7 @@ Page {
 
 	signal loggedIn
 
-	property real globalOpacity: 1.0
+	property real globalOpacity: 0.0
 
 	Behavior on globalOpacity {
 		NumberAnimation {
@@ -60,7 +60,74 @@ Page {
 	}
 
 	Component.onCompleted: {
-		MainController.autoLogIn()
+		logo.opacity = 1.0
+	}
+
+	PBusyIndicator {
+		size: 350
+
+		onSpinnersStopped: {
+			MainController.autoLogIn()
+			opacity = 0.0
+			logo.state = "ready"
+			devLabel.visible = false
+			globalOpacity = 1.0
+		}
+	}
+
+	Image {
+		id: logo
+
+		anchors.verticalCenter: parent.verticalCenter
+		anchors.left: parent.left
+		anchors.right: parent.right
+
+		anchors.topMargin: 72
+		anchors.bottomMargin: 72
+		anchors.leftMargin: 72
+		anchors.rightMargin: 72
+
+		opacity: 0.0
+
+		source: "qrc:/images/logo.png"
+		fillMode: Image.PreserveAspectFit
+		smooth: true
+
+		transitions: Transition {
+			AnchorAnimation {
+				duration: 1000
+			}
+		}
+
+		Behavior on opacity {
+			NumberAnimation {
+				duration: 2000
+			}
+		}
+
+		states: State {
+			name: "ready"
+			AnchorChanges {
+				target: logo
+
+				anchors.top: logo.parent.top
+				anchors.verticalCenter: undefined
+			}
+		}
+	}
+
+	PLabel {
+		id: devLabel
+
+		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.bottomMargin: 72
+		horizontalAlignment: Text.AlignHCenter
+
+		font: Fonts.info
+		lineHeight: Fonts.infoHeight
+
+		text: "Created by\nPiotr Balcer"
 	}
 
 	ColumnLayout {
@@ -68,25 +135,15 @@ Page {
 
 		width: parent.width
 
-		anchors.centerIn: parent
+		anchors.top: logo.bottom
+		anchors.bottom: parent.bottom
+		anchors.left: parent.left
+		anchors.right: parent.right
+
+		anchors.topMargin: 72
+		anchors.bottomMargin: 72
 
 		spacing: Properties.margin
-
-		Image {
-			id: logo
-
-			Layout.alignment: Qt.AlignHCenter
-
-			Layout.fillWidth: true
-			Layout.leftMargin: 72
-			Layout.rightMargin: 72
-
-			height: implicitWidth
-
-			source: "qrc:/images/logo.png"
-			fillMode: Image.PreserveAspectFit
-			smooth: true
-		}
 
 		PTextField {
 			id: emailField
