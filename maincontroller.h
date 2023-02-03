@@ -19,6 +19,21 @@ public:
 	explicit MainController(QObject *parent = nullptr);
 	~MainController();
 
+	enum SU_ERROR {
+		SU_UNKNOWN_ERROR					= 0,
+		SU_EMAIL_EXISTS						= 1,
+		SU_TOO_MANY_ATTEMPTS_TRY_LATER		= 2
+	};
+	Q_ENUM(SU_ERROR)
+
+	enum SI_ERROR {
+		SI_UNKNOWN_ERROR					= 0,
+		SI_EMAIL_NOT_FOUND					= 1,
+		SI_INVALID_PASSWORD					= 2,
+		SI_USER_DISABLED					= 3
+	};
+	Q_ENUM(SI_ERROR)
+
 	static MainController* instance();
 
 	DatabaseHandler* database() const;
@@ -26,7 +41,6 @@ public:
 	User* currentUser() const;
 	QVariantMap trainersList() const;
 
-	//TODO: metody z useren do poprawienia
 	Q_INVOKABLE User* getCurrentUser();
 
 	Q_INVOKABLE TrainingPlan* newTrainingPlan(QString ownerId);
@@ -46,7 +60,14 @@ public:
 	Q_INVOKABLE Measurement* getCurrentUserLastMeasurement();
 
 	//DATABASE INTERFACE
-	Q_INVOKABLE void getDatabaseUserByLogIn(QString email, QString password);
+	Q_INVOKABLE void signUpUser(QString email, QString password);
+	Q_INVOKABLE void signInUser(QString email, QString password);
+
+	Q_INVOKABLE void getDatabaseUserByEmail(QString email);
+	Q_INVOKABLE void addDatabaseUser( QString email, bool isTrainer);
+	Q_INVOKABLE void checkIsUsernameAvailable(QString username);
+	Q_INVOKABLE void changeDatabaseUsername(QString userId, QString email, QString username, bool isTrainer);
+
 	Q_INVOKABLE void getDatabaseTrainers();
 	Q_INVOKABLE void getDatabaseUserTrainingPlans(User* user);
 	Q_INVOKABLE void getDatabaseTrainingsByPlanId(User* user, QString planId);
@@ -87,6 +108,17 @@ public:
 	Q_INVOKABLE User* createPupilInstance(QObject* parent, QString pupilId, QString pupilUsername);
 
 signals:
+	void signUpFailed(MainController::SU_ERROR errorCode);
+	void signUpSucceed();
+
+	void signInFailed(MainController::SI_ERROR errorCode);
+	void signInSucceed(QString email);
+
+	void usernameChanged();
+
+	void userAdded(QString email);
+	void usernameVerificationReceived(bool isAvailable);
+
 	void currentUserChanged();
 	void trainersListChanged();
 

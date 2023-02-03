@@ -70,5 +70,6 @@
         <file>qml/LogInView.qml</file>
         <file>qml/RegisterDialog.qml</file>
         <file>qml/Notification.qml</file>
+        <file>qml/FirstLogInModal.qml</file>
     </qresource>
 </RCC>

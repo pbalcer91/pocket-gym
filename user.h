@@ -15,7 +15,6 @@ class User : public QObject
 	Q_PROPERTY(QString id READ id WRITE setId NOTIFY userDataChanged)
 	Q_PROPERTY(QString name READ name WRITE setName NOTIFY userDataChanged)
 	Q_PROPERTY(QString email READ email WRITE setEmail NOTIFY userDataChanged)
-	Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY userDataChanged)
 	Q_PROPERTY(QList<Measurement*> measurements READ measurements NOTIFY userDataChanged)
 	Q_PROPERTY(bool isTrainer READ isTrainer WRITE setIsTrainer NOTIFY userDataChanged)
 	Q_PROPERTY(QList<QString> pupilsIds READ pupilsIds NOTIFY userDataChanged)
@@ -27,13 +26,12 @@ public:
 	explicit User(QObject *parent = nullptr);
 	explicit User(QObject *parent, QString id);
 	explicit User(QObject *parent, QString id, QString username);
-	User(QObject* parent, QString id, QString username, QString email, QString password, bool isTrainer);
+	User(QObject* parent, QString id, QString username, QString email, bool isTrainer);
 	~User();
 
 	QString id() const;
 	QString name() const;
 	QString email() const;
-	QString password() const;
 	QList<Measurement*> measurements() const;
 	bool isTrainer() const;
 	QList<QString> pupilsIds() const;
@@ -44,7 +42,6 @@ public:
 	void setId(QString id);
 	void setName(QString name);
 	void setEmail(QString email);
-	void setPassword(QString password);
 	void setIsTrainer(bool isTrainer);
 	void setTrainerId(QString trainerId);
 	void setTrainerUsername(QString username);
@@ -96,7 +93,6 @@ private:
 	QString m_id;
 	QString m_name;
 	QString m_email;
-	QString m_password;
 	bool m_isTrainer;
 	QList<QString> m_pupilsIds;
 	QString m_trainerId;

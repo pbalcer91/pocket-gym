@@ -7,7 +7,6 @@ User::User(QObject *parent)
 	  m_id(""),
 	  m_name(""),
 	  m_email(""),
-	  m_password(""),
 	  m_isTrainer(false),
 	  m_trainerId(""),
 	  m_trainerUsername("")
@@ -26,13 +25,12 @@ User::User(QObject *parent, QString id, QString username)
 	  m_name(username)
 {}
 
-User::User(QObject *parent, QString id, QString username, QString email, QString password, bool isTrainer)
+User::User(QObject *parent, QString id, QString username, QString email, bool isTrainer)
 	: QObject{parent},
 	  m_trainingsManager(new UserTrainingsManager()),
 	  m_id(id),
 	  m_name(username),
 	  m_email(email),
-	  m_password(password),
 	  m_isTrainer(isTrainer),
 	  m_trainerId(""),
 	  m_trainerUsername("")
@@ -59,12 +57,6 @@ QString
 User::email() const
 {
 	return m_email;
-}
-
-QString
-User::password() const
-{
-	return m_password;
 }
 
 QList<Measurement*>
@@ -126,15 +118,6 @@ User::setEmail(QString email)
 {
 	if (email != m_email)
 		m_email = email;
-
-	emit userDataChanged();
-}
-
-void
-User::setPassword(QString password)
-{
-	if (password != m_password)
-		m_password = password;
 
 	emit userDataChanged();
 }

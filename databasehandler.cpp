@@ -9,8 +9,8 @@
 DatabaseHandler::DatabaseHandler(QObject *parent)
 	: QObject{parent},
 	  m_networkManager(new QNetworkAccessManager(this)),
-	  m_connection(std::make_shared<QMetaObject::Connection>()),
-	  m_url("https://pocket-gym-b561a-default-rtdb.europe-west1.firebasedatabase.app/")
+	  m_url("https://pocket-gym-b561a-default-rtdb.europe-west1.firebasedatabase.app/"),
+	  m_apiKey("AIzaSyAa6IKwcf3b-HOIL9f1DYbZZDLROOl13Ds")
 {}
 
 DatabaseHandler::~DatabaseHandler()
@@ -19,14 +19,124 @@ DatabaseHandler::~DatabaseHandler()
 }
 
 void
-DatabaseHandler::getUserByLogIn(QString email, QString password)
+DatabaseHandler::signUserUp(const QString &email, const QString &password)
+{
+	QString signUpEndPoint = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + m_apiKey;
+
+	QVariantMap variantPayload;
+	variantPayload["email"] = email;
+	variantPayload["password"] = password;
+	variantPayload["returnSecureToken"] = true;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(variantPayload);
+
+	QNetworkRequest request((QUrl(signUpEndPoint)));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		for (const auto &key : rootObject.keys()) {
+			if (key == "error") {
+				auto errorDocument = rootObject.value(key);
+				auto errorObject = errorDocument.toObject();
+
+				QString errorMessage = errorObject.value("message").toString();
+
+				if (errorMessage == "EMAIL_EXISTS") {
+					emit signUpFailed(SU_EMAIL_EXISTS);
+					return;
+				}
+
+				if (errorMessage == "TOO_MANY_ATTEMPTS_TRY_LATER") {
+					emit signUpFailed(SU_TOO_MANY_ATTEMPTS_TRY_LATER);
+					return;
+				}
+
+				emit signUpFailed(SU_UNKNOWN_ERROR);
+				return;
+			}
+		}
+
+		m_idToken = rootObject.value("idToken").toString();
+
+		emit signUpSucceed();
+	});
+
+}
+
+void
+DatabaseHandler::signUserIn(const QString &email, const QString &password)
+{
+	QString signInEndPoint = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + m_apiKey;
+
+	QVariantMap variantPayload;
+	variantPayload["email"] = email;
+	variantPayload["password"] = password;
+	variantPayload["returnSecureToken"] = true;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(variantPayload);
+
+	QNetworkRequest request((QUrl(signInEndPoint)));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, email, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		for (const auto &key : rootObject.keys()) {
+			if (key == "error") {
+				auto errorDocument = rootObject.value(key);
+				auto errorObject = errorDocument.toObject();
+
+				QString errorMessage = errorObject.value("message").toString();
+
+				if (errorMessage == "EMAIL_NOT_FOUND") {
+					emit signInFailed(SI_EMAIL_NOT_FOUND);
+					return;
+				}
+
+				if (errorMessage == "USER_DISABLED") {
+					emit signInFailed(SI_USER_DISABLED);
+					return;
+				}
+
+				if (errorMessage == "INVALID_PASSWORD") {
+					emit signInFailed(SI_INVALID_PASSWORD);
+					return;
+				}
+
+				emit signInFailed(SI_UNKNOWN_ERROR);
+				return;
+			}
+		}
+
+		m_idToken = rootObject.value("idToken").toString();
+
+		emit signInSucceed(email);
+	});
+}
+
+void
+DatabaseHandler::checkIsUsernameAvailable(QString username)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "users.json?orderBy=\"email\"&equalTo=\"" + email + "\"")));
+					QUrl(m_url + "users.json?auth=" + m_idToken)));
 
 	QObject::connect(reply, &QNetworkReply::finished,
-					 this, [this, password, reply](){
+					 this, [this, username, reply](){
 		reply->deleteLater();
 
 		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
@@ -36,16 +146,63 @@ DatabaseHandler::getUserByLogIn(QString email, QString password)
 			auto userDocument = rootObject.value(key);
 			auto userObject = userDocument.toObject();
 
-			if (userObject.value("password").toString() != password)
+			if (userObject.value("username").toString() == username) {
+				emit usernameVerificationReceived(false);
 				return;
+			}
+		}
+
+		emit usernameVerificationReceived(true);
+	});
+}
+
+void
+DatabaseHandler::changeUsername(QString userId, QString email, QString username, bool isTrainer)
+{
+	QVariantMap userDatabase;
+	userDatabase["email"] = email;
+	userDatabase["username"] = username;
+	userDatabase["isTrainer"] = isTrainer;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(userDatabase);
+
+	QNetworkRequest request(QUrl(m_url + "users/" + userId + ".json?auth=" + m_idToken));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->put(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		emit usernameChanged();
+	});
+}
+
+void
+DatabaseHandler::getUserByEmail(QString email)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "users.json?auth=" + m_idToken + "&orderBy=\"email\"&equalTo=\"" + email + "\"")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		for (const auto &key : rootObject.keys()) {
+			auto userDocument = rootObject.value(key);
+			auto userObject = userDocument.toObject();
 
 			QString id = key;
 			QString username = userObject.value("username").toString();
 			QString email = userObject.value("email").toString();
-			QString password = userObject.value("password").toString();
 			bool isTrainer = userObject.value("isTrainer").toBool();
 
-			emit userLoggedIn(id, username, email, password, isTrainer);
+			emit userLoggedIn(id, username, email, isTrainer);
 
 			return;
 		}
@@ -57,7 +214,7 @@ DatabaseHandler::getTrainerById(QString trainerId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "users.json?orderBy=\"isTrainer\"&equalTo=true")));
+					QUrl(m_url + "users.json?auth=" + m_idToken + "&orderBy=\"isTrainer\"&equalTo=true")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, trainerId, reply](){
@@ -87,7 +244,7 @@ DatabaseHandler::getTrainers()
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "users.json?orderBy=\"isTrainer\"&equalTo=true")));
+					QUrl(m_url + "users.json?auth=" + m_idToken + "&orderBy=\"isTrainer\"&equalTo=true")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, reply](){
@@ -117,7 +274,7 @@ DatabaseHandler::getUserTrainerId(QString userId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "users.json?orderBy=\"isTrainer\"&equalTo=true")));
+					QUrl(m_url + "users.json?auth=" + m_idToken + "&orderBy=\"isTrainer\"&equalTo=true")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, userId, reply](){
@@ -154,7 +311,7 @@ DatabaseHandler::getTrainerPupilsIds(QString trainerId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "users/" + trainerId + ".json")));
+					QUrl(m_url + "users/" + trainerId + ".json?auth=" + m_idToken)));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, reply](){
@@ -181,7 +338,7 @@ DatabaseHandler::getPupilById(QString trainerId, QString pupilId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "users/" + pupilId + ".json")));
+					QUrl(m_url + "users/" + pupilId + ".json?auth=" + m_idToken)));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, trainerId, reply](){
@@ -206,7 +363,7 @@ DatabaseHandler::getUserTrainingPlans(User* user)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "trainingPlans.json?orderBy=\"ownerId\"&equalTo=\"" + user->id() + "\"")));
+					QUrl(m_url + "trainingPlans.json?auth=" + m_idToken + "&orderBy=\"ownerId\"&equalTo=\"" + user->id() + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, user, reply](){
@@ -242,7 +399,7 @@ DatabaseHandler::getTrainingPlanById(User* user, QString id)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "trainingPlans/" + id + ".json")));
+					QUrl(m_url + "trainingPlans/" + id + ".json?auth=" + m_idToken)));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, user, id, reply](){
@@ -264,7 +421,7 @@ DatabaseHandler::getTrainingsByPlanId(User* user, QString planId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "trainings.json?orderBy=\"planId\"&equalTo=\"" + planId + "\"")));
+					QUrl(m_url + "trainings.json?auth=" + m_idToken + "&orderBy=\"planId\"&equalTo=\"" + planId + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, user, planId, reply](){
@@ -298,7 +455,7 @@ DatabaseHandler::getTrainingById(User* user, QString trainingId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "trainings/" + trainingId + ".json")));
+					QUrl(m_url + "trainings/" + trainingId + ".json?auth=" + m_idToken)));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, user, trainingId, reply](){
@@ -307,7 +464,6 @@ DatabaseHandler::getTrainingById(User* user, QString trainingId)
 		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
 		auto rootObject = rootDocument.object();
 
-		QString ownerId = rootObject.value("ownerId").toString();
 		QString name = rootObject.value("name").toString();
 		QString planId = rootObject.value("planId").toString();
 
@@ -320,7 +476,7 @@ DatabaseHandler::getExercisesByTrainingId(User* user, QString planId, QString tr
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "exercises.json?orderBy=\"trainingId\"&equalTo=\"" + trainingId + "\"")));
+					QUrl(m_url + "exercises.json?auth=" + m_idToken + "&orderBy=\"trainingId\"&equalTo=\"" + trainingId + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, user, planId, trainingId, reply](){
@@ -365,7 +521,7 @@ DatabaseHandler::getExerciseById(User* user, QString planId, QString exerciseId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "exercises/" + exerciseId + ".json")));
+					QUrl(m_url + "exercises/" + exerciseId + ".json?auth=" + m_idToken)));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, user, planId, exerciseId, reply](){
@@ -396,7 +552,7 @@ DatabaseHandler::getMeasurementsByUser(User* user)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "measurements.json?orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+					QUrl(m_url + "measurements.json?auth=" + m_idToken + "&orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, user, reply](){
@@ -440,24 +596,22 @@ DatabaseHandler::getMeasurementsByUser(User* user)
 }
 
 void
-DatabaseHandler::addUser(QString username, QString email, QString password, bool isTrainer)
+DatabaseHandler::addUser(QString email, bool isTrainer)
 {
 	QVariantMap databaseUser;
-	databaseUser["username"] = username;
 	databaseUser["email"] = email;
-	databaseUser["password"] = password;
 	databaseUser["isTrainer"] = isTrainer;
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseUser);
-	QNetworkRequest request(QUrl(m_url + "users.json"));
+	QNetworkRequest request(QUrl(m_url + "users.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->post(request, jsonDoc.toJson());
 
 	QObject::connect(reply, &QNetworkReply::finished,
-					 this, [this, reply](){
+					 this, [this, email, reply](){
 		reply->deleteLater();
-		emit userAdded();
+		emit userAdded(email);
 	});
 }
 
@@ -471,7 +625,7 @@ DatabaseHandler::addTrainingPlan(User* user, QString name, QString description, 
 	databasePlan["ownerId"] = user->id();
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databasePlan);
-	QNetworkRequest request(QUrl(m_url + "trainingPlans.json"));
+	QNetworkRequest request(QUrl(m_url + "trainingPlans.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->post(request, jsonDoc.toJson());
@@ -493,7 +647,7 @@ DatabaseHandler::addTraining(User* user, QString name, QString planId)
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseTraining);
 
-	QNetworkRequest request(QUrl(m_url + "trainings.json"));
+	QNetworkRequest request(QUrl(m_url + "trainings.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->post(request, jsonDoc.toJson());
@@ -519,7 +673,7 @@ DatabaseHandler::addExercise(User* user, QString planId, QString trainingId, QSt
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseExercise);
 
-	QNetworkRequest request(QUrl(m_url + "exercises.json"));
+	QNetworkRequest request(QUrl(m_url + "exercises.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->post(request, jsonDoc.toJson());
@@ -550,7 +704,7 @@ DatabaseHandler::addMeasurement(User* user, double weight, double chest, double 
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseMeasurement);
 
-	QNetworkRequest request(QUrl(m_url + "measurements.json"));
+	QNetworkRequest request(QUrl(m_url + "measurements.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->post(request, jsonDoc.toJson());
@@ -573,7 +727,7 @@ DatabaseHandler::addCompletedTraining(User *user, QString trainingName)
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseTraining);
 
-	QNetworkRequest request(QUrl(m_url + "completedTrainings.json"));
+	QNetworkRequest request(QUrl(m_url + "completedTrainings.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->post(request, jsonDoc.toJson());
@@ -590,7 +744,7 @@ DatabaseHandler::getUserCompletedTrainings(User *user)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "completedTrainings.json?orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+					QUrl(m_url + "completedTrainings.json?auth=" + m_idToken + "&orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, reply](){
@@ -631,7 +785,7 @@ DatabaseHandler::getUserCompletedExercises(QString trainingId)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "completedTrainings/" + trainingId + ".json")));
+					QUrl(m_url + "completedTrainings/" + trainingId + ".json?auth=" + m_idToken)));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, reply](){
@@ -675,7 +829,7 @@ DatabaseHandler::getUserUncompletedTrainings(User* user)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "completedTrainings.json?orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+					QUrl(m_url + "completedTrainings.json?auth=" + m_idToken + "&orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, reply](){
@@ -701,7 +855,7 @@ DatabaseHandler::deleteCompletedTraining(User *user)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "completedTrainings.json?orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+					QUrl(m_url + "completedTrainings.json?auth=" + m_idToken + "&orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, reply](){
@@ -714,7 +868,7 @@ DatabaseHandler::deleteCompletedTraining(User *user)
 			if (rootObject.value("completed").toBool())
 				continue;
 
-			QNetworkRequest request(QUrl(m_url + "completedTrainings/" + key + ".json"));
+			QNetworkRequest request(QUrl(m_url + "completedTrainings/" + key + ".json?auth=" + m_idToken));
 			request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 			m_networkManager->deleteResource(request);
@@ -733,7 +887,7 @@ DatabaseHandler::addCompletedExercise(QString trainingId, QString name, QList<QS
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseExercise);
 
-	QNetworkRequest request(QUrl(m_url + "completedTrainings/" + trainingId + ".json"));
+	QNetworkRequest request(QUrl(m_url + "completedTrainings/" + trainingId + ".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	m_networkManager->post(request, jsonDoc.toJson());
@@ -744,7 +898,7 @@ DatabaseHandler::completeTraining(QString trainingId)
 {
 	QByteArray someData = "true";
 
-	QNetworkRequest request(QUrl(m_url + "completedTrainings/" + trainingId + "/completed.json"));
+	QNetworkRequest request(QUrl(m_url + "completedTrainings/" + trainingId + "/completed.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->put(request, someData);
@@ -768,7 +922,7 @@ DatabaseHandler::editTrainingPlan(QString planId, User* user, QString name, QStr
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databasePlan);
 
-	QNetworkRequest request(QUrl(m_url + "trainingPlans/" + planId + ".json"));
+	QNetworkRequest request(QUrl(m_url + "trainingPlans/" + planId + ".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->put(request, jsonDoc.toJson());
@@ -790,7 +944,7 @@ DatabaseHandler::editTraining(QString trainingId, User* user, QString name, QStr
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseTraining);
 
-	QNetworkRequest request(QUrl(m_url + "trainings/" + trainingId + ".json"));
+	QNetworkRequest request(QUrl(m_url + "trainings/" + trainingId + ".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->put(request, jsonDoc.toJson());
@@ -816,7 +970,7 @@ DatabaseHandler::editExercise(User* user, QString planId, QString exerciseId, QS
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseExercise);
 
-	QNetworkRequest request(QUrl(m_url + "exercises/" + exerciseId + ".json"));
+	QNetworkRequest request(QUrl(m_url + "exercises/" + exerciseId + ".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->put(request, jsonDoc.toJson());
@@ -831,7 +985,7 @@ DatabaseHandler::editExercise(User* user, QString planId, QString exerciseId, QS
 void
 DatabaseHandler::deleteTrainingPlan(User* user, QString planId)
 {
-	QNetworkRequest request(QUrl(m_url + "trainingPlans/" + planId + ".json"));
+	QNetworkRequest request(QUrl(m_url + "trainingPlans/" + planId + ".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->deleteResource(request);
@@ -847,7 +1001,7 @@ DatabaseHandler::deleteTrainingPlan(User* user, QString planId)
 void
 DatabaseHandler::deleteTraining(User* user, QString planId, QString trainingId)
 {
-	QNetworkRequest request(QUrl(m_url + "trainings/" + trainingId + ".json"));
+	QNetworkRequest request(QUrl(m_url + "trainings/" + trainingId + ".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->deleteResource(request);
@@ -863,7 +1017,7 @@ DatabaseHandler::deleteTraining(User* user, QString planId, QString trainingId)
 void
 DatabaseHandler::deleteExercise(User* user, QString planId, QString trainingId, QString exerciseId)
 {
-	QNetworkRequest request(QUrl(m_url + "exercises/" + exerciseId + ".json"));
+	QNetworkRequest request(QUrl(m_url + "exercises/" + exerciseId + ".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->deleteResource(request);
@@ -881,7 +1035,7 @@ DatabaseHandler::addRequestForTrainer(QString userId, QString trainerId)
 {
 	QByteArray someData = "false";
 
-	QNetworkRequest request(QUrl(m_url + "users/" + trainerId + "/pupils/" + userId +".json"));
+	QNetworkRequest request(QUrl(m_url + "users/" + trainerId + "/pupils/" + userId +".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->put(request, someData);
@@ -899,7 +1053,7 @@ DatabaseHandler::acceptPupilRequest(QString trainerId, QString pupilId)
 {
 	QByteArray someData = "true";
 
-	QNetworkRequest request(QUrl(m_url + "users/" + trainerId + "/pupils/" + pupilId +".json"));
+	QNetworkRequest request(QUrl(m_url + "users/" + trainerId + "/pupils/" + pupilId +".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->put(request, someData);
@@ -917,7 +1071,7 @@ DatabaseHandler::acceptTrainer(QString trainerId, QString pupilId)
 {
 	QByteArray someData = "true";
 
-	QNetworkRequest request(QUrl(m_url + "users/" + pupilId + "/trainer/" + trainerId +".json"));
+	QNetworkRequest request(QUrl(m_url + "users/" + pupilId + "/trainer/" + trainerId +".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->put(request, someData);
@@ -933,7 +1087,7 @@ DatabaseHandler::acceptTrainer(QString trainerId, QString pupilId)
 void
 DatabaseHandler::deleteRequestForTrainer(QString userId, QString trainerId)
 {
-	QNetworkRequest request(QUrl(m_url + "users/" + trainerId + "/pupils/" + userId + ".json"));
+	QNetworkRequest request(QUrl(m_url + "users/" + trainerId + "/pupils/" + userId + ".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->deleteResource(request);
@@ -954,7 +1108,7 @@ DatabaseHandler::addTrainerToUser(QString userId, QString trainerId)
 
 	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseTrainer);
 
-	QNetworkRequest request(QUrl(m_url + "users/" + userId + "/trainer.json"));
+	QNetworkRequest request(QUrl(m_url + "users/" + userId + "/trainer.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->put(request, jsonDoc.toJson());
@@ -970,7 +1124,7 @@ DatabaseHandler::addTrainerToUser(QString userId, QString trainerId)
 void
 DatabaseHandler::deleteTrainerFromUser(QString userId)
 {
-	QNetworkRequest request(QUrl(m_url + "users/" + userId + "/trainer.json"));
+	QNetworkRequest request(QUrl(m_url + "users/" + userId + "/trainer.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->deleteResource(request);
@@ -986,7 +1140,7 @@ DatabaseHandler::deleteTrainerFromUser(QString userId)
 void
 DatabaseHandler::deletePupilFromUser(User* trainer, QString pupilId)
 {
-	QNetworkRequest request(QUrl(m_url + "users/" + trainer->id() + "/pupils/" + pupilId + ".json"));
+	QNetworkRequest request(QUrl(m_url + "users/" + trainer->id() + "/pupils/" + pupilId + ".json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->deleteResource(request);
@@ -1002,7 +1156,7 @@ DatabaseHandler::deletePupilFromUser(User* trainer, QString pupilId)
 void
 DatabaseHandler::deleteTrainerFromPupil(QString trainerId, QString pupilId)
 {
-	QNetworkRequest request(QUrl(m_url + "users/" + pupilId + "/trainer.json"));
+	QNetworkRequest request(QUrl(m_url + "users/" + pupilId + "/trainer.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
 
 	auto reply = m_networkManager->deleteResource(request);

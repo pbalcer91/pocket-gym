@@ -29,8 +29,6 @@ ApplicationWindow {
 		anchors.fill: parent
 		visible: true
 		asynchronous: true
-
-		//source: "qrc:/qml/AppWindow.qml"
 	}
 
 	Loader {
@@ -40,5 +38,12 @@ ApplicationWindow {
 		asynchronous: true
 
 		source: "qrc:/qml/LogInView.qml"
+
+		onLoaded: {
+			logInLoader.item.loggedIn.connect(function() {
+				appLoader.source = "qrc:/qml/AppWindow.qml"
+				source = ""
+			})
+		}
 	}
 }

@@ -5,11 +5,58 @@ import QtQuick.Layouts
 import Components
 import Properties
 
+import pl.com.thesis
+
 Page {
 	id: window
 
 	background: Rectangle {
 		color: Colors.background
+	}
+
+	signal loggedIn
+
+	property real globalOpacity: 1.0
+
+	Behavior on globalOpacity {
+		NumberAnimation {
+			duration: 500
+		}
+	}
+
+	Connections {
+		target: MainController
+
+		function onCurrentUserReady() {
+			if (MainController.currentUser.name == "") {
+				modalLoader.setSource("qrc:/qml/FirstLogInModal.qml")
+				return
+			}
+
+			window.loggedIn()
+		}
+
+		function onSignInSucceed(email) {
+			MainController.getDatabaseUserByEmail(email)
+			globalOpacity = 0.0
+		}
+
+		function onSignInFailed(errorCode) {
+			switch(errorCode) {
+			case MainController.SI_EMAIL_NOT_FOUND:
+				console.log("BRAK KONTA - NOTIFICATION")
+				return
+			case MainController.SI_INVALID_PASSWORD:
+				console.log("NIEPOPRAWNE HASLO - NOTIFICATION")
+				return
+			case MainController.SU_UNKNOWN_ERROR:
+				console.log("NIEZNANY BLAD - NOTIFICATION")
+				return
+			case MainController.SI_USER_DISABLED:
+				console.log("UZYTKOWNIK ZABLOKOWANY - NOTIFICATION")
+				return
+			}
+		}
 	}
 
 	ColumnLayout {
@@ -45,6 +92,8 @@ Page {
 			Layout.leftMargin: 48
 			Layout.rightMargin: 48
 
+			opacity: globalOpacity
+
 			label: "Email"
 			placeholderText: "Email"
 
@@ -63,6 +112,8 @@ Page {
 			Layout.leftMargin: 48
 			Layout.rightMargin: 48
 
+			opacity: globalOpacity
+
 			label: "Hasło"
 			placeholderText: "Hasło"
 
@@ -78,10 +129,12 @@ Page {
 
 			text: "Zaloguj"
 
+			opacity: globalOpacity
+
 			flat: false
 
 			onClicked: {
-
+				MainController.signInUser(emailField.text, passwordField.text)
 			}
 		}
 
@@ -89,6 +142,8 @@ Page {
 			id: registerInfo
 
 			Layout.alignment: Qt.AlignHCenter
+
+			opacity: globalOpacity
 
 			text: "Nie masz jeszcze konta?"
 			font: Fonts.caption
@@ -101,6 +156,8 @@ Page {
 			Layout.alignment: Qt.AlignHCenter
 
 			text: "Załóż konto"
+
+			opacity: globalOpacity
 
 			onClicked: {
 				loader.setSource("qrc:/qml/RegisterDialog.qml")
@@ -120,4 +177,23 @@ Page {
 			loader.item.open()
 		}
 	}
+
+	Loader {
+		id: modalLoader
+
+		onLoaded: {
+			modalLoader.item.closed.connect(function() {
+				if (!modalLoader)
+					return
+				modalLoader.source = ""
+			})
+
+			modalLoader.item.confirmed.connect(function() {
+				window.loggedIn()
+			})
+
+			modalLoader.item.open()
+		}
+	}
+
 }
