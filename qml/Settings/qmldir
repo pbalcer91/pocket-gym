@@ -2,3 +2,4 @@ module Settings
 
 SettingsView    	    SettingsView.qml
 SettingsSection    	    SettingsSection.qml
+AccountTypeChangeModal	    AccountTypeChangeModal.qml

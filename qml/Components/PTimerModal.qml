@@ -27,6 +27,9 @@ PMessageDialog {
 	onBreakTimeChanged: {
 		timerLabel.text = breakTimeToString(breakTime)
 
+		if (beginningBreakTime != 0)
+			colorArc.sweepAngle = 360 - (1 - breakTime / beginningBreakTime) * 360
+
 		if (breakTime == 0)
 			acceptButton.clicked()
 	}
@@ -94,7 +97,7 @@ PMessageDialog {
 					centerX: 75; centerY: 75
 					radiusX: 75; radiusY: 75
 					startAngle: -90
-					sweepAngle: (1 - breakTime / beginningBreakTime) * 360
+					sweepAngle: 360
 
 					Behavior on sweepAngle {
 						NumberAnimation {
@@ -128,6 +131,4 @@ PMessageDialog {
 			}
 		}
 	}
-
-
 }

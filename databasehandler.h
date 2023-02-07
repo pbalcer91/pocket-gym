@@ -34,6 +34,8 @@ public:
 		SI_USER_DISABLED					= 3
 	};
 
+	void clearIdToken();
+
 	void signUserUp(const QString &email, const QString &password);
 	void signUserIn(const QString &email, const QString &password);
 

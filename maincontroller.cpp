@@ -6,6 +6,8 @@ MainController::MainController(QObject *parent)
 	  m_database(new DatabaseHandler(this)),
 	  m_settings(new QSettings(this))
 {
+	setTrainerSectionVisible(m_settings->value(TRAINER_SECTION_VISIBLE, true).toBool());
+
 	QObject::connect(m_database, &DatabaseHandler::signUpFailed,
 					 this, [this](DatabaseHandler::SING_UP_ERROR errorMessage) {
 		switch (errorMessage) {
@@ -368,6 +370,22 @@ MainController::trainersList() const
 	return m_trainersList;
 }
 
+bool
+MainController::trainerSectionVisible() const
+{
+	return m_trainerSectionVisible;
+}
+
+void
+MainController::setTrainerSectionVisible(bool visible)
+{
+	m_trainerSectionVisible = visible;
+
+	m_settings->setValue(TRAINER_SECTION_VISIBLE, visible);
+
+	emit settingsChanged();
+}
+
 User*
 MainController::getCurrentUser()
 {
@@ -387,6 +405,18 @@ MainController::autoLogIn()
 		return;
 
 	signInUser(email, password);
+}
+
+void
+MainController::logOut()
+{
+	m_settings->setValue(EMAIL, "");
+	m_settings->setValue(PASSWORD, "");
+	m_settings->setValue(TRAINER_SECTION_VISIBLE, true);
+
+	m_database->clearIdToken();
+
+	emit userLoggedOut();
 }
 
 TrainingPlan*

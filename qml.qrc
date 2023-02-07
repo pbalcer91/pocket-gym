@@ -72,5 +72,6 @@
         <file>qml/Notification.qml</file>
         <file>qml/FirstLogInModal.qml</file>
         <file>qml/Components/PBusyIndicator.qml</file>
+        <file>qml/Settings/AccountTypeChangeModal.qml</file>
     </qresource>
 </RCC>

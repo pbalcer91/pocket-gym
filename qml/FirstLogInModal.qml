@@ -25,7 +25,7 @@ PMessageDialog {
 		MainController.changeDatabaseUsername(MainController.currentUser.id,
 											  MainController.currentUser.email,
 											  userNameField.text,
-											  MainController.currentUser.isTrainer)
+											  trainerAccountTypeButton.checked)
 	}
 
 	Component.onCompleted: {

@@ -7,8 +7,10 @@
 #include "user.h"
 #include "databasehandler.h"
 
-#define EMAIL				QStringLiteral("main/email")
-#define PASSWORD			QStringLiteral("main/password")
+#define EMAIL							QStringLiteral("main/email")
+#define PASSWORD						QStringLiteral("main/password")
+
+#define TRAINER_SECTION_VISIBLE			QStringLiteral("main/trainerSectionVisible")
 
 class MainController : public QObject
 {
@@ -18,6 +20,7 @@ class MainController : public QObject
 	Q_PROPERTY(DatabaseHandler* database READ database CONSTANT)
 	Q_PROPERTY(User* currentUser READ currentUser NOTIFY currentUserChanged)
 	Q_PROPERTY(QVariantMap trainersList READ trainersList NOTIFY trainersListChanged)
+	Q_PROPERTY(bool trainerSectionVisible READ trainerSectionVisible WRITE setTrainerSectionVisible NOTIFY settingsChanged)
 
 public:
 	explicit MainController(QObject *parent = nullptr);
@@ -44,10 +47,15 @@ public:
 
 	User* currentUser() const;
 	QVariantMap trainersList() const;
+	bool trainerSectionVisible() const;
+
+	void setTrainerSectionVisible(bool visible);
 
 	Q_INVOKABLE User* getCurrentUser();
 
 	Q_INVOKABLE void autoLogIn();
+
+	Q_INVOKABLE void logOut();
 
 	Q_INVOKABLE TrainingPlan* newTrainingPlan(QString ownerId);
 	Q_INVOKABLE Training* newTraining(QString ownerId, QString planId);
@@ -114,11 +122,14 @@ public:
 	Q_INVOKABLE User* createPupilInstance(QObject* parent, QString pupilId, QString pupilUsername);
 
 signals:
+	void settingsChanged();
 	void signUpFailed(MainController::SU_ERROR errorCode);
 	void signUpSucceed();
 
 	void signInFailed(MainController::SI_ERROR errorCode);
 	void signInSucceed(QString email);
+
+	void userLoggedOut();
 
 	void usernameChanged();
 
@@ -148,6 +159,7 @@ private:
 
 	User* m_currentUser;
 	QVariantMap m_trainersList;
+	bool m_trainerSectionVisible;
 
 	QSettings* m_settings;
 };

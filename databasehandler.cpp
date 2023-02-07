@@ -19,6 +19,12 @@ DatabaseHandler::~DatabaseHandler()
 }
 
 void
+DatabaseHandler::clearIdToken()
+{
+	m_idToken = "";
+}
+
+void
 DatabaseHandler::signUserUp(const QString &email, const QString &password)
 {
 	QString signUpEndPoint = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + m_apiKey;

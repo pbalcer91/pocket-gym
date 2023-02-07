@@ -23,6 +23,11 @@ PMessageDialog {
 							"Anuluj"
 						  : "Wróć")
 	rejectButton.onClicked: {
+		if (currentStep === TrainingSelectorModal.STEPS.NAME) {
+			currentStep = TrainingSelectorModal.STEPS.TYPE
+			return
+		}
+
 		if (currentStep !== TrainingSelectorModal.STEPS.TYPE) {
 			currentStep--
 			return
