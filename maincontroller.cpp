@@ -56,9 +56,32 @@ MainController::MainController(QObject *parent)
 		emit usernameVerificationReceived(isAvailable);
 	});
 
-	QObject::connect(m_database, &DatabaseHandler::usernameChanged,
+	QObject::connect(m_database, &DatabaseHandler::userChanged,
 					 this, [this]() {
-		emit usernameChanged();
+		emit userChanged();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userEmailChanged,
+					 this, [this](QString email) {
+		m_settings->setValue(EMAIL, "");
+		m_settings->setValue(PASSWORD, "");
+
+		emit userEmailChanged(email);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userEmailChangedFailed,
+					 this, [this](DatabaseHandler::EMAIL_ERROR errorMessage) {
+		switch (errorMessage) {
+			case DatabaseHandler::EMAIL_EXISTS:
+				emit userEmailChangeFailed(MainController::EMAIL_UNKNOWN_ERROR);
+				return;
+			case DatabaseHandler::EMAIL_INVALID_ID_TOKEN:
+				emit userEmailChangeFailed(MainController::EMAIL_EXISTS);
+				break;
+			case DatabaseHandler::EMAIL_UNKNOWN_ERROR:
+				emit userEmailChangeFailed(MainController::EMAIL_INVALID_ID_TOKEN);
+				break;
+		}
 	});
 
 	QObject::connect(m_database, &DatabaseHandler::signInSucceed,
@@ -526,9 +549,19 @@ MainController::checkIsUsernameAvailable(QString username)
 }
 
 void
-MainController::changeDatabaseUsername(QString userId, QString email, QString username, bool isTrainer)
+MainController::changeDatabaseUser(QString userId, QString email, QString username, bool isTrainer)
 {
+	m_currentUser->setEmail(email);
+	m_currentUser->setName(username);
+	m_currentUser->setIsTrainer(isTrainer);
+
 	m_database->changeUsername(userId, email, username, isTrainer);
+}
+
+void
+MainController::changeDatabaseUserEmail(QString email)
+{
+	m_database->changeUserEmail(email);
 }
 
 void

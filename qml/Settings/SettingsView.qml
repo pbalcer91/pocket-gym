@@ -214,7 +214,7 @@ Item {
 						horizontalAlignment: Text.AlignLeft
 
 						onClicked: {
-
+							loader.setSource("qrc:/qml/Settings/UserNameChangeModal.qml")
 						}
 					}
 
@@ -231,7 +231,7 @@ Item {
 						horizontalAlignment: Text.AlignLeft
 
 						onClicked: {
-
+							loader.setSource("qrc:/qml/Settings/UserEmailChangeModal.qml")
 						}
 					}
 
@@ -248,7 +248,7 @@ Item {
 						horizontalAlignment: Text.AlignLeft
 
 						onClicked: {
-
+							loader.setSource("qrc:/qml/Settings/UserChangePasswordModal.qml")
 						}
 					}
 
@@ -298,6 +298,8 @@ Item {
 
 						Layout.fillWidth: true
 
+						checked: MainController.trainerSectionVisible
+
 						text: "Sekcja trenera widoczna"
 
 						onToggled: {
@@ -310,15 +312,17 @@ Item {
 					label: "O aplikacji"
 
 					PLabel {
-						text: "Autor: Piotr Balcer"
+						text: "Twórca: Piotr Balcer"
+
+						font: Fonts.caption
+						lineHeight: Fonts.captionHeight
 					}
 
 					PLabel {
-						text: "Wersja: 0.2.1"
-					}
+						text: "Wersja: 1.0.0"
 
-					PLabel {
-						text: "Licencje: CC0 - ikony i fonty"
+						font: Fonts.caption
+						lineHeight: Fonts.captionHeight
 					}
 				}
 			}

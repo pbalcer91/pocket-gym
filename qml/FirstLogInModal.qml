@@ -22,10 +22,10 @@ PMessageDialog {
 	signal confirmed
 
 	acceptButton.onClicked: {
-		MainController.changeDatabaseUsername(MainController.currentUser.id,
-											  MainController.currentUser.email,
-											  userNameField.text,
-											  trainerAccountTypeButton.checked)
+		MainController.changeDatabaseUser(MainController.currentUser.id,
+										  MainController.currentUser.email,
+										  userNameField.text,
+										  trainerAccountTypeButton.checked)
 	}
 
 	Component.onCompleted: {
@@ -44,7 +44,7 @@ PMessageDialog {
 			acceptButton.opacity = 1.0
 		}
 
-		function onUsernameChanged() {
+		function onUserChanged() {
 			confirmed()
 		}
 	}
@@ -266,5 +266,4 @@ PMessageDialog {
 		visible: (userNameField.state == "error")
 		color: Colors.error
 	}
-
 }

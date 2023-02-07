@@ -73,5 +73,8 @@
         <file>qml/FirstLogInModal.qml</file>
         <file>qml/Components/PBusyIndicator.qml</file>
         <file>qml/Settings/AccountTypeChangeModal.qml</file>
+        <file>qml/Settings/UserNameChangeModal.qml</file>
+        <file>qml/Settings/UserEmailChangeModal.qml</file>
+        <file>qml/Settings/UserChangePasswordModal.qml</file>
     </qresource>
 </RCC>

@@ -23,7 +23,10 @@ PMessageDialog {
 	}
 
 	acceptButton.onClicked: {
-		// TODO: zmianma typu uzytkownika
+		MainController.changeDatabaseUser(MainController.currentUser.id,
+										  MainController.currentUser.email,
+										  MainController.currentUser.name,
+										  trainerAccountTypeButton.checked)
 	}
 
 	RowLayout {

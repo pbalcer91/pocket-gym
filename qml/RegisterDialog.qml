@@ -45,15 +45,15 @@ PMessageDialog {
 
 		function onSignUpFailed(errorCode) {
 			switch(errorCode) {
-			case MainController.SU_EMAIL_EXISTS:
-				console.log("EMAIL JUZ ISTNIEJE - NOTIFICATION")
-				return
-			case MainController.SU_TOO_MANY_ATTEMPTS_TRY_LATER:
-				console.log("ZBYT WIELE PROB - NOTIFICATION")
-				return
-			case MainController.SU_UNKNOWN_ERROR:
-				console.log("NIEZNANY BLAD - NOTIFICATION")
-				return
+				case MainController.SU_EMAIL_EXISTS:
+					console.log("EMAIL JUZ ISTNIEJE - NOTIFICATION")
+					return
+				case MainController.SU_TOO_MANY_ATTEMPTS_TRY_LATER:
+					console.log("ZBYT WIELE PROB - NOTIFICATION")
+					return
+				case MainController.SU_UNKNOWN_ERROR:
+					console.log("NIEZNANY BLAD - NOTIFICATION")
+					return
 			}
 		}
 	}

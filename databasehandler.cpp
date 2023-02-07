@@ -181,7 +181,57 @@ DatabaseHandler::changeUsername(QString userId, QString email, QString username,
 					 this, [this, reply](){
 		reply->deleteLater();
 
-		emit usernameChanged();
+		emit userChanged();
+	});
+}
+
+void
+DatabaseHandler::changeUserEmail(QString email)
+{
+	QString changeEmailEndPoint = "https://identitytoolkit.googleapis.com/v1/accounts:update?key=" + m_apiKey;
+
+	QVariantMap variantPayload;
+	variantPayload["idToken"] = m_idToken;
+	variantPayload["email"] = email;
+	variantPayload["returnSecureToken"] = true;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(variantPayload);
+
+	QNetworkRequest request((QUrl(changeEmailEndPoint)));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply, email](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		for (const auto &key : rootObject.keys()) {
+			if (key == "error") {
+				auto errorDocument = rootObject.value(key);
+				auto errorObject = errorDocument.toObject();
+
+				QString errorMessage = errorObject.value("message").toString();
+
+				if (errorMessage == "EMAIL_EXISTS") {
+					emit userEmailChangedFailed(EMAIL_EXISTS);
+					return;
+				}
+
+				if (errorMessage == "INVALID_ID_TOKEN") {
+					emit userEmailChangedFailed(EMAIL_INVALID_ID_TOKEN);
+					return;
+				}
+
+				emit userEmailChangedFailed(EMAIL_UNKNOWN_ERROR);
+				return;
+			}
+		}
+
+		emit userEmailChanged(email.toLower());
 	});
 }
 
