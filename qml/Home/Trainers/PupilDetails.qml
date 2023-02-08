@@ -69,6 +69,10 @@ PDialog {
 
 			progressButton.enabled = true
 		}
+
+		function onTrainingCompleted() {
+			MainController.getDabaseCompletedTrainings(pupil)
+		}
 	}
 
 	function getDateString(date) {
@@ -105,6 +109,7 @@ PDialog {
 						"rejectButton.text": "Nie",
 						"acceptAction": function() {
 							MainController.deletePupilFromTrainer(MainController.currentUser, pupilId)
+							notify("Zakończono współpracę z podopiecznym")
 							dialog.close()
 						}
 					})

@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 
 import Properties
 
@@ -10,7 +9,10 @@ ApplicationWindow {
 	id: window
 
 	visible: true
-	title: qsTr("Pocket Gym")
+
+	background: Rectangle {
+		color: Colors.background
+	}
 
 	Component.onCompleted: {
 		Properties.appWindow = this
@@ -35,6 +37,18 @@ ApplicationWindow {
 		close.accepted = false
 	}
 
+	function notify(message) {
+		if (notificationLoader.status != Loader.Null){
+			console.warn("Multiple notifications need to be handle!")
+			return
+		}
+
+		notificationLoader.setSource("qrc:/qml/Notification.qml",
+									 {
+										"message": message
+									 })
+	}
+
 	Loader {
 		id: appLoader
 		anchors.fill: parent
@@ -54,7 +68,23 @@ ApplicationWindow {
 			logInLoader.item.loggedIn.connect(function() {
 				appLoader.source = "qrc:/qml/AppWindow.qml"
 				source = ""
+
+				notify("Poprawnie zalogowano")
 			})
+		}
+	}
+
+	Loader {
+		id: notificationLoader
+		asynchronous: true
+
+		onLoaded: {
+			notificationLoader.item.closed.connect(function() {
+				if (!notificationLoader)
+					return
+				notificationLoader.source = ""
+			})
+			notificationLoader.item.open()
 		}
 	}
 }

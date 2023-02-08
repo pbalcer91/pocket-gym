@@ -21,6 +21,8 @@ PMessageDialog {
 										  MainController.currentUser.email,
 										  userNameField.text,
 										  MainController.currentUser.isTrainer)
+
+		notify("Zmieniono nazwę użytkownika")
 	}
 
 	PTextField {

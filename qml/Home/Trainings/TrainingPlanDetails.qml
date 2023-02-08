@@ -21,6 +21,7 @@ PDialog {
 		target: user
 
 		function onUserTrainingPlanRemoved() {
+			notify("Usunięto plan treningowy")
 			dialog.close()
 		}
 	}

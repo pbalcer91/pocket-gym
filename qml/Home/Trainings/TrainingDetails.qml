@@ -189,6 +189,7 @@ PDialog {
 								"acceptAction": function() {
 									MainController.deleteDatabaseTraining(user, training.planId, training.id)
 									dialog.close()
+									notify("Usunięto trening")
 								}
 							})
 			}

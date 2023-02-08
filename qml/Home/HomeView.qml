@@ -45,6 +45,7 @@ Item {
 
 		function onTrainingCompleted() {
 			MainController.getDabaseCompletedTrainings(currentUser)
+			notify("Ukończono trening")
 		}
 
 		function onCompletedTrainingsReady(trainingsList) {

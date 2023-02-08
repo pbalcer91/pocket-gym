@@ -56,6 +56,7 @@ PDialog {
 						"acceptAction": function() {
 							MainController.deleteDatabaseCompletedTraining(user)
 							dialog.reject()
+							notify("Przerwano trening")
 						}
 					})
 	}

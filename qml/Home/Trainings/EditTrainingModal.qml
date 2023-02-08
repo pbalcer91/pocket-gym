@@ -38,12 +38,15 @@ PMessageDialog {
 												nameField.text,
 												training.planId)
 
+			notify("Zmieniono trening")
 			return
 		}
 
 		MainController.addDatabaseTraining(user,
 										   nameField.text,
 										   training.planId)
+
+		notify("Dodano trening")
 	}
 
 	Component.onCompleted: {

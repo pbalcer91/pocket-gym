@@ -41,6 +41,7 @@ PMessageDialog {
 													descriptionField.text,
 													isDefaultSwitch.checked)
 
+			notify("Zmieniono plan treningowy")
 			return
 		}
 
@@ -48,6 +49,8 @@ PMessageDialog {
 											   nameField.text,
 											   descriptionField.text,
 											   isDefaultSwitch.checked)
+
+		notify("Dodano plan treningowy")
 	}
 
 	Component.onCompleted: {

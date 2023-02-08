@@ -86,6 +86,7 @@ Item {
 									"rejectButton.text": "Nie",
 									"acceptAction": function() {
 										MainController.deleteTrainerFromUser(trainerId)
+										notify("Zakończono współpracę z trenerem")
 									}
 								})
 				}

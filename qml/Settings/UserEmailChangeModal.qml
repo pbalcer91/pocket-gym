@@ -32,13 +32,13 @@ PMessageDialog {
 		function onUserEmailChangeFailed(errorCode) {
 			switch(errorCode) {
 				case MainController.EMAIL_EXISTS:
-					console.log("EMAIL JUZ ISTNIEJE - NOTIFICATION")
+					notify("Istnieje już konto przypisane do podanego adresu email")
 					return
 				case MainController.EMAIL_INVALID_ID_TOKEN:
-					console.log("ZBYT WIELE PROB - NOTIFICATION")
+					notify("Błąd połączenia, zaloguj się ponownie")
 					return
 				case MainController.EMAIL_UNKNOWN_ERROR:
-					console.log("NIEZNANY BLAD - NOTIFICATION")
+					notify("Operacja się nie udała")
 					return
 			}
 		}
@@ -48,6 +48,8 @@ PMessageDialog {
 											  email,
 											  MainController.currentUser.name,
 											  MainController.currentUser.isTrainer)
+
+			notify("Email został zmieniony")
 			modal.close()
 		}
 	}

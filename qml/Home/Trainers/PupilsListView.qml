@@ -117,10 +117,12 @@ PDialog {
 
 						rejectButton.onClicked: {
 							MainController.deletePupilFromTrainer(currentUser, model.id)
+							notify("Odrzucono prośbę od użytkownika")
 						}
 
 						acceptButton.onClicked: {
 							MainController.acceptPupil(model.id)
+							notify("Dodano nowego podopiecznego")
 						}
 
 						detailsButton.onClicked: {

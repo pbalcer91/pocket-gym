@@ -27,6 +27,8 @@ PMessageDialog {
 										  MainController.currentUser.email,
 										  MainController.currentUser.name,
 										  trainerAccountTypeButton.checked)
+
+		notify("Zmieniono typ konta")
 	}
 
 	RowLayout {
