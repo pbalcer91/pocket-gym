@@ -71,6 +71,7 @@ PMessageDialog {
 												getBreakTime(),
 												setList)
 
+			notify("Zmieniono ćwiczenie")
 			return
 		}
 
@@ -80,6 +81,8 @@ PMessageDialog {
 										   nameField.text,
 										   getBreakTime(),
 										   setList)
+
+		notify("Dodano ćwiczenie")
 	}
 
 	function getBreakTime() {

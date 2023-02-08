@@ -41,18 +41,19 @@ PMessageDialog {
 		function onUserAdded() {
 			MainController.signInUser(emailField.text, passwordField.text)
 			modal.acceptButton.clicked()
+			notify("Konto utworzone. Zalogowano na nowe konto")
 		}
 
 		function onSignUpFailed(errorCode) {
 			switch(errorCode) {
 				case MainController.SU_EMAIL_EXISTS:
-					console.log("EMAIL JUZ ISTNIEJE - NOTIFICATION")
+					notify("Istnieje już konto przypisane do podanego adresu email")
 					return
 				case MainController.SU_TOO_MANY_ATTEMPTS_TRY_LATER:
-					console.log("ZBYT WIELE PROB - NOTIFICATION")
+					notify("Zbyt wiele nieudanych prób, spróbuj później")
 					return
 				case MainController.SU_UNKNOWN_ERROR:
-					console.log("NIEZNANY BLAD - NOTIFICATION")
+					notify("Operacja się nie udała")
 					return
 			}
 		}

@@ -32,6 +32,8 @@ PMessageDialog {
 											  Number(hipsField.text),
 											  Number(peaceField.text),
 											  Number(calfField.text))
+
+		notify("Dodano nowy pomiar")
 	}
 
 	acceptButton.enabled: modal.validate()

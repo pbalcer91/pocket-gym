@@ -46,18 +46,19 @@ PMessageDialog {
 		function onUserPasswordChangeFailed(errorCode) {
 			switch(errorCode) {
 				case MainController.PASSWORD_UNKNOWN_ERROR:
-					console.log("EMAIL JUZ ISTNIEJE - NOTIFICATION")
+					notify("Operacja się nie udała")
 					return
 				case MainController.PASSWORD_INVALID_ID_TOKEN:
-					console.log("ZBYT WIELE PROB - NOTIFICATION")
+					notify("Błąd połączenia, zaloguj się ponownie")
 					return
 				case MainController.PASSWORD_WEAK_PASSWORD:
-					console.log("NIEZNANY BLAD - NOTIFICATION")
+					notify("Zbyt słabe hasło")
 					return
 				}
 		}
 
 		function onUserPasswordChanged() {
+			notify("Hasło zostało zmienione")
 			modal.close()
 		}
 	}

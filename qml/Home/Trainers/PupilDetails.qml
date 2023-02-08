@@ -109,6 +109,7 @@ PDialog {
 						"rejectButton.text": "Nie",
 						"acceptAction": function() {
 							MainController.deletePupilFromTrainer(MainController.currentUser, pupilId)
+							notify("Zakończono współpracę z podopiecznym")
 							dialog.close()
 						}
 					})

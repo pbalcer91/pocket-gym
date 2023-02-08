@@ -209,6 +209,7 @@ PDialog {
 																		  dialog.planId,
 																		  dialog.exercise.trainingId,
 																		  dialog.exercise.id)
+									notify("Usunięto ćwiczenie")
 									dialog.close()
 								}
 							})

@@ -33,15 +33,13 @@ Page {
 		messageDialogLoader.setSource("qrc:/qml/Components/PMessageDialog.qml", args)
 	}
 
-	//TODO: usunac to
-	function showAppCloseMessage() {
-		console.log("Proba zamkniecia aplikacji")
-		showMessage({ "message": "Are you sure to close the app?",
-						"acceptButtonText": "Yes",
-						"rejectButtonText": "No" })
-	}
+//	function showAppCloseMessage() {
+//		console.log("Proba zamkniecia aplikacji")
+//		showMessage({ "message": "Are you sure to close the app?",
+//						"acceptButtonText": "Yes",
+//						"rejectButtonText": "No" })
+//	}
 
-	//TODO: obsluga klawisza back na telefonie
 //	Keys.onBackPressed: {
 //		return
 //		//showAppCloseMessage()

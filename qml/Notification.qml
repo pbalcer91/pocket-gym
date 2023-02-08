@@ -1,11 +1,18 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
+
+import Components
+import Properties
 
 Popup {
 	id: popup
 
 	parent: Overlay.overlay
 
+	property alias message: messageLabel.text
+
+	y: Properties.margin
 	x: parent.width / 2 - contentWidth / 2 - padding
 	z: 99
 
@@ -89,7 +96,9 @@ Popup {
 			anchors.margins: 16
 
 			PLabel {
-				text: "Notification"
+				id: messageLabel
+
+				text: ""
 				font: Fonts.input
 				lineHeight: Fonts.inputHeight
 				color: Colors.text

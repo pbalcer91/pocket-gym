@@ -26,6 +26,8 @@ PMessageDialog {
 										  MainController.currentUser.email,
 										  userNameField.text,
 										  trainerAccountTypeButton.checked)
+
+		notify("Konfiguracja konta zakończona")
 	}
 
 	Component.onCompleted: {

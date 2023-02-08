@@ -114,10 +114,12 @@ PDialog {
 							if (!isSelected) {
 								dialog.currentTrainer = model.id
 								MainController.addRequestForTrainer(dialog.currentTrainer)
+								notify("Wysłano zaproszenie do trenera")
 								return
 							}
 
 							MainController.deleteTrainerFromUser(dialog.currentTrainer)
+							notify("Usunięto trenera")
 							dialog.currentTrainer = ""
 						}
 					}

@@ -44,16 +44,16 @@ Page {
 		function onSignInFailed(errorCode) {
 			switch(errorCode) {
 			case MainController.SI_EMAIL_NOT_FOUND:
-				console.log("BRAK KONTA - NOTIFICATION")
+				notify("Brak konta o podanym adresie email")
 				return
 			case MainController.SI_INVALID_PASSWORD:
-				console.log("NIEPOPRAWNE HASLO - NOTIFICATION")
+				notify("Podano niepoprawne hasło")
 				return
 			case MainController.SU_UNKNOWN_ERROR:
-				console.log("NIEZNANY BLAD - NOTIFICATION")
+				notify("Operacja się nie udała")
 				return
 			case MainController.SI_USER_DISABLED:
-				console.log("UZYTKOWNIK ZABLOKOWANY - NOTIFICATION")
+				notify("Użytkownik jest zablokowany")
 				return
 			}
 		}
