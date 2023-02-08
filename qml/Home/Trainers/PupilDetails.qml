@@ -69,6 +69,10 @@ PDialog {
 
 			progressButton.enabled = true
 		}
+
+		function onTrainingCompleted() {
+			MainController.getDabaseCompletedTrainings(pupil)
+		}
 	}
 
 	function getDateString(date) {
