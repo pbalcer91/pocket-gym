@@ -48,6 +48,13 @@ public:
 	};
 	Q_ENUM(EMAIL_ERROR)
 
+	enum PASSWORD_ERROR {
+		PASSWORD_UNKNOWN_ERROR					= 0,
+		PASSWORD_WEAK_PASSWORD					= 1,
+		PASSWORD_INVALID_ID_TOKEN				= 2
+	};
+	Q_ENUM(PASSWORD_ERROR)
+
 	static MainController* instance();
 
 	DatabaseHandler* database() const;
@@ -88,7 +95,8 @@ public:
 	Q_INVOKABLE void addDatabaseUser( QString email, bool isTrainer);
 	Q_INVOKABLE void checkIsUsernameAvailable(QString username);
 	Q_INVOKABLE void changeDatabaseUser(QString userId, QString email, QString username, bool isTrainer);
-	Q_INVOKABLE void changeDatabaseUserEmail(QString email);
+	Q_INVOKABLE void changeDatabaseUserEmail(QString newEmail);
+	Q_INVOKABLE void changeDatabaseUserPassword(QString newPasword);
 
 	Q_INVOKABLE void getDatabaseTrainers();
 	Q_INVOKABLE void getDatabaseUserTrainingPlans(User* user);
@@ -142,6 +150,8 @@ signals:
 	void userChanged();
 	void userEmailChanged(QString email);
 	void userEmailChangeFailed(MainController::EMAIL_ERROR);
+	void userPasswordChanged();
+	void userPasswordChangeFailed(MainController::PASSWORD_ERROR);
 
 	void userAdded(QString email);
 	void usernameVerificationReceived(bool isAvailable);

@@ -16,7 +16,7 @@ PMessageDialog {
 	acceptButton.enabled: isValid()
 
 	acceptButton.onClicked: {
-		//TODO:: change password
+		MainController.changeDatabaseUserPassword(passwordField.text)
 	}
 
 	rejectButton.onClicked: {
@@ -43,27 +43,23 @@ PMessageDialog {
 	Connections {
 		target: MainController
 
-//		function onUserEmailChangeFailed(errorCode) {
-//			switch(errorCode) {
-//				case MainController.EMAIL_EXISTS:
-//					console.log("EMAIL JUZ ISTNIEJE - NOTIFICATION")
-//					return
-//				case MainController.EMAIL_INVALID_ID_TOKEN:
-//					console.log("ZBYT WIELE PROB - NOTIFICATION")
-//					return
-//				case MainController.EMAIL_UNKNOWN_ERROR:
-//					console.log("NIEZNANY BLAD - NOTIFICATION")
-//					return
-//			}
-//		}
+		function onUserPasswordChangeFailed(errorCode) {
+			switch(errorCode) {
+				case MainController.PASSWORD_UNKNOWN_ERROR:
+					console.log("EMAIL JUZ ISTNIEJE - NOTIFICATION")
+					return
+				case MainController.PASSWORD_INVALID_ID_TOKEN:
+					console.log("ZBYT WIELE PROB - NOTIFICATION")
+					return
+				case MainController.PASSWORD_WEAK_PASSWORD:
+					console.log("NIEZNANY BLAD - NOTIFICATION")
+					return
+				}
+		}
 
-//		function onUserEmailChanged(email) {
-//			MainController.changeDatabaseUser(MainController.currentUser.id,
-//											  email,
-//											  MainController.currentUser.name,
-//											  MainController.currentUser.isTrainer)
-//			modal.close()
-//		}
+		function onUserPasswordChanged() {
+			modal.close()
+		}
 	}
 
 	PTextField {

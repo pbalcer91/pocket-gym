@@ -69,17 +69,40 @@ MainController::MainController(QObject *parent)
 		emit userEmailChanged(email);
 	});
 
-	QObject::connect(m_database, &DatabaseHandler::userEmailChangedFailed,
+	QObject::connect(m_database, &DatabaseHandler::userEmailChangeFailed,
 					 this, [this](DatabaseHandler::EMAIL_ERROR errorMessage) {
 		switch (errorMessage) {
-			case DatabaseHandler::EMAIL_EXISTS:
+			case DatabaseHandler::EMAIL_UNKNOWN_ERROR:
 				emit userEmailChangeFailed(MainController::EMAIL_UNKNOWN_ERROR);
 				return;
-			case DatabaseHandler::EMAIL_INVALID_ID_TOKEN:
+			case DatabaseHandler::EMAIL_EXISTS:
 				emit userEmailChangeFailed(MainController::EMAIL_EXISTS);
 				break;
-			case DatabaseHandler::EMAIL_UNKNOWN_ERROR:
+			case DatabaseHandler::EMAIL_INVALID_ID_TOKEN:
 				emit userEmailChangeFailed(MainController::EMAIL_INVALID_ID_TOKEN);
+				break;
+		}
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userPasswordChanged,
+					 this, [this]() {
+		m_settings->setValue(EMAIL, "");
+		m_settings->setValue(PASSWORD, "");
+
+		emit userPasswordChanged();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userPasswordChangeFailed,
+					 this, [this](DatabaseHandler::PASSWORD_ERROR errorMessage) {
+		switch (errorMessage) {
+			case DatabaseHandler::PASSWORD_UNKNOWN_ERROR:
+				emit userPasswordChangeFailed(MainController::PASSWORD_UNKNOWN_ERROR);
+				return;
+			case DatabaseHandler::PASSWORD_WEAK_PASSWORD:
+				emit userPasswordChangeFailed(MainController::PASSWORD_WEAK_PASSWORD);
+				break;
+			case DatabaseHandler::PASSWORD_INVALID_ID_TOKEN:
+				emit userPasswordChangeFailed(MainController::PASSWORD_INVALID_ID_TOKEN);
 				break;
 		}
 	});
@@ -559,9 +582,15 @@ MainController::changeDatabaseUser(QString userId, QString email, QString userna
 }
 
 void
-MainController::changeDatabaseUserEmail(QString email)
+MainController::changeDatabaseUserEmail(QString newEmail)
 {
-	m_database->changeUserEmail(email);
+	m_database->changeUserEmail(newEmail);
+}
+
+void
+MainController::changeDatabaseUserPassword(QString newPasword)
+{
+	m_database->changeUserPassword(newPasword);
 }
 
 void
