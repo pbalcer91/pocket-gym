@@ -19,6 +19,12 @@ DatabaseHandler::~DatabaseHandler()
 }
 
 void
+DatabaseHandler::clearIdToken()
+{
+	m_idToken = "";
+}
+
+void
 DatabaseHandler::signUserUp(const QString &email, const QString &password)
 {
 	QString signUpEndPoint = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + m_apiKey;
@@ -175,7 +181,107 @@ DatabaseHandler::changeUsername(QString userId, QString email, QString username,
 					 this, [this, reply](){
 		reply->deleteLater();
 
-		emit usernameChanged();
+		emit userChanged();
+	});
+}
+
+void
+DatabaseHandler::changeUserEmail(QString newEmail)
+{
+	QString changeEmailEndPoint = "https://identitytoolkit.googleapis.com/v1/accounts:update?key=" + m_apiKey;
+
+	QVariantMap variantPayload;
+	variantPayload["idToken"] = m_idToken;
+	variantPayload["email"] = newEmail.toLower();
+	variantPayload["returnSecureToken"] = true;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(variantPayload);
+
+	QNetworkRequest request((QUrl(changeEmailEndPoint)));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply, newEmail](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		for (const auto &key : rootObject.keys()) {
+			if (key == "error") {
+				auto errorDocument = rootObject.value(key);
+				auto errorObject = errorDocument.toObject();
+
+				QString errorMessage = errorObject.value("message").toString();
+
+				if (errorMessage == "EMAIL_EXISTS") {
+					emit userEmailChangeFailed(EMAIL_EXISTS);
+					return;
+				}
+
+				if (errorMessage == "INVALID_ID_TOKEN") {
+					emit userEmailChangeFailed(EMAIL_INVALID_ID_TOKEN);
+					return;
+				}
+
+				emit userEmailChangeFailed(EMAIL_UNKNOWN_ERROR);
+				return;
+			}
+		}
+
+		emit userEmailChanged(newEmail.toLower());
+	});
+}
+
+void
+DatabaseHandler::changeUserPassword(QString newPassword)
+{
+	QString changeEmailEndPoint = "https://identitytoolkit.googleapis.com/v1/accounts:update?key=" + m_apiKey;
+
+	QVariantMap variantPayload;
+	variantPayload["idToken"] = m_idToken;
+	variantPayload["password"] = newPassword;
+	variantPayload["returnSecureToken"] = true;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(variantPayload);
+
+	QNetworkRequest request((QUrl(changeEmailEndPoint)));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		for (const auto &key : rootObject.keys()) {
+			if (key == "error") {
+				auto errorDocument = rootObject.value(key);
+				auto errorObject = errorDocument.toObject();
+
+				QString errorMessage = errorObject.value("message").toString();
+
+				if (errorMessage == "WEAK_PASSWORD") {
+					emit userPasswordChangeFailed(PASSWORD_WEAK_PASSWORD);
+					return;
+				}
+
+				if (errorMessage == "INVALID_ID_TOKEN") {
+					emit userPasswordChangeFailed(PASSWORD_INVALID_ID_TOKEN);
+					return;
+				}
+
+				emit userPasswordChangeFailed(PASSWORD_UNKNOWN_ERROR);
+				return;
+			}
+		}
+
+		emit userPasswordChanged();
 	});
 }
 

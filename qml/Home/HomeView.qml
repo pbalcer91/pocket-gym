@@ -273,6 +273,8 @@ Item {
 
 					label: "Trenerzy"
 
+					visible: MainController.trainerSectionVisible
+
 					Layout.leftMargin: Properties.smallMargin
 					Layout.rightMargin: Properties.smallMargin
 
@@ -324,7 +326,10 @@ Item {
 						onClicked: {
 							showMessage({"message": "Czy na pewno chcesz ukryć sekcję? Będziesz mógł ją przywrócić z ustawieniach.",
 											"acceptButton.text": "Tak",
-											"rejectButton.text": "Nie"
+											"rejectButton.text": "Nie",
+											"acceptAction": function() {
+												MainController.trainerSectionVisible = false
+											}
 										})
 						}
 					}

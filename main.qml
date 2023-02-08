@@ -4,6 +4,8 @@ import QtQuick.Layouts
 
 import Properties
 
+import pl.com.thesis
+
 ApplicationWindow {
 	id: window
 
@@ -18,6 +20,15 @@ ApplicationWindow {
 	  https://www.svgrepo.com/page/licensing
 	  CC Licence
 	*/
+
+	Connections {
+		target: MainController
+
+		function onUserLoggedOut() {
+			appLoader.source = ""
+			logInLoader.source = "qrc:/qml/LogInView.qml"
+		}
+	}
 
 	onClosing: function(close) {
 		console.warn("Closing app is blocked by developer")

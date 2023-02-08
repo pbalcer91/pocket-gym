@@ -5,84 +5,306 @@ import QtQuick.Controls
 import Components
 import Properties
 
-Item {
-	id: content
+import pl.com.thesis
 
-	property int margin: Properties.margin
+Item {
+	id: form
+
+	implicitWidth: content.implicitWidth
+	implicitHeight: content.implicitHeight
+
+	Connections {
+		target: MainController
+
+		function onSettingsChanged() {
+			trainerSectionVisibleSwitch.checked = MainController.trainerSectionVisible
+		}
+	}
 
 	ScrollView {
 		id: scroll
 
 		anchors.fill: parent
 
+		contentHeight: content.implicitHeight
+		contentWidth: content.width
+
+		ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+
 		Flickable {
 			id: flickable
 
-			clip: (contentHeight > height)
-			boundsBehavior: Flickable.StopAtBounds
+			anchors.fill: scroll
 
-			contentWidth: width
-			contentHeight: mainColumn.implicitHeight + content.margin * 2
+			clip: true
+			boundsBehavior: Flickable.StopAtBounds
+			contentWidth: content.width
+			contentHeight: content.implicitHeight
 
 			ColumnLayout {
-				id: mainColumn
+				id: content
 
-				anchors.fill: parent
-				anchors.margins: content.margin
+				width: flickable.width
+
 				spacing: Properties.margin
 
-				SettingsSection {
-					label: "Ustawienia konta"
+				Rectangle {
+					id: header
 
-					PLabel {
-						text: "Adres email"
+					Layout.alignment: Qt.AlignTop
+
+					height: Properties.toolBarHeight
+					Layout.fillWidth: true
+
+					color: Colors.darkGray
+
+					RowLayout {
+						anchors.fill: parent
+
+						anchors.leftMargin: Properties.margin
+						anchors.rightMargin: Properties.margin
+
+						PLabel {
+							id: title
+
+							font: Fonts.title
+							lineHeight: Fonts.titleHeight
+
+							color: Colors.text
+
+							text: "Ustawienia"
+						}
+
+						Item {
+							Layout.fillWidth: true
+						}
+					}
+				}
+
+				SettingsSection {
+					label: "Konto"
+
+					Rectangle {
+						id: background
+
+						implicitWidth: accountInfoContent.implicitWidth
+						implicitHeight: accountInfoContent.implicitHeight
+
+						Layout.fillWidth: true
+
+						color: "transparent"
+						radius: 20
+						border.color: Colors.primary_30
+						border.width: 2
+
+						ColumnLayout {
+							id: accountInfoContent
+
+							anchors.fill: parent
+
+							anchors.topMargin: Properties.smallMargin
+							anchors.bottomMargin: Properties.smallMargin
+							anchors.leftMargin: Properties.margin
+							anchors.rightMargin: Properties.margin
+
+							spacing: Properties.margin
+
+							RowLayout {
+								Layout.fillWidth: true
+
+								PLabel {
+									Layout.fillHeight: true
+
+									text: "Użytkownik:"
+									color: Colors.text
+
+									font: Fonts.list
+									lineHeight: Fonts.listHeight
+								}
+
+								Item {
+									Layout.fillWidth: true
+								}
+
+								PLabel {
+									Layout.fillHeight: true
+
+									text: MainController.currentUser.name
+									color: Colors.text
+
+									horizontalAlignment: Text.AlignRight
+
+									font: Fonts.subTitle
+									lineHeight: Fonts.subTitleHeight
+								}
+							}
+
+							RowLayout {
+								Layout.fillWidth: true
+
+								PLabel {
+									Layout.fillHeight: true
+
+									text: "Typ użytkownika:"
+									color: Colors.text
+
+									font: Fonts.list
+									lineHeight: Fonts.listHeight
+								}
+
+								Item {
+									Layout.fillWidth: true
+								}
+
+								PLabel {
+									Layout.fillHeight: true
+
+									text: (MainController.currentUser.isTrainer ? "Trener" : "Zwykły")
+									color: Colors.text
+
+									horizontalAlignment: Text.AlignRight
+
+									font: Fonts.subTitle
+									lineHeight: Fonts.subTitleHeight
+								}
+							}
+
+							RowLayout {
+								Layout.fillWidth: true
+
+								PLabel {
+									Layout.fillHeight: true
+
+									text: "Email:"
+									color: Colors.text
+
+									font: Fonts.list
+									lineHeight: Fonts.listHeight
+								}
+
+								Item {
+									Layout.fillWidth: true
+								}
+
+								PLabel {
+									Layout.fillHeight: true
+
+									text: MainController.currentUser.email
+									color: Colors.text
+
+									horizontalAlignment: Text.AlignRight
+
+									font: Fonts.caption
+									lineHeight: Fonts.captionHeight
+								}
+							}
+						}
 					}
 
-					PLabel {
+					PButton {
+						id: changeusernameButton
+
+						Layout.fillWidth: true
+
+						text: "Zmień nazwę użytkownika"
+						icon.source: "qrc:/icons/ic_chevronRight.svg"
+
+						isBorder: true
+						isRightIcon: true
+						horizontalAlignment: Text.AlignLeft
+
+						onClicked: {
+							loader.setSource("qrc:/qml/Settings/UserNameChangeModal.qml")
+						}
+					}
+
+					PButton {
+						id: changeEmaildButton
+
+						Layout.fillWidth: true
+
+						text: "Zmień adres email"
+						icon.source: "qrc:/icons/ic_chevronRight.svg"
+
+						isBorder: true
+						isRightIcon: true
+						horizontalAlignment: Text.AlignLeft
+
+						onClicked: {
+							loader.setSource("qrc:/qml/Settings/UserEmailChangeModal.qml")
+						}
+					}
+
+					PButton {
+						id: changePasswordButton
+
+						Layout.fillWidth: true
+
 						text: "Zmień hasło"
+						icon.source: "qrc:/icons/ic_chevronRight.svg"
+
+						isBorder: true
+						isRightIcon: true
+						horizontalAlignment: Text.AlignLeft
+
+						onClicked: {
+							loader.setSource("qrc:/qml/Settings/UserChangePasswordModal.qml")
+						}
 					}
 
-					PLabel {
-						text: "Typ konta"
+					PButton {
+						id: changeAccountTypeButton
+
+						Layout.fillWidth: true
+
+						text: "Zmień typ konta"
+						icon.source: "qrc:/icons/ic_chevronRight.svg"
+
+						isBorder: true
+						isRightIcon: true
+						horizontalAlignment: Text.AlignLeft
+
+						onClicked: {
+							loader.setSource("qrc:/qml/Settings/AccountTypeChangeModal.qml")
+						}
 					}
 
-					// model (label, url, isButton)
-					// + konkretne przyciski w ListView / repeaterze w settingsSection
+					PButton {
+						id: logoutButton
+
+						Layout.alignment: Qt.AlignHCenter
+
+						color: Colors.error
+
+						text: "Wyloguj"
+
+						onClicked: {
+							showMessage({"message": "Czy na pewno chcesz się wylogować?",
+											"acceptButton.text": "Tak",
+											"rejectButton.text": "Nie",
+											"acceptAction": function() {
+												MainController.logOut()
+											}
+										})
+						}
+					}
 				}
 
 				SettingsSection {
-					label: "Ustawienia treningów"
+					label: "Personalizacja"
 
-					PLabel {
-						text: "Czas przerw"
-					}
+					PSwitch {
+						id: trainerSectionVisibleSwitch
 
-					PLabel {
-						text: "Jednostki"
-					}
+						Layout.fillWidth: true
 
-					PLabel {
-						text: "Ilość treningów w tygodniu"
-					}
-				}
+						checked: MainController.trainerSectionVisible
 
-				SettingsSection {
-					label: "Ustawienia aplikacji"
+						text: "Sekcja trenera widoczna"
 
-					PLabel {
-						text: "Powiadomienia"
-					}
-
-					PLabel {
-						text: "Tryb ciemny"
-					}
-
-					PLabel {
-						text: "Kolor motywu"
-					}
-
-					PLabel {
-						text: "Język"
+						onToggled: {
+							MainController.trainerSectionVisible = checked
+						}
 					}
 				}
 
@@ -90,18 +312,33 @@ Item {
 					label: "O aplikacji"
 
 					PLabel {
-						text: "Autor: Piotr Balcer"
+						text: "Twórca: Piotr Balcer"
+
+						font: Fonts.caption
+						lineHeight: Fonts.captionHeight
 					}
 
 					PLabel {
-						text: "Wersja: 0.1.0"
-					}
+						text: "Wersja: 1.0.0"
 
-					PLabel {
-						text: "Licencje: CC0 - ikony i fonty"
+						font: Fonts.caption
+						lineHeight: Fonts.captionHeight
 					}
 				}
 			}
+		}
+	}
+
+	Loader {
+		id: loader
+
+		onLoaded: {
+			loader.item.closed.connect(function() {
+				if (!loader)
+					return
+				loader.source = ""
+			})
+			loader.item.open()
 		}
 	}
 }

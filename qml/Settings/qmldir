@@ -2,3 +2,7 @@ module Settings
 
 SettingsView    	    SettingsView.qml
 SettingsSection    	    SettingsSection.qml
+AccountTypeChangeModal	    AccountTypeChangeModal.qml
+UserNameChangeModal	    UserNameChangeModal.qml
+UserEmailChangeModal	    UserEmailChangeModal.qml
+UserChangePasswordModal	    UserChangePasswordModal.qml

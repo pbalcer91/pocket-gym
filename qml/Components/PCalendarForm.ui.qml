@@ -59,6 +59,7 @@ ColumnLayout {
 
 				height: title.implicitHeight
 				width: implicitHeight
+				Layout.minimumWidth: Properties.calendarButtonSize
 
 				isBorder: true
 				text: form.nowDay

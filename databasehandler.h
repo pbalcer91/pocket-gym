@@ -34,11 +34,27 @@ public:
 		SI_USER_DISABLED					= 3
 	};
 
+	enum EMAIL_ERROR {
+		EMAIL_UNKNOWN_ERROR					= 0,
+		EMAIL_EXISTS						= 1,
+		EMAIL_INVALID_ID_TOKEN				= 2
+	};
+
+	enum PASSWORD_ERROR {
+		PASSWORD_UNKNOWN_ERROR					= 0,
+		PASSWORD_WEAK_PASSWORD					= 1,
+		PASSWORD_INVALID_ID_TOKEN				= 2
+	};
+
+	void clearIdToken();
+
 	void signUserUp(const QString &email, const QString &password);
 	void signUserIn(const QString &email, const QString &password);
 
 	void checkIsUsernameAvailable(QString username);
 	void changeUsername(QString userId, QString email, QString username, bool isTrainer);
+	void changeUserEmail(QString newEmail);
+	void changeUserPassword(QString newPassword);
 
 	//get methods
 	void getUserByEmail(QString email);
@@ -100,7 +116,13 @@ signals:
 	void signInSucceed(QString email, QString password);
 
 	void usernameVerificationReceived(bool isAvailable);
-	void usernameChanged();
+	void userChanged();
+
+	void userEmailChanged(QString email);
+	void userEmailChangeFailed(DatabaseHandler::EMAIL_ERROR);
+
+	void userPasswordChanged();
+	void userPasswordChangeFailed(DatabaseHandler::PASSWORD_ERROR);
 
 	void userLoggedIn(QString id, QString username, QString email, bool isTrainer);
 	void trainersReceived(QVariantMap trainersList);

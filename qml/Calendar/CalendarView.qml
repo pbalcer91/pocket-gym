@@ -31,8 +31,4 @@ Column {
 		width: 1
 		height: Properties.margin
 	}
-
-	PLabel {
-		text: "Wydarzenie"
-	}
 }

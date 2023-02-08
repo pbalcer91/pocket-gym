@@ -11,18 +11,23 @@ ColumnLayout {
 
 	default property alias content: mainContent.data
 
+	Layout.fillWidth: true
+
+	Layout.leftMargin: Properties.margin
+	Layout.rightMargin: Properties.margin
+
 	PLabel {
 		id: label
 
 		font: Fonts.list
 		lineHeight: Fonts.listHeight
 
-		color: Colors.black_70
+		color: Colors.text
 	}
 
 	Rectangle {
 		Layout.fillWidth: true
-		color: Colors.black_30
+		color: Colors.text
 		height: 0.5
 	}
 
@@ -37,5 +42,7 @@ ColumnLayout {
 		Layout.bottomMargin: Properties.smallMargin
 		Layout.leftMargin: Properties.smallMargin
 		Layout.rightMargin: Properties.smallMargin
+
+		spacing: Properties.smallMargin
 	}
 }

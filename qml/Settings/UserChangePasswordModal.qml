@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Shapes
 
 import Components
 import Properties
@@ -10,22 +11,30 @@ import pl.com.thesis
 PMessageDialog {
 	id: modal
 
-	acceptButton.visible: false
+	title: "Hasło"
+
+	acceptButton.enabled: isValid()
+
+	acceptButton.onClicked: {
+		MainController.changeDatabaseUserPassword(passwordField.text)
+	}
+
+	rejectButton.onClicked: {
+		modal.close()
+	}
+
+	autoCloseMode: false
 
 	function isValid() {
-		if (emailField.text == "")
+		if (passwordField.text == ""
+				|| rePasswordField.text == "")
 			return false
 
-		if (passwordField.text == "")
+		if (passwordField.text != rePasswordField.text)
 			return false
 
-		if (rePasswordField.text == "")
-			return false
-
-		if (emailField.state == "error")
-			return false
-
-		if (rePasswordField.state == "error")
+		if (passwordErrorLabel.visible
+				| repasswordErrorLabel.visible)
 			return false
 
 		return true
@@ -34,98 +43,30 @@ PMessageDialog {
 	Connections {
 		target: MainController
 
-		function onSignUpSucceed() {
-			MainController.addDatabaseUser(emailField.text, false)
-		}
-
-		function onUserAdded() {
-			MainController.signInUser(emailField.text, passwordField.text)
-			modal.acceptButton.clicked()
-		}
-
-		function onSignUpFailed(errorCode) {
+		function onUserPasswordChangeFailed(errorCode) {
 			switch(errorCode) {
-				case MainController.SU_EMAIL_EXISTS:
+				case MainController.PASSWORD_UNKNOWN_ERROR:
 					console.log("EMAIL JUZ ISTNIEJE - NOTIFICATION")
 					return
-				case MainController.SU_TOO_MANY_ATTEMPTS_TRY_LATER:
+				case MainController.PASSWORD_INVALID_ID_TOKEN:
 					console.log("ZBYT WIELE PROB - NOTIFICATION")
 					return
-				case MainController.SU_UNKNOWN_ERROR:
+				case MainController.PASSWORD_WEAK_PASSWORD:
 					console.log("NIEZNANY BLAD - NOTIFICATION")
 					return
-			}
-		}
-	}
-
-	PLabel {
-		id: label
-
-		Layout.alignment: Qt.AlignHCenter
-		Layout.topMargin: Properties.spacing
-		Layout.bottomMargin: Properties.spacing
-
-		text: "Stwórz konto"
-		font: Fonts.subTitle
-		lineHeight: Fonts.subTitleHeight
-	}
-
-	PTextField {
-		id: emailField
-
-		Layout.fillWidth: true
-		Layout.topMargin: Properties.margin
-		Layout.leftMargin: Properties.margin
-		Layout.rightMargin: Properties.margin
-
-		label: "Email"
-		placeholderText: "Email"
-
-		inputMethodHints: Qt.ImhEmailCharactersOnly
-		validator: RegularExpressionValidator {
-			regularExpression: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+				}
 		}
 
-		Keys.onReturnPressed: {
-			passwordField.focus = true
-
-			if (!acceptableInput) {
-				state = "error"
-				return
-			}
+		function onUserPasswordChanged() {
+			modal.close()
 		}
-
-		onFocusChanged: {
-			if (!focus && !acceptableInput) {
-				state = "error"
-				return
-			}
-
-			if (state == "error")
-				state = ""
-		}
-	}
-
-	PLabel {
-		id: emailErrorLabel
-
-		Layout.topMargin: -Properties.spacing
-		Layout.leftMargin: 48
-		Layout.fillWidth: true
-
-		font: Fonts.info
-		lineHeight: Fonts.infoHeight
-		text: "Niepoprawny format adresu email"
-
-		visible: (emailField.state == "error")
-		color: Colors.error
 	}
 
 	PTextField {
 		id: passwordField
 
 		Layout.fillWidth: true
-		Layout.topMargin: (emailErrorLabel.visible ? Properties.spacing : Properties.margin)
+		Layout.topMargin:Properties.margin
 		Layout.leftMargin: Properties.margin
 		Layout.rightMargin: Properties.margin
 
@@ -212,20 +153,5 @@ PMessageDialog {
 
 		visible: (rePasswordField.state == "error")
 		color: Colors.error
-	}
-
-	PButton {
-		id: acceptButton
-
-		Layout.alignment: Qt.AlignHCenter
-		Layout.topMargin: (repasswordErrorLabel.visible ? Properties.spacing : Properties.margin)
-
-		text: "Załóż konto"
-		enabled: isValid()
-		flat: false
-
-		onClicked: {
-			MainController.signUpUser(emailField.text, passwordField.text)
-		}
 	}
 }

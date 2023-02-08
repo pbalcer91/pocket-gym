@@ -6,6 +6,8 @@ MainController::MainController(QObject *parent)
 	  m_database(new DatabaseHandler(this)),
 	  m_settings(new QSettings(this))
 {
+	setTrainerSectionVisible(m_settings->value(TRAINER_SECTION_VISIBLE, true).toBool());
+
 	QObject::connect(m_database, &DatabaseHandler::signUpFailed,
 					 this, [this](DatabaseHandler::SING_UP_ERROR errorMessage) {
 		switch (errorMessage) {
@@ -54,9 +56,55 @@ MainController::MainController(QObject *parent)
 		emit usernameVerificationReceived(isAvailable);
 	});
 
-	QObject::connect(m_database, &DatabaseHandler::usernameChanged,
+	QObject::connect(m_database, &DatabaseHandler::userChanged,
 					 this, [this]() {
-		emit usernameChanged();
+		emit userChanged();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userEmailChanged,
+					 this, [this](QString email) {
+		m_settings->setValue(EMAIL, "");
+		m_settings->setValue(PASSWORD, "");
+
+		emit userEmailChanged(email);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userEmailChangeFailed,
+					 this, [this](DatabaseHandler::EMAIL_ERROR errorMessage) {
+		switch (errorMessage) {
+			case DatabaseHandler::EMAIL_UNKNOWN_ERROR:
+				emit userEmailChangeFailed(MainController::EMAIL_UNKNOWN_ERROR);
+				return;
+			case DatabaseHandler::EMAIL_EXISTS:
+				emit userEmailChangeFailed(MainController::EMAIL_EXISTS);
+				break;
+			case DatabaseHandler::EMAIL_INVALID_ID_TOKEN:
+				emit userEmailChangeFailed(MainController::EMAIL_INVALID_ID_TOKEN);
+				break;
+		}
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userPasswordChanged,
+					 this, [this]() {
+		m_settings->setValue(EMAIL, "");
+		m_settings->setValue(PASSWORD, "");
+
+		emit userPasswordChanged();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::userPasswordChangeFailed,
+					 this, [this](DatabaseHandler::PASSWORD_ERROR errorMessage) {
+		switch (errorMessage) {
+			case DatabaseHandler::PASSWORD_UNKNOWN_ERROR:
+				emit userPasswordChangeFailed(MainController::PASSWORD_UNKNOWN_ERROR);
+				return;
+			case DatabaseHandler::PASSWORD_WEAK_PASSWORD:
+				emit userPasswordChangeFailed(MainController::PASSWORD_WEAK_PASSWORD);
+				break;
+			case DatabaseHandler::PASSWORD_INVALID_ID_TOKEN:
+				emit userPasswordChangeFailed(MainController::PASSWORD_INVALID_ID_TOKEN);
+				break;
+		}
 	});
 
 	QObject::connect(m_database, &DatabaseHandler::signInSucceed,
@@ -368,6 +416,22 @@ MainController::trainersList() const
 	return m_trainersList;
 }
 
+bool
+MainController::trainerSectionVisible() const
+{
+	return m_trainerSectionVisible;
+}
+
+void
+MainController::setTrainerSectionVisible(bool visible)
+{
+	m_trainerSectionVisible = visible;
+
+	m_settings->setValue(TRAINER_SECTION_VISIBLE, visible);
+
+	emit settingsChanged();
+}
+
 User*
 MainController::getCurrentUser()
 {
@@ -387,6 +451,18 @@ MainController::autoLogIn()
 		return;
 
 	signInUser(email, password);
+}
+
+void
+MainController::logOut()
+{
+	m_settings->setValue(EMAIL, "");
+	m_settings->setValue(PASSWORD, "");
+	m_settings->setValue(TRAINER_SECTION_VISIBLE, true);
+
+	m_database->clearIdToken();
+
+	emit userLoggedOut();
 }
 
 TrainingPlan*
@@ -496,9 +572,25 @@ MainController::checkIsUsernameAvailable(QString username)
 }
 
 void
-MainController::changeDatabaseUsername(QString userId, QString email, QString username, bool isTrainer)
+MainController::changeDatabaseUser(QString userId, QString email, QString username, bool isTrainer)
 {
+	m_currentUser->setEmail(email);
+	m_currentUser->setName(username);
+	m_currentUser->setIsTrainer(isTrainer);
+
 	m_database->changeUsername(userId, email, username, isTrainer);
+}
+
+void
+MainController::changeDatabaseUserEmail(QString newEmail)
+{
+	m_database->changeUserEmail(newEmail);
+}
+
+void
+MainController::changeDatabaseUserPassword(QString newPasword)
+{
+	m_database->changeUserPassword(newPasword);
 }
 
 void
