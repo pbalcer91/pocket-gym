@@ -85,8 +85,30 @@ Item {
 					text: model.name
 
 					wrap: Text.WordWrap
+
+					onClicked: {
+						loader.setSource("qrc:/qml/Exercises/ExercisesListView.qml",
+										 {
+											 "title": model.name,
+											 "category": model.category
+										 })
+					}
 				}
 			}
+		}
+	}
+
+	Loader {
+		id: loader
+
+		onLoaded: {
+			loader.item.closed.connect(function() {
+				if (!loader)
+					return
+				loader.source = ""
+			})
+
+			loader.item.open()
 		}
 	}
 }

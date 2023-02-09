@@ -70,6 +70,7 @@ public:
 	void getExercisesByTrainingId(User* user, QString planId, QString trainingId);
 	void getExerciseById(User* user, QString planId, QString exerciseId);
 	void getMeasurementsByUser(User* user);
+	void getCatalogByCategory(QString category);
 
 	//add methods
 	void addUser(QString email, bool isTrainer);
@@ -123,6 +124,8 @@ signals:
 
 	void userPasswordChanged();
 	void userPasswordChangeFailed(DatabaseHandler::PASSWORD_ERROR);
+
+	void catalogExercisesReceived(QVariantMap list);
 
 	void userLoggedIn(QString id, QString username, QString email, bool isTrainer);
 	void trainersReceived(QVariantMap trainersList);

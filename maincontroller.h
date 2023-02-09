@@ -98,6 +98,8 @@ public:
 	Q_INVOKABLE void changeDatabaseUserEmail(QString newEmail);
 	Q_INVOKABLE void changeDatabaseUserPassword(QString newPasword);
 
+	Q_INVOKABLE void getDatabaseCatalogByCategory(QString category);
+
 	Q_INVOKABLE void getDatabaseTrainers();
 	Q_INVOKABLE void getDatabaseUserTrainingPlans(User* user);
 	Q_INVOKABLE void getDatabaseTrainingsByPlanId(User* user, QString planId);
@@ -146,6 +148,8 @@ signals:
 	void signInSucceed(QString email);
 
 	void userLoggedOut();
+
+	void catalogReady(QVariantMap list);
 
 	void userChanged();
 	void userEmailChanged(QString email);

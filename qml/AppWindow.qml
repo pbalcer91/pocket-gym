@@ -14,6 +14,8 @@ Page {
 		color: Colors.background
 	}
 
+	signal mainStackReady
+
 	property int currentPage: -1
 
 	enum PAGES {
@@ -173,6 +175,7 @@ Page {
 					if (!mainStack.isReady && (index === 0)) {
 						mainStack.isReady = true
 						mainStack.currentIndex = AppWindow.PAGES.HOME
+						window.mainStackReady()
 					}
 				}
 			}

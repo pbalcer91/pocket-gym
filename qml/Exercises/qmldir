@@ -1,5 +1,7 @@
 module Training
 
 ExercisesView		    	    ExercisesView.qml
+ExercisesListView		    ExercisesListView.qml
+CatalogExerciseItem		    CatalogExerciseItem.qml
 
 ExerciseCategoriesModel	    	    Models/ExerciseCategoriesModel.qml

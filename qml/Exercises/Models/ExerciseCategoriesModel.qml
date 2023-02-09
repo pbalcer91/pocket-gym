@@ -13,12 +13,22 @@ PListModel {
 						  "Barki",
 						  "Biceps",
 						  "Triceps",
-						  "Przedramię",
+						  "Mobilizacje",
 						  "Nogi",
 						  "Brzuch"]
 
+		var categoryCodes = ["chest",
+							 "back",
+							 "shoulders",
+							 "biceps",
+							 "triceps",
+							 "mobilisation",
+							 "legs",
+							 "core"]
+
 		for (var i = 0; i < categories.length; i++) {
-			append({"name": categories[i]})
+			append({"name": categories[i],
+					   "category": categoryCodes[i]})
 		}
 	}
 }
