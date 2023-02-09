@@ -152,6 +152,11 @@ MainController::MainController(QObject *parent)
 		emit trainingCompleted();
 	});
 
+	QObject::connect(m_database, &DatabaseHandler::catalogExercisesReceived,
+					 this, [this](QVariantMap list) {
+		emit catalogReady(list);
+	});
+
 	QObject::connect(m_database, &DatabaseHandler::trainerPupilsIdsReceived,
 					 this, [this](QList<QString> pupilsIds) {
 		if (!m_currentUser->isTrainer())
@@ -591,6 +596,12 @@ void
 MainController::changeDatabaseUserPassword(QString newPasword)
 {
 	m_database->changeUserPassword(newPasword);
+}
+
+void
+MainController::getDatabaseCatalogByCategory(QString category)
+{
+	m_database->getCatalogByCategory(category);
 }
 
 void

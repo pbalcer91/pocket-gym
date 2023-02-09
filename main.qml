@@ -52,8 +52,13 @@ ApplicationWindow {
 	Loader {
 		id: appLoader
 		anchors.fill: parent
-		visible: true
+		visible: false
 		asynchronous: true
+
+		onStatusChanged: {
+			if (status == Loader.Ready)
+				visible = true
+		}
 	}
 
 	Loader {

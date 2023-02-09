@@ -92,6 +92,8 @@ Drawer {
 				PLabel {
 					id: title
 
+					Layout.fillWidth: true
+
 					visible: (text != "")
 
 					font: Fonts.subTitle
@@ -121,10 +123,14 @@ Drawer {
 				Layout.fillWidth: true
 				Layout.fillHeight: true
 
+				Layout.topMargin: Properties.margin
+
 				PLabel {
 					id: message
 
 					Layout.fillWidth: true
+					font: Fonts.caption
+					lineHeight: Fonts.captionHeight
 
 					color: Colors.text
 

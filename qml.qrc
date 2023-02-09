@@ -76,5 +76,7 @@
         <file>qml/Settings/UserNameChangeModal.qml</file>
         <file>qml/Settings/UserEmailChangeModal.qml</file>
         <file>qml/Settings/UserChangePasswordModal.qml</file>
+        <file>qml/Exercises/ExercisesListView.qml</file>
+        <file>qml/Exercises/CatalogExerciseItem.qml</file>
     </qresource>
 </RCC>

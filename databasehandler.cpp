@@ -702,6 +702,36 @@ DatabaseHandler::getMeasurementsByUser(User* user)
 }
 
 void
+DatabaseHandler::getCatalogByCategory(QString category)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "catalog/" + category +".json?auth=" + m_idToken)));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		QVariantMap exercisesList;
+
+		for (const auto &key : rootObject.keys()) {
+			auto exerciseDocument = rootObject.value(key);
+			auto exerciseObject = exerciseDocument.toObject();
+
+			QString name = exerciseObject.value("name").toString();
+			QString description = exerciseObject.value("description").toString();
+
+			exercisesList.insert(name, description);
+		}
+
+		emit catalogExercisesReceived(exercisesList);
+	});
+}
+
+void
 DatabaseHandler::addUser(QString email, bool isTrainer)
 {
 	QVariantMap databaseUser;
