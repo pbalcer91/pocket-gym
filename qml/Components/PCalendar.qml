@@ -4,6 +4,8 @@ import QtQuick.Controls
 
 import Properties
 
+import pl.com.thesis
+
 PCalendarForm {
 	id: content
 
@@ -13,6 +15,23 @@ PCalendarForm {
 
 	Component.onCompleted: {
 		content.setToday()
+	}
+
+	onSelectedDayChanged: {
+		MainController.getDatabaseEvents(MainController.currentUser, selectedDay, selectedMonth + 1, selectedYear)
+	}
+
+	Connections {
+		target: MainController
+
+		function onEventRemoved() {
+			notify("Usunięto wydarzenie")
+			MainController.getDatabaseEvents(MainController.currentUser, selectedDay, selectedMonth + 1, selectedYear)
+		}
+
+		function onEventChanged() {
+			MainController.getDatabaseEvents(MainController.currentUser, selectedDay, selectedMonth + 1, selectedYear)
+		}
 	}
 
 	function monthLength(month) {
@@ -39,7 +58,10 @@ PCalendarForm {
 
 		content.currentYear = content.nowYear
 		content.currentMonth = content.nowMonth
-		content.currentDay = content.nowDay
+
+		content.selectedYear = content.nowYear
+		content.selectedMonth = content.nowMonth
+		content.selectedDay = content.nowDay
 	}
 
 	currentMonthLabel: Qt.locale().standaloneMonthName(content.currentMonth)
@@ -125,8 +147,14 @@ PCalendarForm {
 
 			ButtonGroup.group: daysButtonGroup
 
+			checked: (content.currentYear == content.selectedYear
+					  && content.currentMonth == content.selectedMonth
+					  && model.value === content.selectedDay)
+
 			onClicked: {
-				content.currentDay = model.value
+				content.selectedYear = content.currentYear
+				content.selectedMonth = content.currentMonth
+				content.selectedDay = model.value
 			}
 
 			flat: !checked

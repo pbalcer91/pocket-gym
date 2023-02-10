@@ -122,6 +122,32 @@ MainController::MainController(QObject *parent)
 		emit currentUserReady();
 	});
 
+	QObject::connect(m_database, &DatabaseHandler::eventAdded,
+					 this, [this](User* user) {
+		(void)user;
+		emit eventAdded();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::eventRemoved,
+					 this, [this]() {
+		emit eventRemoved();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::eventsReceived,
+					 this, [this](QList<QString> eventsIdList) {
+		emit eventsReady(eventsIdList);
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::eventChanged,
+					 this, [this]() {
+		emit eventChanged();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::eventReceived,
+					 this, [this](QString id, QString name, QDateTime dateTime) {
+		emit eventReady(id, name, dateTime);
+	});
+
 	QObject::connect(m_database, &DatabaseHandler::pupilRequestAccepted,
 					 this, [this](QString trainerId) {
 		getDatabaseTrainerPupilsIds(trainerId);
@@ -635,6 +661,20 @@ MainController::getDatabaseMeasurementsByUser(User* user)
 }
 
 void
+MainController::getDatabaseEvents(User *user, int day, int month, int year)
+{
+	QDateTime dateTime = QDateTime(QDate(year, month, day), QTime(0, 0));
+
+	m_database->getEvents(user, dateTime);
+}
+
+void
+MainController::getDatabaseEventById(QString id)
+{
+	m_database->getEventById(id);
+}
+
+void
 MainController::addDatabaseTrainingPlan(User* user, QString name, QString description, bool isDefault)
 {
 	if (isDefault) {
@@ -666,6 +706,14 @@ MainController::addDatabaseMeasurement(User* user, double weight, double chest, 
 									   double waist, double hips, double peace, double calf)
 {
 	m_database->addMeasurement(user, weight, chest, shoulders, arm, forearm, waist, hips, peace, calf);
+}
+
+void
+MainController::addDatabaseEvent(User *user, QString name, int day, int month, int year, int hour, int minute)
+{
+	QDateTime dateTime = QDateTime(QDate(year, month, day), QTime(hour, minute));
+
+	m_database->addEvent(user, name, dateTime);
 }
 
 void
@@ -732,6 +780,14 @@ MainController::editDatabaseExercise(User* user, QString planId, QString exercis
 }
 
 void
+MainController::editDatabaseEvent(User *user, QString eventId, QString name, int day, int month, int year, int hour, int minute)
+{
+	QDateTime dateTime = QDateTime(QDate(year, month, day), QTime(hour, minute));
+
+	m_database->editEvent(user, eventId, name, dateTime);
+}
+
+void
 MainController::deleteDatabaseTrainingPlan(User* user, QString planId)
 {
 	auto plan = getTrainingPlanById(user, planId);
@@ -761,6 +817,12 @@ void
 MainController::deleteDatabaseExercise(User* user, QString planId, QString trainingId, QString exerciseId)
 {
 	m_database->deleteExercise(user, planId, trainingId, exerciseId);
+}
+
+void
+MainController::deleteEvent(QString id)
+{
+	m_database->deleteEvent(id);
 }
 
 void

@@ -107,6 +107,13 @@ QtObject {
 	})
 	readonly property int infoHeight: 18
 
+	readonly property font clock: Qt.font({
+		family: nunito.bold.name,
+		weight: weight.bold,
+		pixelSize: 38,
+		letterSpacing: -0.67
+	})
+	readonly property int clockHeight: 44
 
 	readonly property font button: Qt.font({
 		family: nunito.extraBold.name,

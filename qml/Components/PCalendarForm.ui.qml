@@ -7,9 +7,12 @@ import Properties
 ColumnLayout {
 	id: form
 
+	property int selectedYear
+	property int selectedMonth
+	property int selectedDay
+
 	property int currentYear
 	property int currentMonth
-	property int currentDay
 
 	property int nowYear
 	property int nowMonth
@@ -24,6 +27,7 @@ ColumnLayout {
 	property alias monthDaysGrid: monthDaysGrid
 
 	property alias todayButton: todayButton
+	property alias addButton: addButton
 
 	Rectangle {
 		id: header
@@ -52,6 +56,16 @@ ColumnLayout {
 
 			Item {
 				Layout.fillWidth: true
+			}
+
+			PButton {
+				id: addButton
+
+				height: title.implicitHeight
+				width: implicitHeight
+
+				icon.source: "qrc:/icons/ic_add.svg"
+
 			}
 
 			PButton {

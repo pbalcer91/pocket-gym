@@ -86,7 +86,7 @@ Item {
 
 		var month = ""
 
-		if (date.getDate() < 10)
+		if (date.getMonth() < 10)
 			month += "0"
 		month += date.getMonth() + 1
 
