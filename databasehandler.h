@@ -71,6 +71,7 @@ public:
 	void getExerciseById(User* user, QString planId, QString exerciseId);
 	void getMeasurementsByUser(User* user);
 	void getCatalogByCategory(QString category);
+	void getEvents(User* user, QDateTime selectedDateTime);
 
 	//add methods
 	void addUser(QString email, bool isTrainer);
@@ -79,6 +80,7 @@ public:
 	void addExercise(User* user, QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets);
 	void addMeasurement(User* user, double weight, double chest, double shoulders, double arm,
 						double forearm, double waist, double hips, double peace, double calf);
+	void addEvent(User* user, QString name, QDateTime dateTime);
 
 	void addCompletedTraining(User* user, QString trainingName);
 	void getUserCompletedTrainings(User* user);
@@ -127,6 +129,8 @@ signals:
 
 	void catalogExercisesReceived(QVariantMap list);
 
+	void eventAdded(User* user);
+
 	void userLoggedIn(QString id, QString username, QString email, bool isTrainer);
 	void trainersReceived(QVariantMap trainersList);
 	void trainerReceived(QString id, QString username);
@@ -140,6 +144,7 @@ signals:
 	void exercisesReceived(User* user, QString planId, QString trainingId, QList<Exercise*> exercises);
 	void exerciseReceived(User* user, QString planId, QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList);
 	void measurementsReceived(User*, QList<Measurement*> measurements);
+	void eventsReceived(QVariantMap eventsList);
 
 	void completedTrainingAdded(User* user);
 	void uncompletedTrainingIdReceived(QString id);

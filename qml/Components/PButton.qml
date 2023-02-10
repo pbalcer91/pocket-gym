@@ -72,7 +72,7 @@ Button {
 			radius: parent.radius
 			color: (form.flat ? Colors.primary : Colors.black)
 
-			opacity: (form.down ? 0.2 : 0)
+			opacity: (form.down || form.checked ? 0.2 : 0)
 
 			Behavior on opacity {
 				NumberAnimation {

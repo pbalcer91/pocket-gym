@@ -732,6 +732,47 @@ DatabaseHandler::getCatalogByCategory(QString category)
 }
 
 void
+DatabaseHandler::getEvents(User *user, QDateTime selectedDateTime)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "events.json?auth=" + m_idToken+ "&orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, selectedDateTime, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		QVariantMap eventsList;
+
+		for (const auto &key : rootObject.keys()) {
+			auto eventDocument = rootObject.value(key);
+			auto eventObject = eventDocument.toObject();
+
+			long long timestamp = eventObject.value("timestamp").toInteger();
+			QDateTime dateTime;
+			dateTime.setSecsSinceEpoch(timestamp);
+
+			QDateTime beginOfDay = selectedDateTime;
+			beginOfDay.setTime(QTime(0, 0));
+			QDateTime endOfDay = beginOfDay.addSecs(60 * 60 * 24 - 1);
+
+			if (dateTime > endOfDay
+					|| dateTime < beginOfDay)
+				continue;
+
+			QString name = eventObject.value("name").toString();
+
+			eventsList.insert(name, dateTime);
+		}
+
+		emit eventsReceived(eventsList);
+	});
+}
+
+void
 DatabaseHandler::addUser(QString email, bool isTrainer)
 {
 	QVariantMap databaseUser;
@@ -849,6 +890,28 @@ DatabaseHandler::addMeasurement(User* user, double weight, double chest, double 
 					 this, [this, user, reply](){
 		reply->deleteLater();
 		emit measurementAdded(user);
+	});
+}
+
+void
+DatabaseHandler::addEvent(User *user, QString name, QDateTime dateTime)
+{
+	QVariantMap databaseEvent;
+	databaseEvent["userId"] = user->id();
+	databaseEvent["timestamp"] = dateTime.toSecsSinceEpoch();
+	databaseEvent["name"] = name;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseEvent);
+
+	QNetworkRequest request(QUrl(m_url + "events.json?auth=" + m_idToken));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->post(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, user, reply](){
+		reply->deleteLater();
+		emit eventAdded(user);
 	});
 }
 

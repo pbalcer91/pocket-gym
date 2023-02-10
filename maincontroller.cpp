@@ -122,6 +122,17 @@ MainController::MainController(QObject *parent)
 		emit currentUserReady();
 	});
 
+	QObject::connect(m_database, &DatabaseHandler::eventAdded,
+					 this, [this](User* user) {
+		(void)user;
+		emit eventAdded();
+	});
+
+	QObject::connect(m_database, &DatabaseHandler::eventsReceived,
+					 this, [this](QVariantMap eventsList) {
+		emit eventsReady(eventsList);
+	});
+
 	QObject::connect(m_database, &DatabaseHandler::pupilRequestAccepted,
 					 this, [this](QString trainerId) {
 		getDatabaseTrainerPupilsIds(trainerId);
@@ -635,6 +646,14 @@ MainController::getDatabaseMeasurementsByUser(User* user)
 }
 
 void
+MainController::getDatabaseEvents(User *user, int day, int month, int year)
+{
+	QDateTime dateTime = QDateTime(QDate(year, month, day), QTime(0, 0));
+
+	m_database->getEvents(user, dateTime);
+}
+
+void
 MainController::addDatabaseTrainingPlan(User* user, QString name, QString description, bool isDefault)
 {
 	if (isDefault) {
@@ -666,6 +685,14 @@ MainController::addDatabaseMeasurement(User* user, double weight, double chest, 
 									   double waist, double hips, double peace, double calf)
 {
 	m_database->addMeasurement(user, weight, chest, shoulders, arm, forearm, waist, hips, peace, calf);
+}
+
+void
+MainController::addDatabaseEvent(User *user, QString name, int day, int month, int year, int hour, int minute)
+{
+	QDateTime dateTime = QDateTime(QDate(year, month, day), QTime(hour, minute));
+
+	m_database->addEvent(user, name, dateTime);
 }
 
 void

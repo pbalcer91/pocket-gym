@@ -69,7 +69,7 @@ Drawer {
 		id: priv
 
 		property int defaultHeight: header.implicitHeight + Properties.smallMargin
-									+ mainContent.implicitHeight
+									+ mainContent.implicitHeight + Properties.margin
 									+ footer.implicitHeight + Properties.margin + 36
 	}
 

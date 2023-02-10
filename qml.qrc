@@ -78,5 +78,8 @@
         <file>qml/Settings/UserChangePasswordModal.qml</file>
         <file>qml/Exercises/ExercisesListView.qml</file>
         <file>qml/Exercises/CatalogExerciseItem.qml</file>
+        <file>qml/Calendar/EditEventModal.qml</file>
+        <file>qml/Components/PTimePicker.qml</file>
+        <file>qml/Calendar/EventItem.qml</file>
     </qresource>
 </RCC>

@@ -16,5 +16,6 @@ PListView	    		PListView.qml
 PTimerModal	    		PTimerModal.qml
 PTimeSelector	    		PTimeSelector.qml
 PBusyIndicator			PBusyIndicator.qml
+PTimePicker			PTimePicker.qml
 
 PMainLayout	    		PMainLayout.qml

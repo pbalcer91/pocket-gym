@@ -105,12 +105,14 @@ public:
 	Q_INVOKABLE void getDatabaseTrainingsByPlanId(User* user, QString planId);
 	Q_INVOKABLE void getDatabaseExercisesByTrainingId(User* user, QString planId, QString trainingId);
 	Q_INVOKABLE void getDatabaseMeasurementsByUser(User* user);
+	Q_INVOKABLE void getDatabaseEvents(User* user, int day, int month, int year);
 
 	Q_INVOKABLE void addDatabaseTrainingPlan(User* user, QString name, QString description, bool isDefault);
 	Q_INVOKABLE void addDatabaseTraining(User* user, QString name, QString planId);
 	Q_INVOKABLE void addDatabaseExercise(User* user, QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets);
 	Q_INVOKABLE void addDatabaseMeasurement(User* user, double weight, double chest, double shoulders, double arm, double forearm,
 											double waist, double hips, double peace, double calf);
+	Q_INVOKABLE void addDatabaseEvent(User* user, QString name, int day, int month, int year, int hour, int minute);
 
 	Q_INVOKABLE void getDabaseCompletedTrainings(User* user);
 	Q_INVOKABLE void getDabaseCompletedExercises(QString traininId);
@@ -150,6 +152,9 @@ signals:
 	void userLoggedOut();
 
 	void catalogReady(QVariantMap list);
+
+	void eventAdded();
+	void eventsReady(QVariantMap list);
 
 	void userChanged();
 	void userEmailChanged(QString email);

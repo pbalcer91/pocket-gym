@@ -1,3 +1,5 @@
 module Calendar
 
 CalendarView	    	    CalendarView.qml
+EditEventModal		    EditEventModal.qml
+EventItem		    EventItem.qml
