@@ -42,7 +42,19 @@ ColumnLayout {
 
 		year += date.getFullYear()
 
-		return (day + "/" + month + "/" + year)
+		var hours = ""
+
+		if (date.getHours() < 10)
+			hours += "0"
+		hours += date.getHours()
+
+		var minutes = ""
+
+		if (date.getMinutes() < 10)
+			minutes += "0"
+		minutes += date.getMinutes()
+
+		return (day + "/" + month + "/" + year + " - " + hours + ":" + minutes)
 	}
 
 	Connections {
@@ -51,10 +63,16 @@ ColumnLayout {
 		function onEventsReady(eventsList) {
 			eventsModel.clear()
 
-			for(var event in eventsList) {
-				eventsModel.append({"name": event,
-									   "date": getDateString(eventsList[event])})
+			for(var i = 0; i < eventsList.length; i++) {
+				MainController.getDatabaseEventById(eventsList[i])
+
 			}
+		}
+
+		function onEventReady(id, name, dateTime) {
+			eventsModel.append({"id": id,
+								   "name": name,
+								   "date": dateTime})
 		}
 	}
 
@@ -143,8 +161,23 @@ ColumnLayout {
 			delegate: EventItem {
 				implicitWidth: eventsList.width
 
+				eventId: model.id
 				name: model.name
-				date: model.date
+				date: getDateString(model.date)
+
+				editButton.onClicked: {
+					loader.setSource("qrc:/qml/Calendar/EditEventModal.qml",
+									 {
+										 "editMode": true,
+										 "day": calendar.selectedDay,
+										 "month": calendar.selectedMonth,
+										 "year": calendar.selectedYear,
+										 "name": model.name,
+										 "hour": model.date.getHours(),
+										 "minute": model.date.getMinutes(),
+										 "eventId": model.id
+									 })
+				}
 			}
 		}
 	}

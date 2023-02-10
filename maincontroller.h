@@ -106,6 +106,7 @@ public:
 	Q_INVOKABLE void getDatabaseExercisesByTrainingId(User* user, QString planId, QString trainingId);
 	Q_INVOKABLE void getDatabaseMeasurementsByUser(User* user);
 	Q_INVOKABLE void getDatabaseEvents(User* user, int day, int month, int year);
+	Q_INVOKABLE void getDatabaseEventById(QString id);
 
 	Q_INVOKABLE void addDatabaseTrainingPlan(User* user, QString name, QString description, bool isDefault);
 	Q_INVOKABLE void addDatabaseTraining(User* user, QString name, QString planId);
@@ -124,10 +125,12 @@ public:
 	Q_INVOKABLE void editDatabaseTrainingPlan(QString planId, User* user, QString name, QString description, bool isDefault);
 	Q_INVOKABLE void editDatabaseTraining(QString trainingId, User* user, QString name, QString planId);
 	Q_INVOKABLE void editDatabaseExercise(User* user, QString planId, QString exerciseId, QString trainingId, QString name, int breakTime, QList<QString> sets);
+	Q_INVOKABLE void editDatabaseEvent(User *user, QString eventId, QString name, int day, int month, int year, int hour, int minute);
 
 	Q_INVOKABLE void deleteDatabaseTrainingPlan(User* user, QString planId);
 	Q_INVOKABLE void deleteDatabaseTraining(User* user, QString planId, QString trainingId);
 	Q_INVOKABLE void deleteDatabaseExercise(User* user, QString planId, QString trainingId, QString exerciseId);
+	Q_INVOKABLE void deleteEvent(QString id);
 
 	Q_INVOKABLE void addRequestForTrainer(QString trainerId);
 	Q_INVOKABLE void deleteTrainerFromUser(QString trainerId);
@@ -154,7 +157,10 @@ signals:
 	void catalogReady(QVariantMap list);
 
 	void eventAdded();
-	void eventsReady(QVariantMap list);
+	void eventsReady(QList<QString> eventsIdList);
+	void eventReady(QString id, QString name, QDateTime dateTime);
+	void eventRemoved();
+	void eventChanged();
 
 	void userChanged();
 	void userEmailChanged(QString email);

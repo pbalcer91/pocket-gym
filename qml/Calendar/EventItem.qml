@@ -12,6 +12,8 @@ Item {
 	implicitWidth: content.implicitWidth + Properties.margin * 2
 	implicitHeight: 72
 
+	property string eventId
+
 	property alias name: nameLabel.text
 	property alias date: dateLabel.text
 
@@ -85,6 +87,13 @@ Item {
 
 			icon.source: "qrc:/icons/ic_delete.svg"
 			color: Colors.error
+
+			onClicked: {
+				showMessage({"message": "Czy na pewno chcesz usunąć wydarzenie?",
+								"acceptAction": function() {
+									MainController.deleteEvent(eventId)
+								}})
+			}
 		}
 	}
 }

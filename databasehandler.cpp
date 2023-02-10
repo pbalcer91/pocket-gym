@@ -745,7 +745,7 @@ DatabaseHandler::getEvents(User *user, QDateTime selectedDateTime)
 		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
 		auto rootObject = rootDocument.object();
 
-		QVariantMap eventsList;
+		QList<QString> eventsIdList;
 
 		for (const auto &key : rootObject.keys()) {
 			auto eventDocument = rootObject.value(key);
@@ -763,12 +763,34 @@ DatabaseHandler::getEvents(User *user, QDateTime selectedDateTime)
 					|| dateTime < beginOfDay)
 				continue;
 
-			QString name = eventObject.value("name").toString();
-
-			eventsList.insert(name, dateTime);
+			eventsIdList.push_back(key);
 		}
 
-		emit eventsReceived(eventsList);
+		emit eventsReceived(eventsIdList);
+	});
+}
+
+void
+DatabaseHandler::getEventById(QString eventId)
+{
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "events/" + eventId + ".json?auth=" + m_idToken)));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, eventId, reply](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		QString name = rootObject.value("name").toString();
+
+		long long timestamp = rootObject.value("timestamp").toInteger();
+		QDateTime dateTime;
+		dateTime.setSecsSinceEpoch(timestamp);
+
+		emit eventReceived(eventId, name, dateTime);
 	});
 }
 
@@ -1182,6 +1204,28 @@ DatabaseHandler::editExercise(User* user, QString planId, QString exerciseId, QS
 }
 
 void
+DatabaseHandler::editEvent(User* user, QString eventId, QString name, QDateTime dateTime)
+{
+	QVariantMap databaseEvent;
+	databaseEvent["userId"] = user->id();
+	databaseEvent["name"] = name;
+	databaseEvent["timestamp"] = dateTime.toSecsSinceEpoch();;
+
+	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseEvent);
+
+	QNetworkRequest request(QUrl(m_url + "events/" + eventId + ".json?auth=" + m_idToken));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->put(request, jsonDoc.toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+		emit eventChanged();
+	});
+}
+
+void
 DatabaseHandler::deleteTrainingPlan(User* user, QString planId)
 {
 	QNetworkRequest request(QUrl(m_url + "trainingPlans/" + planId + ".json?auth=" + m_idToken));
@@ -1226,6 +1270,22 @@ DatabaseHandler::deleteExercise(User* user, QString planId, QString trainingId, 
 		reply->deleteLater();
 
 		emit exerciseRemoved(user, planId, trainingId, exerciseId);
+	});
+}
+
+void
+DatabaseHandler::deleteEvent(QString id)
+{
+	QNetworkRequest request(QUrl(m_url + "events/" + id + ".json?auth=" + m_idToken));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	auto reply = m_networkManager->deleteResource(request);
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply](){
+		reply->deleteLater();
+
+		emit eventRemoved();
 	});
 }
 

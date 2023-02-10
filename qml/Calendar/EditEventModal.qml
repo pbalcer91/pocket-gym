@@ -14,19 +14,39 @@ PMessageDialog {
 	required property int month
 	required property int year
 
+	property alias name: nameField.text
+	property alias hour: timePicker.hours
+	property alias minute: timePicker.minutes
+
+	property string eventId: ""
+
 	autoCloseMode: false
+
+	property bool editMode: false
 
 	title: getDateString(day, month, year)
 
 	acceptButton.enabled: nameField.text != ""
 	acceptButton.onClicked: {
-		MainController.addDatabaseEvent(MainController.currentUser,
-										nameField.text,
-										day,
-										month + 1,
-										year,
-										timePicker.hours,
-										timePicker.minutes)
+		if (!editMode) {
+			MainController.addDatabaseEvent(MainController.currentUser,
+											nameField.text,
+											day,
+											month + 1,
+											year,
+											timePicker.hours,
+											timePicker.minutes)
+			return
+		}
+
+		MainController.editDatabaseEvent(MainController.currentUser,
+										 eventId,
+										 nameField.text,
+										 day,
+										 month + 1,
+										 year,
+										 timePicker.hours,
+										 timePicker.minutes)
 	}
 
 	rejectButton.onClicked: {
@@ -38,6 +58,11 @@ PMessageDialog {
 
 		function onEventAdded() {
 			notify("Dodano wydarzenie")
+			modal.close()
+		}
+
+		function onEventChanged() {
+			notify("Zmieniono wydarzenie")
 			modal.close()
 		}
 	}
@@ -73,7 +98,7 @@ PMessageDialog {
 		id: timePicker
 
 		Layout.alignment: Qt.AlignHCenter
-		Layout.bottomMargin: Properties.margin
+		Layout.bottomMargin: Properties.margin	
 	}
 
 	PTextField {

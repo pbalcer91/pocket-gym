@@ -72,6 +72,7 @@ public:
 	void getMeasurementsByUser(User* user);
 	void getCatalogByCategory(QString category);
 	void getEvents(User* user, QDateTime selectedDateTime);
+	void getEventById(QString eventId);
 
 	//add methods
 	void addUser(QString email, bool isTrainer);
@@ -94,11 +95,13 @@ public:
 	void editTrainingPlan(QString planId, User* user, QString name, QString description, bool isDefault);
 	void editTraining(QString trainingId, User* user, QString name, QString planId);
 	void editExercise(User* user, QString planId, QString exerciseId, QString trainingId, QString name, int breakTime, QList<QString> sets);
+	void editEvent(User* user, QString eventId, QString name, QDateTime dateTime);
 
 	//delete methods
 	void deleteTrainingPlan(User* user, QString planId);
 	void deleteTraining(User* user, QString planId, QString trainingId);
 	void deleteExercise(User* user, QString planId, QString trainingId, QString exerciseId);
+	void deleteEvent(QString id);
 
 	//trainer request method
 	void addRequestForTrainer(QString userId, QString trainerId);
@@ -144,7 +147,8 @@ signals:
 	void exercisesReceived(User* user, QString planId, QString trainingId, QList<Exercise*> exercises);
 	void exerciseReceived(User* user, QString planId, QString exerciseId, QString name, int breakTime, QString trainingId, QList<QString> setList);
 	void measurementsReceived(User*, QList<Measurement*> measurements);
-	void eventsReceived(QVariantMap eventsList);
+	void eventsReceived(QList<QString> eventsIdList);
+	void eventReceived(QString id, QString name, QDateTime dateTime);
 
 	void completedTrainingAdded(User* user);
 	void uncompletedTrainingIdReceived(QString id);
@@ -161,10 +165,12 @@ signals:
 	void trainingPlanChanged(User* user, QString planId);
 	void trainingChanged(User* user, QString trainingId);
 	void exerciseChanged(User* user, QString planId, QString exerciseId);
+	void eventChanged();
 
 	void trainingPlanRemoved(User* user, QString planId);
 	void trainingRemoved(User* user, QString planId, QString trainingId);
 	void exerciseRemoved(User* user, QString planId, QString trainingId, QString exerciseId);
+	void eventRemoved();
 
 	void trainerRequestAdded(QString trainerId);
 	void pupilRequestAccepted(QString trainerId);

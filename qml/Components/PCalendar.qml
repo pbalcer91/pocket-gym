@@ -21,6 +21,19 @@ PCalendarForm {
 		MainController.getDatabaseEvents(MainController.currentUser, selectedDay, selectedMonth + 1, selectedYear)
 	}
 
+	Connections {
+		target: MainController
+
+		function onEventRemoved() {
+			notify("Usunięto wydarzenie")
+			MainController.getDatabaseEvents(MainController.currentUser, selectedDay, selectedMonth + 1, selectedYear)
+		}
+
+		function onEventChanged() {
+			MainController.getDatabaseEvents(MainController.currentUser, selectedDay, selectedMonth + 1, selectedYear)
+		}
+	}
+
 	function monthLength(month) {
 		var date = new Date()
 
