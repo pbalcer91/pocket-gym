@@ -15,6 +15,8 @@ Item {
 	property string trainerUsername: ""
 	property string trainerId: ""
 
+	property alias chatButton: chatButton
+
 	Rectangle {
 		id: background
 
@@ -99,7 +101,7 @@ Item {
 			PButton {
 				id: chatButton
 
-				text: "Wyślij wiadomość"
+				text: "Wyślij wiadomość"				
 			}
 		}
 	}

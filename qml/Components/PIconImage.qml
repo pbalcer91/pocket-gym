@@ -25,7 +25,7 @@ Item {
 		visible: false
 	}
 
-	ColorOverlay{
+	ColorOverlay {
 			anchors.fill: icon
 			source: icon
 			color: form.color

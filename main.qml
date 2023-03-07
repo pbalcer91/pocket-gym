@@ -18,11 +18,6 @@ ApplicationWindow {
 		Properties.appWindow = this
 	}
 
-	/*	ICONS CREDITS
-	  https://www.svgrepo.com/page/licensing
-	  CC Licence
-	*/
-
 	Connections {
 		target: MainController
 

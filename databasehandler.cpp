@@ -658,7 +658,11 @@ DatabaseHandler::getMeasurementsByUser(User* user)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "measurements.json?auth=" + m_idToken + "&orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+					QUrl(m_url + "measurements.json?auth="
+						 + m_idToken
+						 + "&orderBy=\"userId\"&equalTo=\""
+						 + user->id()
+						 + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, user, reply](){
@@ -736,7 +740,7 @@ DatabaseHandler::getEvents(User *user, QDateTime selectedDateTime)
 {
 	auto reply = m_networkManager->get(
 				QNetworkRequest(
-					QUrl(m_url + "events.json?auth=" + m_idToken+ "&orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
+					QUrl(m_url + "events.json?auth=" + m_idToken + "&orderBy=\"userId\"&equalTo=\"" + user->id() + "\"")));
 
 	QObject::connect(reply, &QNetworkReply::finished,
 					 this, [this, selectedDateTime, reply](){
@@ -791,6 +795,42 @@ DatabaseHandler::getEventById(QString eventId)
 		dateTime.setSecsSinceEpoch(timestamp);
 
 		emit eventReceived(eventId, name, dateTime);
+	});
+}
+
+void
+DatabaseHandler::getMessages(QObject* parent, QString senderId, QString receiverId)
+{
+	QString signature = (senderId < receiverId ?
+							 senderId + receiverId
+						   : receiverId + senderId);
+
+	auto reply = m_networkManager->get(
+				QNetworkRequest(
+					QUrl(m_url + "messages.json?auth=" + m_idToken
+						 + "&orderBy=\"signature\"&equalTo=\"" + signature + "\"")));
+
+	QObject::connect(reply, &QNetworkReply::finished,
+					 this, [this, reply, parent, signature](){
+		reply->deleteLater();
+
+		auto rootDocument = QJsonDocument::fromJson(reply->readAll());
+		auto rootObject = rootDocument.object();
+
+		QList<Message*> messagesList;
+
+		for (const auto &key : rootObject.keys()) {
+			auto messageDocument = rootObject.value(key);
+			auto messageObject = messageDocument.toObject();
+
+			QString sender = messageObject.value("sender").toString();
+			QString receiver = messageObject.value("receiver").toString();
+			QString message = messageObject.value("message").toString();
+
+			messagesList.push_back(new Message(parent, key, sender,receiver, signature, message));
+		}
+
+		emit messagesReceived(messagesList);
 	});
 }
 
@@ -859,7 +899,12 @@ DatabaseHandler::addTraining(User* user, QString name, QString planId)
 }
 
 void
-DatabaseHandler::addExercise(User* user, QString planId, QString trainingId, QString name, int breakTime, QList<QString> sets)
+DatabaseHandler::addExercise(User* user,
+							 QString planId,
+							 QString trainingId,
+							 QString name,
+							 int breakTime,
+							 QList<QString> sets)
 {
 	QVariantMap databaseExercise;
 	databaseExercise["name"] = name;
@@ -901,7 +946,8 @@ DatabaseHandler::addMeasurement(User* user, double weight, double chest, double 
 	databaseMeasurement["peace"] = peace;
 	databaseMeasurement["calf"] = calf;
 
-	QJsonDocument jsonDoc = QJsonDocument::fromVariant(databaseMeasurement);
+	QJsonDocument jsonDoc = QJsonDocument
+			::fromVariant(databaseMeasurement);
 
 	QNetworkRequest request(QUrl(m_url + "measurements.json?auth=" + m_idToken));
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
@@ -1426,4 +1472,25 @@ DatabaseHandler::deleteTrainerFromPupil(QString trainerId, QString pupilId)
 
 		emit pupilRemoved(trainerId);
 	});
+}
+
+void
+DatabaseHandler::sendMessage(QString senderId, QString receiverId, QString message)
+{
+	QVariantMap databaseMessage;
+	databaseMessage["timestamp"] = QDateTime::currentSecsSinceEpoch();
+	databaseMessage["sender"] = senderId;
+	databaseMessage["receiver"] = receiverId;
+	databaseMessage["signature"] = (senderId < receiverId ?
+										senderId + receiverId
+									  : receiverId + senderId);
+	databaseMessage["message"] = message;
+
+	QJsonDocument jsonDoc = QJsonDocument
+			::fromVariant(databaseMessage);
+
+	QNetworkRequest request(QUrl(m_url + "messages.json?auth=" + m_idToken));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+	m_networkManager->post(request, jsonDoc.toJson());
 }

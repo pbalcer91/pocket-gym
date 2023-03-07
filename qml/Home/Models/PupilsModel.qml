@@ -18,28 +18,28 @@ PListModel {
 		//sortModelByIsConfirmed()
 	}
 
-	function sortModelByIsConfirmed() {
-		var nextIndexToReplace = 0
-		var shouldReplaceNext = false
+//	function sortModelByIsConfirmed() {
+//		var nextIndexToReplace = 0
+//		var shouldReplaceNext = false
 
-		for (var i = 0; i < pupilsModel.count; i++) {
+//		for (var i = 0; i < pupilsModel.count; i++) {
 
-			if (!pupilsModel.get(i).isConfirmed
-					&& !shouldReplaceNext) {
-				nextIndexToReplace++
-				continue
-			}
+//			if (!pupilsModel.get(i).isConfirmed
+//					&& !shouldReplaceNext) {
+//				nextIndexToReplace++
+//				continue
+//			}
 
-			if (!pupilsModel.get(i).isConfirmed
-					&& shouldReplaceNext) {
-				pupilsModel.move(i, nextIndexToReplace, 1)
-				nextIndexToReplace++
-				continue
-			}
+//			if (!pupilsModel.get(i).isConfirmed
+//					&& shouldReplaceNext) {
+//				pupilsModel.move(i, nextIndexToReplace, 1)
+//				nextIndexToReplace++
+//				continue
+//			}
 
-			shouldReplaceNext = true
-		}
-	}
+//			shouldReplaceNext = true
+//		}
+//	}
 
 	function appendPupil(id, pupilUsername, isConfirmed) {
 		append({"id": id,

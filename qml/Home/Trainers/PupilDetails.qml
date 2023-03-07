@@ -64,7 +64,7 @@ PDialog {
 		}
 
 		function onMeasurementsReady() {
-			if (!MainController.getCurrentUserLastMeasurement())
+			if (pupil.measurements.length === 0)
 				return
 
 			progressButton.enabled = true
@@ -245,6 +245,14 @@ PDialog {
 					Layout.alignment: Qt.AlignHCenter
 
 					text: "Wyślij wiadomość"
+
+					onClicked: {
+						loader.setSource("qrc:/qml/Home/Trainers/ChatDialog.qml",
+										 {
+											"username": dialog.pupilUsername,
+											 "userId": dialog.pupilId
+										 })
+					}
 				}
 			}
 		}

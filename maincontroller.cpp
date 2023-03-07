@@ -411,6 +411,11 @@ MainController::MainController(QObject *parent)
 
 		emit measurementsReady();
 	});
+
+	QObject::connect(m_database, &DatabaseHandler::messagesReceived,
+					 this, [this](QList<Message*> messagesList) {
+		emit messagesReceived(messagesList);
+	});
 }
 
 MainController::~MainController()
@@ -871,4 +876,16 @@ User*
 MainController::createPupilInstance(QObject* parent, QString pupilId, QString pupilUsername)
 {
 	return new User(parent, pupilId, pupilUsername);
+}
+
+void
+MainController::sendMessage(QString receiverId, QString message)
+{
+	m_database->sendMessage(m_currentUser->id(), receiverId, message);
+}
+
+void
+MainController::getMessages(QObject* parent, QString senderId)
+{
+	m_database->getMessages(parent, senderId, m_currentUser->id());
 }

@@ -155,7 +155,7 @@ Drawer {
 				PButton {
 					id: rejectButton
 
-					text: "Anuluj"	// do tłumaczenia
+					text: "Anuluj"
 
 					visible: text != ""
 
@@ -175,7 +175,7 @@ Drawer {
 				PButton {
 					id: acceptButton
 
-					text: "Zatwierdź"	// do tłumaczenia
+					text: "Zatwierdź"
 
 					visible: text != ""
 

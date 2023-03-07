@@ -38,7 +38,6 @@ TextField {
 	placeholderTextColor: (textField.enabled ? Colors.black_30 : "transparent")
 
 	echoMode: (passwordMode ? TextInput.Password : TextInput.Normal)
-	//passwordCharacter: Properties.passwordCharacter
 
 	cursorDelegate: Rectangle {
 		id: cursor

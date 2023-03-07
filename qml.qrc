@@ -23,7 +23,6 @@
         <file>qml/Home/HomeView.qml</file>
         <file>qml/Home/qmldir</file>
         <file>qml/Settings/SettingsSection.qml</file>
-        <file>qml/Components/PMainLayout.qml</file>
         <file>qml/Home/HomeSection.qml</file>
         <file>qml/Exercises/qmldir</file>
         <file>qml/Exercises/ExercisesView.qml</file>
@@ -81,5 +80,7 @@
         <file>qml/Calendar/EditEventModal.qml</file>
         <file>qml/Components/PTimePicker.qml</file>
         <file>qml/Calendar/EventItem.qml</file>
+        <file>qml/Home/Trainers/ChatDialog.qml</file>
+        <file>qml/Home/Trainers/MessageItem.qml</file>
     </qresource>
 </RCC>
