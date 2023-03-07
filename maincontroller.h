@@ -144,6 +144,9 @@ public:
 
 	Q_INVOKABLE User* createPupilInstance(QObject* parent, QString pupilId, QString pupilUsername);
 
+	Q_INVOKABLE void sendMessage(QString receiverId, QString message);
+	Q_INVOKABLE void getMessages(QObject* parent, QString senderId);
+
 signals:
 	void settingsChanged();
 	void signUpFailed(MainController::SU_ERROR errorCode);
@@ -188,6 +191,8 @@ signals:
 	void trainingsReady();
 	void exercisesReady();
 	void measurementsReady();
+
+	void messagesReceived(QList<Message*> messages);
 
 private:
 	DatabaseHandler* m_database;

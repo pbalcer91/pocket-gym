@@ -293,6 +293,14 @@ Item {
 						Layout.fillWidth: true
 
 						visible: trainerUsername != ""
+
+						chatButton.onClicked: {
+							loader.setSource("qrc:/qml/Home/Trainers/ChatDialog.qml",
+											 {
+												"username": userTrainerPanel.trainerUsername,
+												 "userId": userTrainerPanel.trainerId
+											 })
+						}
 					}
 
 					PLabel {

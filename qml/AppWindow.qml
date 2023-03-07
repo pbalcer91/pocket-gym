@@ -35,18 +35,6 @@ Page {
 		messageDialogLoader.setSource("qrc:/qml/Components/PMessageDialog.qml", args)
 	}
 
-//	function showAppCloseMessage() {
-//		console.log("Proba zamkniecia aplikacji")
-//		showMessage({ "message": "Are you sure to close the app?",
-//						"acceptButtonText": "Yes",
-//						"rejectButtonText": "No" })
-//	}
-
-//	Keys.onBackPressed: {
-//		return
-//		//showAppCloseMessage()
-//	}
-
 	Component.onCompleted: {
 		window.currentPage = AppWindow.PAGES.HOME
 		window.forceActiveFocus()

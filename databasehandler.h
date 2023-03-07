@@ -12,6 +12,7 @@
 #include "training.h"
 #include "trainingplan.h"
 #include "user.h"
+#include "message.h"
 
 class DatabaseHandler : public QObject
 {
@@ -73,6 +74,7 @@ public:
 	void getCatalogByCategory(QString category);
 	void getEvents(User* user, QDateTime selectedDateTime);
 	void getEventById(QString eventId);
+	void getMessages(QObject* parent, QString senderId, QString receiverId);
 
 	//add methods
 	void addUser(QString email, bool isTrainer);
@@ -90,6 +92,7 @@ public:
 	void deleteCompletedTraining(User* user);
 	void addCompletedExercise(QString trainingId, QString name, QList<QString> sets);
 	void completeTraining(QString trainingId);
+	void sendMessage(QString senderId, QString receiverId, QString message);
 
 	//edit methods
 	void editTrainingPlan(QString planId, User* user, QString name, QString description, bool isDefault);
@@ -176,6 +179,8 @@ signals:
 	void pupilRequestAccepted(QString trainerId);
 	void trainerRequestRemoved();
 	void pupilRemoved(QString trainerId);
+
+	void messagesReceived(QList<Message*> messagesList);
 
 private:
 	QNetworkAccessManager* m_networkManager;

@@ -9,6 +9,9 @@ ExerciseSetItem		    	    ../Trainings/ExerciseSetItem.qml
 PupilItem		    	    PupilItem.qml
 TrainerItem		    	    TrainerItem.qml
 
+ChatDialog			    ChatDialog.qml
+MessageItem			    MessageItem.qml
+
 EditTrainingPlanModal	    	    ../Trainings/EditTrainingPlanModal.qml
 EditTrainingModal	    	    ../Trainings/EditTrainingModal.qml
 EditExerciseModal	    	    ../Trainings/EditExerciseModal.qml
